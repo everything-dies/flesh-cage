@@ -1,0 +1,85 @@
+{
+  "name": "@flesh-cage/vite-plugin",
+  "version": "0.0.0",
+  "description": "Vite plugin for flesh-cage: Convention-based shadow components with zero boilerplate",
+  "keywords": [
+    "vite",
+    "vite-plugin",
+    "shadow-dom",
+    "web-components",
+    "react",
+    "conventions"
+  ],
+  "license": "MIT",
+  "author": "Fernando Camargo <deusmorto@gmail.com>",
+  "homepage": "https://github.com/fernandocamargo/flesh-cage/tree/main/packages/vite-plugin#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fernandocamargo/flesh-cage.git",
+    "directory": "packages/vite-plugin"
+  },
+  "bugs": {
+    "url": "https://github.com/fernandocamargo/flesh-cage/issues"
+  },
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/",
+    "provenance": true
+  },
+  "scripts": {
+    "build": "tsup",
+    "build:watch": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "validate": "npm-run-all validate:*",
+    "validate:package": "publint",
+    "validate:types": "attw --pack",
+    "clean": "rm -rf dist .turbo *.tsbuildinfo"
+  },
+  "dependencies": {
+    "@flesh-cage/core": "workspace:*",
+    "@flesh-cage/react": "workspace:*"
+  },
+  "peerDependencies": {
+    "vite": "^5.0.0 || ^6.0.0"
+  },
+  "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.2",
+    "@types/node": "^22.10.2",
+    "@vitest/coverage-v8": "^2.1.8",
+    "npm-run-all2": "^8.0.4",
+    "publint": "^0.3.16",
+    "tsup": "^8.5.1",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.5",
+    "vitest": "^2.1.8"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

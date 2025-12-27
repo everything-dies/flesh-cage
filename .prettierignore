@@ -1,0 +1,9 @@
+dist
+build
+coverage
+node_modules
+.turbo
+*.tsbuildinfo
+pnpm-lock.yaml
+yarn.lock
+package-lock.json

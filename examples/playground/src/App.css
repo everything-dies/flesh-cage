@@ -1,0 +1,53 @@
+.App {
+  padding: 2rem;
+}
+
+.skin-selector {
+  margin: 2rem 0;
+  padding: 1.5rem;
+  border: 2px solid #444;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.skin-selector button {
+  margin: 0 0.5rem;
+}
+
+.card {
+  padding: 2rem;
+  margin: 2rem 0;
+  border: 2px solid #444;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.nested-example {
+  margin: 2rem 0;
+  padding: 2rem;
+  border: 2px solid #444;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.hint {
+  font-size: 0.9em;
+  color: #888;
+}
+
+.info {
+  margin-top: 3rem;
+  padding: 2rem;
+  border-top: 2px solid #444;
+}
+
+.info ul {
+  line-height: 1.8;
+}
+
+.info code {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-size: 0.9em;
+}

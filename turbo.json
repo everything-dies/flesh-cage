@@ -1,0 +1,107 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": [
+    ".env",
+    "tsconfig.json",
+    "tsconfig.*.json"
+  ],
+  "globalEnv": [
+    "NODE_ENV"
+  ],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "inputs": [
+        "src/**",
+        "tsconfig.json",
+        "tsconfig.*.json",
+        "tsup.config.ts",
+        "vite.config.ts"
+      ],
+      "outputs": [
+        "dist/**",
+        ".tsbuildinfo"
+      ]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "typecheck": {
+      "dependsOn": ["^build"],
+      "inputs": [
+        "src/**",
+        "tsconfig.json",
+        "tsconfig.*.json"
+      ],
+      "outputs": []
+    },
+    "lint": {
+      "inputs": [
+        "src/**",
+        "eslint.config.js"
+      ],
+      "outputs": []
+    },
+    "lint:fix": {
+      "cache": false,
+      "inputs": [
+        "src/**",
+        "eslint.config.js"
+      ],
+      "outputs": []
+    },
+    "test": {
+      "dependsOn": ["^build"],
+      "inputs": [
+        "src/**",
+        "test/**",
+        "vitest.config.ts"
+      ],
+      "outputs": [
+        "coverage/**"
+      ]
+    },
+    "test:watch": {
+      "cache": false,
+      "persistent": true
+    },
+    "test:coverage": {
+      "dependsOn": ["^build"],
+      "inputs": [
+        "src/**",
+        "test/**",
+        "vitest.config.ts"
+      ],
+      "outputs": [
+        "coverage/**"
+      ]
+    },
+    "test:e2e": {
+      "dependsOn": ["^build"],
+      "inputs": [
+        "e2e/**",
+        "playwright.config.ts"
+      ],
+      "outputs": [
+        "playwright-report/**",
+        "test-results/**"
+      ]
+    },
+    "test:e2e:ui": {
+      "cache": false,
+      "persistent": true
+    },
+    "validate": {
+      "dependsOn": ["build"],
+      "inputs": [
+        "dist/**",
+        "package.json"
+      ],
+      "outputs": []
+    },
+    "clean": {
+      "cache": false
+    }
+  }
+}
