@@ -59,8 +59,22 @@ export const Button = createShadowComponent<ButtonProps>({
   )
 })
 
-// Usage
-<Button skin="material" variant="primary">Click Me</Button>
+// Usage with Provider (REQUIRED)
+import { SkinProvider } from '@my-lib/react'
+
+<SkinProvider skin="material">
+  <Button variant="primary">Click Me</Button>
+  <Button variant="secondary">Cancel</Button>
+</SkinProvider>
+
+// Override via nested provider (not component props!)
+<SkinProvider skin="material">
+  <Button variant="primary">Normal</Button>
+
+  <SkinProvider skin="brutalist">
+    <Button variant="primary">Different skin!</Button>
+  </SkinProvider>
+</SkinProvider>
 ```
 
 ### Advanced Usage (with base styles)
@@ -169,8 +183,22 @@ export const Button = withShadowStyles(ButtonBase, {
   }
 })
 
-// Usage
-<Button skin="material" variant="primary">Click Me</Button>
+// Usage with Provider (REQUIRED)
+import { SkinProvider } from '@my-lib/react'
+
+<SkinProvider skin="material">
+  <Button variant="primary">Click Me</Button>
+  <Button variant="secondary">Cancel</Button>
+</SkinProvider>
+
+// Override via nested provider (not component props!)
+<SkinProvider skin="material">
+  <Button variant="primary">Normal</Button>
+
+  <SkinProvider skin="brutalist">
+    <Button>Different skin!</Button>
+  </SkinProvider>
+</SkinProvider>
 ```
 
 ### Advanced Usage (with configuration)
@@ -261,11 +289,12 @@ export default withShadowStyles(Button, {
 
 ```typescript
 // components/Button.tsx
-import { useShadowStyles } from '@my-lib/react'
+import { useShadowStyles, useSkinContext } from '@my-lib/react'
 
 interface ButtonProps {
   variant?: 'primary' | 'secondary'
   children: React.ReactNode
+  // No skin prop! Skin comes from context
 }
 
 const skins = {
@@ -274,7 +303,9 @@ const skins = {
 }
 
 export const Button = ({ variant = 'primary', children, ...props }: ButtonProps) => {
-  const { ref, skin, setSkin } = useShadowStyles('button', skins, 'material')
+  const skin = useSkinContext() // Read from Provider (internal)
+
+  const { ref } = useShadowStyles('button', skins, skin)
 
   return (
     <shadow-root ref={ref} exportparts="surface,label">
@@ -285,8 +316,22 @@ export const Button = ({ variant = 'primary', children, ...props }: ButtonProps)
   )
 }
 
-// Usage
-<Button variant="primary">Click Me</Button>
+// Usage with Provider (REQUIRED)
+import { SkinProvider } from '@my-lib/react'
+
+<SkinProvider skin="material">
+  <Button variant="primary">Click Me</Button>
+  <Button variant="secondary">Cancel</Button>
+</SkinProvider>
+
+// Override via nested provider (not component props!)
+<SkinProvider skin="material">
+  <Button>Normal</Button>
+
+  <SkinProvider skin="brutalist">
+    <Button>Different skin!</Button>
+  </SkinProvider>
+</SkinProvider>
 ```
 
 ### Advanced Usage (with ShadowRoot component)
@@ -476,9 +521,11 @@ export default defineConfig({
 ```typescript
 // components/Button/Button.tsx
 // Just write a normal React component!
+// The plugin auto-wires it to read skin from context
 interface ButtonProps {
   variant?: 'primary' | 'secondary'
   children: React.ReactNode
+  // No skin prop! Plugin handles context internally
 }
 
 export const Button = ({ variant = 'primary', children }: ButtonProps) => (
@@ -517,13 +564,17 @@ export default `
 
 ```typescript
 // This is what the plugin outputs (you don't write this!)
-import { createShadowComponent } from '@my-lib/react'
+import { createShadowComponent, useSkinContext } from '@my-lib/react'
 
-const ButtonBase = ({ variant = 'primary', children }: ButtonProps) => (
-  <button part="surface" variant={variant}>
-    <span part="label">{children}</span>
-  </button>
-)
+const ButtonBase = ({ variant = 'primary', children }: ButtonProps) => {
+  const skin = useSkinContext() // Plugin adds this internally
+  // Component uses context skin (no prop!)
+  return (
+    <button part="surface" variant={variant}>
+      <span part="label">{children}</span>
+    </button>
+  )
+}
 
 export const Button = createShadowComponent({
   name: 'button',
@@ -533,6 +584,31 @@ export const Button = createShadowComponent({
   },
   render: ButtonBase
 })
+```
+
+**Usage with Provider (REQUIRED):**
+
+```typescript
+import { SkinProvider } from '@my-lib/react'
+
+<SkinProvider skin="default">
+  <Button variant="primary">Click Me</Button>
+  <Button variant="secondary">Cancel</Button>
+</SkinProvider>
+
+// Nesting works! (override via nested providers)
+<SkinProvider skin="default">
+  <Button>Normal</Button>
+
+  <SkinProvider skin="dark">
+    <Button>Dark section</Button>
+  </SkinProvider>
+
+  <Button>Back to normal</Button>
+</SkinProvider>
+
+// Note: No skin prop on <Button>!
+// Overrides happen via Provider nesting only
 ```
 
 ### Advanced Usage (with Directives)
@@ -803,7 +879,7 @@ const Button = styled.button<{ variant: 'primary' | 'secondary' }>`
 #### Option 1: createShadowComponent
 
 ```typescript
-import { createShadowComponent } from '@my-lib/react'
+import { createShadowComponent, SkinProvider } from '@my-lib/react'
 
 export const Button = createShadowComponent<ButtonProps>({
   name: 'button',
@@ -815,14 +891,25 @@ export const Button = createShadowComponent<ButtonProps>({
   )
 })
 
-// Usage
-<Button skin="material" variant="primary">Click Me</Button>
+// Usage with Provider (REQUIRED)
+<SkinProvider skin="material">
+  <Button variant="primary">Click Me</Button>
+</SkinProvider>
+
+// Override via nested provider
+<SkinProvider skin="material">
+  <Button variant="primary">Normal</Button>
+
+  <SkinProvider skin="brutalist">
+    <Button variant="primary">Different</Button>
+  </SkinProvider>
+</SkinProvider>
 ```
 
 #### Option 2: HOC
 
 ```typescript
-import { withShadowStyles } from '@my-lib/react'
+import { withShadowStyles, SkinProvider } from '@my-lib/react'
 
 const Button = ({ variant, children }) => (
   <button part="surface" variant={variant}>
@@ -835,35 +922,41 @@ export default withShadowStyles(Button, {
   skins: { material: () => import('./material') }
 })
 
-// Usage
-<Button skin="material" variant="primary">Click Me</Button>
+// Usage with Provider (REQUIRED)
+<SkinProvider skin="material">
+  <Button variant="primary">Click Me</Button>
+</SkinProvider>
 ```
 
 #### Option 3: Hook
 
 ```typescript
-import { ShadowRoot, useSkin } from '@my-lib/react'
+import { useShadowStyles, useSkinContext, SkinProvider } from '@my-lib/react'
 
 export const Button = ({ variant, children }) => {
-  const skin = useSkin('material')
+  const skin = useSkinContext() // No skin prop!
+
+  const { ref } = useShadowStyles('button', { material: () => import('./material') }, skin)
 
   return (
-    <ShadowRoot name="button" skins={{ material: () => import('./material') }}>
+    <shadow-root ref={ref}>
       <button part="surface" variant={variant}>
         {children}
       </button>
-    </ShadowRoot>
+    </shadow-root>
   )
 }
 
-// Usage
-<Button variant="primary">Click Me</Button>
+// Usage with Provider (REQUIRED)
+<SkinProvider skin="material">
+  <Button variant="primary">Click Me</Button>
+</SkinProvider>
 ```
 
 #### Option 4: Vite Plugin (Convention)
 
 ```typescript
-// Button.tsx - Just write normal React!
+// Button.tsx - Just write normal React! (No skin prop!)
 export const Button = ({ variant, children }) => (
   <button part="surface" variant={variant}>
     {children}
@@ -880,8 +973,14 @@ export default `
   }
 `
 
-// Usage (plugin auto-adds 'skin' prop)
-<Button skin="default" variant="primary">Click Me</Button>
+// Usage with Provider (REQUIRED)
+import { SkinProvider } from '@my-lib/react'
+
+<SkinProvider skin="default">
+  <Button variant="primary">Click Me</Button>
+</SkinProvider>
+
+// Plugin auto-wires useSkinContext() internally
 ```
 
 ---
@@ -1113,24 +1212,36 @@ export { shadow } from '@my-lib/react.macro'
 
 ```typescript
 // Show the simplest possible example
-import { createShadowComponent } from '@my-lib/react'
+import { createShadowComponent, SkinProvider } from '@my-lib/react'
 
 const Button = createShadowComponent({
   name: 'button',
   skins: {
-    default: () => import('./button.css')
+    material: () => import('./material'),
+    dark: () => import('./dark')
   },
   render: ({ children }) => <button>{children}</button>
 })
 
-// That's it! You now have a styled button with:
+// Wrap your app with the skin you want
+function App() {
+  return (
+    <SkinProvider skin="material">
+      <Button>Click Me</Button>
+      <Button>Another Button</Button>
+    </SkinProvider>
+  )
+}
+
+// That's it! You now have styled buttons with:
 // ✅ True CSS encapsulation (Shadow DOM)
 // ✅ Zero runtime cost
 // ✅ Lazy-loaded styles
 // ✅ Multiple skins support
+// ✅ Context-based (no prop drilling)
 ```
 
-**Key: Show value in 10 lines of code**
+**Key: Show Provider pattern immediately - this is the recommended way**
 
 ---
 

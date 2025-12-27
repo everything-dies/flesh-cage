@@ -264,27 +264,46 @@ class ButtonElement extends HTMLElement {
 
 ---
 
-### Layer 6: Component (React + Shadow DOM)
+### Layer 6: Component (React + Provider)
 
 ```typescript
 // components/button/index.tsx
-export const Button = ({ variant, disabled, children }) => {
-  const ref = useRef<HTMLElement>(null)
+import { createShadowComponent, SkinProvider } from '@my-lib/react'
+
+export const Button = createShadowComponent({
+  name: 'button',
+  skins: SKINS,
+  render: ({ variant, disabled, children }) => {
+    // No skin prop! Context is read internally by createShadowComponent
+
+    return (
+      <button
+        part="surface"
+        variant={variant}                // Styling hook
+        aria-disabled={disabled}         // Accessibility + styling
+      >
+        <span part="label">{children}</span>
+      </button>
+    )
+  }
+})
+
+// Usage with Provider (RECOMMENDED)
+function App() {
+  const [skin, setSkin] = useState('material')
 
   return (
-    <button-element
-      ref={ref}
-      variant={variant}                // Styling hook
-      aria-disabled={disabled}         // Accessibility + styling
-      skin="material"
-    >
-      {createPortal(
-        <button part="surface">
-          <span part="label">{children}</span>
-        </button>,
-        ref.current?.shadowRoot!
-      )}
-    </button-element>
+    <SkinProvider skin={skin}>
+      <Button variant="primary">Save</Button>
+      <Button variant="secondary">Cancel</Button>
+
+      {/* Nested provider for specific section */}
+      <SkinProvider skin="high-contrast">
+        <AccessibilitySettings>
+          <Button>High Contrast Button</Button>
+        </AccessibilitySettings>
+      </SkinProvider>
+    </SkinProvider>
   )
 }
 ```
@@ -293,7 +312,129 @@ export const Button = ({ variant, disabled, children }) => {
 - ✅ Attributes control styling (no prop interpolation)
 - ✅ Accessibility baked in (ARIA attributes)
 - ✅ Shadow DOM encapsulation
-- ✅ React portal for children
+- ✅ React Context (no prop drilling)
+- ✅ Provider nesting (different skins per section)
+- ✅ State management integration (Redux, Zustand, etc.)
+
+---
+
+## Provider Pattern (Layer 7)
+
+### Why Provider Over Props
+
+**❌ WRONG - Prop drilling is terrible:**
+
+```tsx
+// Every component needs skin prop - horrible DX!
+<Button skin="material">Save</Button>
+<Card skin="material">
+  <Input skin="material" />
+  <Checkbox skin="material" />
+  <Button skin="material">Cancel</Button>
+</Card>
+```
+
+**✅ CORRECT - Provider sets context:**
+
+```tsx
+// Set once, applies to all
+<SkinProvider skin="material">
+  <Button>Save</Button>
+  <Card>
+    <Input />
+    <Checkbox />
+    <Button>Cancel</Button>
+  </Card>
+</SkinProvider>
+```
+
+### Provider API
+
+```typescript
+import { SkinProvider } from '@my-lib/react'
+
+// Basic usage
+<SkinProvider skin="material">
+  <App />
+</SkinProvider>
+
+// With state management
+function App() {
+  const [skin, setSkin] = useState('material')
+
+  return (
+    <SkinProvider skin={skin}>
+      <ThemeSelector onSkinChange={setSkin} />
+      <YourApp />
+    </SkinProvider>
+  )
+}
+
+// Nested providers (different sections)
+<SkinProvider skin="material">
+  <Header />
+
+  <main>
+    <Content />
+
+    {/* High contrast section */}
+    <SkinProvider skin="high-contrast">
+      <AccessibilitySettings />
+    </SkinProvider>
+  </main>
+
+  {/* Dark footer */}
+  <SkinProvider skin="dark">
+    <Footer />
+  </SkinProvider>
+</SkinProvider>
+```
+
+### Section Override (Via Nested Providers)
+
+```tsx
+// Override via nested providers, NOT component props!
+<SkinProvider skin="material">
+  <Button>Normal</Button>
+  <Button>Also normal</Button>
+
+  {/* Override via nested provider */}
+  <SkinProvider skin="brutalist">
+    <Button>Different skin!</Button>
+    <Button>Also different!</Button>
+  </SkinProvider>
+
+  <Button>Back to normal</Button>
+</SkinProvider>
+
+// Note: Components don't have a 'skin' prop!
+```
+
+### State Management Integration
+
+```tsx
+// Redux
+const skin = useSelector(state => state.theme.currentSkin)
+
+<SkinProvider skin={skin}>
+  <App />
+</SkinProvider>
+
+// Zustand
+const skin = useThemeStore(state => state.skin)
+
+<SkinProvider skin={skin}>
+  <App />
+</SkinProvider>
+
+// URL params
+const [searchParams] = useSearchParams()
+const skin = searchParams.get('skin') || 'material'
+
+<SkinProvider skin={skin}>
+  <App />
+</SkinProvider>
+```
 
 ---
 
