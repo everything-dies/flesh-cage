@@ -13,7 +13,7 @@ Thank you for your interest in contributing! This guide will help you get starte
 
 ```bash
 # Clone the repository
-git clone https://github.com/fernandocamargo/flesh-cage.git
+git clone https://github.com/everything-dies/flesh-cage.git
 cd flesh-cage
 
 # Enable Corepack (for Yarn 4)
@@ -138,8 +138,8 @@ Releases are automated via GitHub Actions. When PRs are merged to `main`:
 ## Need Help?
 
 - 📖 Read the [design docs](./ideas/design-docs/)
-- 💬 Open a [discussion](https://github.com/fernandocamargo/flesh-cage/discussions)
-- 🐛 Report a [bug](https://github.com/fernandocamargo/flesh-cage/issues)
+- 💬 Open a [discussion](https://github.com/everything-dies/flesh-cage/discussions)
+- 🐛 Report a [bug](https://github.com/everything-dies/flesh-cage/issues)
 
 ## Code of Conduct
 

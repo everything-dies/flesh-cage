@@ -11,14 +11,14 @@
   ],
   "license": "MIT",
   "author": "Fernando Camargo <deusmorto@gmail.com>",
-  "homepage": "https://github.com/fernandocamargo/flesh-cage/tree/main/packages/core#readme",
+  "homepage": "https://github.com/everything-dies/flesh-cage/tree/main/packages/core#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/fernandocamargo/flesh-cage.git",
+    "url": "git+https://github.com/everything-dies/flesh-cage.git",
     "directory": "packages/core"
   },
   "bugs": {
-    "url": "https://github.com/fernandocamargo/flesh-cage/issues"
+    "url": "https://github.com/everything-dies/flesh-cage/issues"
   },
   "type": "module",
   "main": "./dist/index.cjs",

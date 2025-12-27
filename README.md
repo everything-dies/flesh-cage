@@ -2,7 +2,7 @@
 
 > Modern CSS-in-TypeScript with Shadow DOM & Constructable Stylesheets
 
-[![CI](https://github.com/fernandocamargo/flesh-cage/actions/workflows/ci.yml/badge.svg)](https://github.com/fernandocamargo/flesh-cage/actions/workflows/ci.yml)
+[![CI](https://github.com/everything-dies/flesh-cage/actions/workflows/ci.yml/badge.svg)](https://github.com/everything-dies/flesh-cage/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 ## What is Flesh Cage?
