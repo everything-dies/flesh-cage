@@ -49,7 +49,7 @@ export interface ShadowComponentsOptions {
    * Shadow DOM mode
    * @default 'open'
    */
-  shadowMode?: ShadowRootMode
+  shadowMode?: 'open' | 'closed'
 
   /**
    * Auto-export parts from component

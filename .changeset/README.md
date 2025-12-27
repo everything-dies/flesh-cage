@@ -17,6 +17,7 @@ Follow the prompts to select packages and describe your changes.
 Publishing is automated via GitHub Actions on push to `main`.
 
 Manual publishing (if needed):
+
 ```bash
 yarn changeset version
 yarn build

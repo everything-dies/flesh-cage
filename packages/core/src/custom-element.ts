@@ -18,9 +18,7 @@ export function createCustomElement(config: CustomElementConfig): CustomElementC
   const { name, mode = 'open', delegatesFocus = false, slotAssignment = 'named', parts } = config
 
   if (!name.includes('-')) {
-    throw new Error(
-      `[createCustomElement] Custom element name must contain a hyphen: "${name}"`
-    )
+    throw new Error(`[createCustomElement] Custom element name must contain a hyphen: "${name}"`)
   }
 
   class ShadowElement extends HTMLElement {
@@ -55,7 +53,11 @@ export function createCustomElement(config: CustomElementConfig): CustomElementC
       // Subclasses can override
     }
 
-    attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null): void {
+    attributeChangedCallback(
+      _name: string,
+      oldValue: string | null,
+      newValue: string | null
+    ): void {
       // Subclasses can override
       if (oldValue === newValue) return
     }
@@ -63,10 +65,11 @@ export function createCustomElement(config: CustomElementConfig): CustomElementC
 
   // Set a readable name for debugging
   Object.defineProperty(ShadowElement, 'name', {
-    value: name
-      .split('-')
-      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-      .join('') + 'Element',
+    value:
+      name
+        .split('-')
+        .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+        .join('') + 'Element',
     writable: false,
   })
 

@@ -1,27 +1,12 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "globalDependencies": [
-    ".env",
-    "tsconfig.json",
-    "tsconfig.*.json"
-  ],
-  "globalEnv": [
-    "NODE_ENV"
-  ],
+  "globalDependencies": [".env", "tsconfig.json", "tsconfig.*.json"],
+  "globalEnv": ["NODE_ENV"],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "inputs": [
-        "src/**",
-        "tsconfig.json",
-        "tsconfig.*.json",
-        "tsup.config.ts",
-        "vite.config.ts"
-      ],
-      "outputs": [
-        "dist/**",
-        ".tsbuildinfo"
-      ]
+      "inputs": ["src/**", "tsconfig.json", "tsconfig.*.json", "tsup.config.ts", "vite.config.ts"],
+      "outputs": ["dist/**", ".tsbuildinfo"]
     },
     "dev": {
       "cache": false,
@@ -29,38 +14,22 @@
     },
     "typecheck": {
       "dependsOn": ["^build"],
-      "inputs": [
-        "src/**",
-        "tsconfig.json",
-        "tsconfig.*.json"
-      ],
+      "inputs": ["src/**", "tsconfig.json", "tsconfig.*.json"],
       "outputs": []
     },
     "lint": {
-      "inputs": [
-        "src/**",
-        "eslint.config.js"
-      ],
+      "inputs": ["src/**", "eslint.config.js"],
       "outputs": []
     },
     "lint:fix": {
       "cache": false,
-      "inputs": [
-        "src/**",
-        "eslint.config.js"
-      ],
+      "inputs": ["src/**", "eslint.config.js"],
       "outputs": []
     },
     "test": {
       "dependsOn": ["^build"],
-      "inputs": [
-        "src/**",
-        "test/**",
-        "vitest.config.ts"
-      ],
-      "outputs": [
-        "coverage/**"
-      ]
+      "inputs": ["src/**", "test/**", "vitest.config.ts"],
+      "outputs": ["coverage/**"]
     },
     "test:watch": {
       "cache": false,
@@ -68,25 +37,13 @@
     },
     "test:coverage": {
       "dependsOn": ["^build"],
-      "inputs": [
-        "src/**",
-        "test/**",
-        "vitest.config.ts"
-      ],
-      "outputs": [
-        "coverage/**"
-      ]
+      "inputs": ["src/**", "test/**", "vitest.config.ts"],
+      "outputs": ["coverage/**"]
     },
     "test:e2e": {
       "dependsOn": ["^build"],
-      "inputs": [
-        "e2e/**",
-        "playwright.config.ts"
-      ],
-      "outputs": [
-        "playwright-report/**",
-        "test-results/**"
-      ]
+      "inputs": ["e2e/**", "playwright.config.ts"],
+      "outputs": ["playwright-report/**", "test-results/**"]
     },
     "test:e2e:ui": {
       "cache": false,
@@ -94,10 +51,7 @@
     },
     "validate": {
       "dependsOn": ["build"],
-      "inputs": [
-        "dist/**",
-        "package.json"
-      ],
+      "inputs": ["dist/**", "package.json"],
       "outputs": []
     },
     "clean": {

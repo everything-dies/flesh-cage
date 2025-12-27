@@ -23,12 +23,12 @@ import type { SkinMap } from '@flesh-cage/core'
  * ```
  */
 export function useShadowStyles<SkinNames extends string = string>(
-  elementName: string,
+  _elementName: string,
   skins: SkinMap<SkinNames>,
   skin: SkinNames
 ) {
   const elementRef = useRef<HTMLElement>(null)
-  const [cache] = useState(() => new SheetsCache(skins))
+  const [cache] = useState(() => new SheetsCache<SkinNames>(skins))
 
   useEffect(() => {
     if (!elementRef.current?.shadowRoot) return
@@ -37,7 +37,7 @@ export function useShadowStyles<SkinNames extends string = string>(
 
     // Acquire skin stylesheet
     let mounted = true
-    cache.acquire(skin as string).then((sheet) => {
+    void cache.acquire(skin).then((sheet) => {
       if (mounted) {
         shadowRoot.adoptedStyleSheets = [sheet]
       }
@@ -46,7 +46,7 @@ export function useShadowStyles<SkinNames extends string = string>(
     // Cleanup: release skin
     return () => {
       mounted = false
-      cache.release(skin as string)
+      cache.release(skin)
     }
   }, [cache, skin])
 

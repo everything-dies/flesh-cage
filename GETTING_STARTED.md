@@ -79,6 +79,7 @@ vim packages/react/src/context.tsx
 ### 2. Test Your Changes
 
 **Unit Tests (Per Package):**
+
 ```bash
 cd packages/core
 yarn test              # Run once
@@ -87,12 +88,14 @@ yarn test:coverage     # With coverage
 ```
 
 **All Tests (Root):**
+
 ```bash
 yarn test              # Run all package tests
 yarn test:coverage     # With coverage report
 ```
 
 **E2E Tests (Playwright):**
+
 ```bash
 yarn test:e2e          # Run E2E tests
 yarn test:e2e:ui       # Open Playwright UI
@@ -148,6 +151,7 @@ yarn changeset
 ```
 
 Follow the prompts:
+
 1. Select changed packages (space to select, enter to continue)
 2. Choose version bump type (patch/minor/major)
 3. Describe your changes (used in changelog)
@@ -173,6 +177,7 @@ When your PR merges to `main`:
 ## Playground Examples
 
 The playground demonstrates:
+
 - **SkinProvider** with dynamic skin switching
 - **Nested providers** (different skins per section)
 - **Three skins**: Material, Brutalist, Glassmorphic
@@ -181,6 +186,7 @@ The playground demonstrates:
 ### Adding More Examples
 
 1. Create new component:
+
 ```bash
 mkdir -p examples/playground/src/components/Card
 touch examples/playground/src/components/Card/index.tsx
@@ -188,6 +194,7 @@ mkdir examples/playground/src/components/Card/skins
 ```
 
 2. Implement using any API flavor:
+
 ```tsx
 // index.tsx
 import { createShadowComponent } from '@flesh-cage/react'
@@ -197,13 +204,12 @@ export const Card = createShadowComponent({
   skins: {
     material: () => import('./skins/material'),
   },
-  render: ({ children }) => (
-    <article part="surface">{children}</article>
-  ),
+  render: ({ children }) => <article part="surface">{children}</article>,
 })
 ```
 
 3. Create skin:
+
 ```ts
 // skins/material.ts
 export default `
@@ -217,10 +223,10 @@ export default `
 ```
 
 4. Use in App.tsx:
+
 ```tsx
 import { Card } from './components/Card'
-
-<SkinProvider skin="material">
+;<SkinProvider skin="material">
   <Card>Hello World!</Card>
 </SkinProvider>
 ```
@@ -228,16 +234,19 @@ import { Card } from './components/Card'
 ## Testing Strategies
 
 ### Unit Tests
+
 - Test individual functions (SheetsCache, custom element creation)
 - Test React hooks (useSkinContext, useShadowStyles)
 - Test component rendering
 
 ### Integration Tests
+
 - Test Provider + Component interaction
 - Test skin loading and caching
 - Test nested providers
 
 ### E2E Tests
+
 - Test in real browser (Playwright)
 - Test Shadow DOM rendering
 - Test Constructable Stylesheets

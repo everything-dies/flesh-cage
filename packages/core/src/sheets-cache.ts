@@ -1,4 +1,4 @@
-import type { SkinLoader, SkinMap, SheetsCacheOptions } from './types'
+import type { SkinMap, SheetsCacheOptions } from './types'
 
 /**
  * SheetsCache manages Constructable StyleSheet lifecycle with ref-counting
@@ -59,6 +59,7 @@ export class SheetsCache<T extends string = string> {
     if (this.#cache.has(skinName)) {
       this.#incrementRef(skinName)
       this.#updateAccessOrder(skinName)
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Checked above with has()
       return this.#cache.get(skinName)!
     }
 
@@ -184,6 +185,7 @@ export class SheetsCache<T extends string = string> {
 
   async #loadSkin(skinName: T): Promise<CSSStyleSheet> {
     const loader = this.#skins[skinName]
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- Runtime check needed despite TypeScript constraints
     if (!loader) {
       throw new Error(`[SheetsCache] Skin "${skinName}" not found`)
     }

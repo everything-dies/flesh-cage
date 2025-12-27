@@ -35,7 +35,7 @@ export function createShadowComponent<Props = unknown, SkinNames extends string 
   const { name, skins, defaultSkin, parts, mode = 'open', render: RenderComponent } = config
 
   // Create shared cache for this component
-  const cache = new SheetsCache(skins)
+  const cache = new SheetsCache<SkinNames>(skins)
 
   // Create custom element class
   const ElementClass = createCustomElement({
@@ -53,7 +53,7 @@ export function createShadowComponent<Props = unknown, SkinNames extends string 
   const ShadowComponent: FC<Props> = (props) => {
     const elementRef = useRef<HTMLElement>(null)
     const contextSkin = useSkinContextOptional()
-    const skin = contextSkin ?? defaultSkin ?? (Object.keys(skins)[0] as SkinNames)
+    const skin = (contextSkin ?? defaultSkin ?? Object.keys(skins)[0]) as SkinNames
 
     useEffect(() => {
       if (!elementRef.current?.shadowRoot) return
@@ -62,7 +62,7 @@ export function createShadowComponent<Props = unknown, SkinNames extends string 
 
       // Acquire skin stylesheet
       let mounted = true
-      cache.acquire(skin as string).then((sheet) => {
+      void cache.acquire(skin).then((sheet) => {
         if (mounted) {
           shadowRoot.adoptedStyleSheets = [sheet]
         }
@@ -71,13 +71,18 @@ export function createShadowComponent<Props = unknown, SkinNames extends string 
       // Cleanup: release skin
       return () => {
         mounted = false
-        cache.release(skin as string)
+        cache.release(skin)
       }
     }, [skin])
 
     // Create portal to render React content in shadow root
     const portalContent =
-      elementRef.current?.shadowRoot && createPortal(<RenderComponent {...props} />, elementRef.current.shadowRoot)
+      elementRef.current?.shadowRoot &&
+      createPortal(
+        // @ts-expect-error - Generic props forwarding
+        <RenderComponent {...(props as unknown as Record<string, unknown>)} />,
+        elementRef.current.shadowRoot
+      )
 
     return (
       <>

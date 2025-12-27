@@ -57,7 +57,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "validate": "npm-run-all validate:*",
+    "validate": "npm-run-all 'validate:*'",
     "validate:package": "publint",
     "validate:types": "attw --pack",
     "validate:size": "size-limit",

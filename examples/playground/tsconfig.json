@@ -7,9 +7,5 @@
       "@flesh-cage/react": ["../../packages/react/src"]
     }
   },
-  "include": ["src/**/*"],
-  "references": [
-    { "path": "../../packages/core" },
-    { "path": "../../packages/react" }
-  ]
+  "include": ["src/**/*"]
 }

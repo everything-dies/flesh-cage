@@ -29,7 +29,7 @@ const SkinContext = createContext<string | undefined>(undefined)
  * </SkinProvider>
  * ```
  */
-export const SkinProvider: FC<SkinProviderProps> = ({ skin, children, fallback }) => {
+export const SkinProvider: FC<SkinProviderProps> = ({ skin, children, fallback: _fallback }) => {
   // TODO: Implement preload logic if needed
   // For now, just provide the skin context
 

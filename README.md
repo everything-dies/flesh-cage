@@ -10,7 +10,7 @@
 Flesh Cage is a **paradigm shift** in component styling that combines four powerful concepts:
 
 1. **🎨 Skins (Not Themes)** - Complete visual languages, not variable swaps (CSS Zen Garden at scale)
-2. **🌐 Attribute-Driven Styling** - Semantic attributes (ARIA, data-*) for styling, not prop interpolation
+2. **🌐 Attribute-Driven Styling** - Semantic attributes (ARIA, data-\*) for styling, not prop interpolation
 3. **📝 CSS-in-TypeScript** - Full ecosystem access at build-time, zero runtime cost
 4. **⚡ Constructable Stylesheets + Shadow DOM** - 99% memory savings, true encapsulation
 
@@ -45,11 +45,11 @@ function App() {
 
 ## Packages
 
-| Package | Version | Description |
-|---------|---------|-------------|
-| [@flesh-cage/core](./packages/core) | - | Core runtime (SheetsCache, custom elements) |
-| [@flesh-cage/react](./packages/react) | - | React bindings (Provider, createShadowComponent, HOC, hooks) |
-| [@flesh-cage/vite-plugin](./packages/vite-plugin) | - | Vite plugin (convention-based, zero boilerplate) |
+| Package                                           | Version | Description                                                  |
+| ------------------------------------------------- | ------- | ------------------------------------------------------------ |
+| [@flesh-cage/core](./packages/core)               | -       | Core runtime (SheetsCache, custom elements)                  |
+| [@flesh-cage/react](./packages/react)             | -       | React bindings (Provider, createShadowComponent, HOC, hooks) |
+| [@flesh-cage/vite-plugin](./packages/vite-plugin) | -       | Vite plugin (convention-based, zero boilerplate)             |
 
 ## Features
 
@@ -69,6 +69,7 @@ function App() {
 ### 🎨 Multiple API Flavors
 
 **1. createShadowComponent (Factory)**
+
 ```tsx
 const Button = createShadowComponent({
   name: 'button',
@@ -78,6 +79,7 @@ const Button = createShadowComponent({
 ```
 
 **2. withShadowStyles (HOC)**
+
 ```tsx
 const ButtonBase = ({ children }) => <button>{children}</button>
 export const Button = withShadowStyles(ButtonBase, {
@@ -87,6 +89,7 @@ export const Button = withShadowStyles(ButtonBase, {
 ```
 
 **3. Hooks + ShadowRoot**
+
 ```tsx
 export const Button = ({ children }) => (
   <ShadowRoot name="button" skins={{ material: () => import('./material') }}>
@@ -135,6 +138,7 @@ Changes to packages hot-reload instantly - no build step needed!
 ## Philosophy
 
 Read the design documentation:
+
 - [Complete Architecture](./ideas/design-docs/ARCHITECTURE_COMPLETE.md)
 - [Skins vs Themes Philosophy](./ideas/design-docs/SKINS_VS_THEMES_PHILOSOPHY.md)
 - [Attribute-Driven Styling](./ideas/design-docs/ATTRIBUTE_DRIVEN_STYLING.md)
@@ -152,6 +156,7 @@ MIT © Fernando Camargo
 ---
 
 **Built with cutting-edge web platform primitives:**
+
 - Shadow DOM for true encapsulation
 - Constructable Stylesheets for performance
 - Web Components for interoperability

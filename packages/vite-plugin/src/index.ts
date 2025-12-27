@@ -32,21 +32,22 @@ import type { ShadowComponentsOptions } from './types'
  * })
  * ```
  */
-export function shadowComponents(options: ShadowComponentsOptions = {}): Plugin {
-  const {
-    include = 'src/components/**/*.{tsx,jsx}',
-    exclude = ['**/*.test.*', '**/*.spec.*', '**/*.stories.*'],
-    skinPattern = '*.skin.ts',
-    variantPattern = '*.{variant}.ts',
-    autoDetectSkins = true,
-  } = options
+export function shadowComponents(_options: ShadowComponentsOptions = {}): Plugin {
+  // Destructure options for future use
+  // const {
+  //   include = 'src/components/**/*.{tsx,jsx}',
+  //   exclude = ['**/*.test.*', '**/*.spec.*', '**/*.stories.*'],
+  //   skinPattern = '*.skin.ts',
+  //   variantPattern = '*.{variant}.ts',
+  //   autoDetectSkins = true,
+  // } = options
 
   return {
     name: 'flesh-cage:shadow-components',
 
     enforce: 'pre',
 
-    async transform(code: string, id: string) {
+    transform(_code: string, _id: string) {
       // TODO: Implement plugin transformation logic
       // For now, this is a placeholder that will be implemented in a future iteration
 

@@ -34,8 +34,8 @@ export default defineConfig({
       include: 'src/components/**/*.tsx',
       skinPattern: '*.skin.ts',
       variantPattern: '*.{variant}.ts',
-    })
-  ]
+    }),
+  ],
 })
 ```
 
@@ -79,8 +79,7 @@ export default `
 ```tsx
 import { SkinProvider } from '@flesh-cage/react'
 import { Button } from './components/Button'
-
-<SkinProvider skin="default">
+;<SkinProvider skin="default">
   <Button variant="primary">Click Me</Button>
 </SkinProvider>
 
@@ -90,6 +89,7 @@ import { Button } from './components/Button'
 ## File Conventions
 
 ### Default Structure
+
 ```
 components/
 ├── Button/
@@ -100,6 +100,7 @@ components/
 ```
 
 ### Alternative (skins folder)
+
 ```
 components/
 ├── Button/
@@ -121,23 +122,19 @@ Override defaults with comment directives:
  * @default-skin material
  * @parts surface,label,icon
  */
-export const Button = ({ children }) => (
-  <button part="surface">
-    {children}
-  </button>
-)
+export const Button = ({ children }) => <button part="surface">{children}</button>
 ```
 
 ## Options
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `include` | `string \| string[]` | `'src/components/**/*.{tsx,jsx}'` | Files to process |
-| `exclude` | `string[]` | `['**/*.test.*', ...]` | Files to exclude |
-| `skinPattern` | `string` | `'*.skin.ts'` | Default skin pattern |
-| `variantPattern` | `string` | `'*.{variant}.ts'` | Variant skin pattern |
-| `autoDetectSkins` | `boolean` | `true` | Auto-discover skins |
-| `debug` | `boolean` | `false` | Enable debug logging |
+| Option            | Type                 | Default                           | Description          |
+| ----------------- | -------------------- | --------------------------------- | -------------------- |
+| `include`         | `string \| string[]` | `'src/components/**/*.{tsx,jsx}'` | Files to process     |
+| `exclude`         | `string[]`           | `['**/*.test.*', ...]`            | Files to exclude     |
+| `skinPattern`     | `string`             | `'*.skin.ts'`                     | Default skin pattern |
+| `variantPattern`  | `string`             | `'*.{variant}.ts'`                | Variant skin pattern |
+| `autoDetectSkins` | `boolean`            | `true`                            | Auto-discover skins  |
+| `debug`           | `boolean`            | `false`                           | Enable debug logging |
 
 ## Note
 

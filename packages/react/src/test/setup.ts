@@ -1,16 +1,16 @@
 import '@testing-library/jest-dom/vitest'
 
 // Mock Constructable Stylesheets if not available in JSDOM
-if (typeof CSSStyleSheet === 'undefined' || !CSSStyleSheet.prototype.replace) {
+if (typeof CSSStyleSheet === 'undefined') {
   class MockCSSStyleSheet {
     cssRules: unknown[] = []
 
-    async replace(css: string) {
+    replace(_css: string) {
       // Mock implementation
-      return this
+      return Promise.resolve(this)
     }
 
-    replaceSync(css: string) {
+    replaceSync(_css: string) {
       // Mock implementation
     }
   }

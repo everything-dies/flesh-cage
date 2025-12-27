@@ -15,6 +15,7 @@ yarn dev
 ```
 
 This will:
+
 1. Start Vite dev server on http://localhost:3000
 2. Open your browser automatically
 3. Hot reload on changes to packages or playground code
@@ -33,6 +34,7 @@ The playground uses **workspace protocol** to import packages locally:
 ```
 
 This means:
+
 - ✅ Changes to packages are immediately reflected
 - ✅ Full TypeScript support with source maps
 - ✅ No need to rebuild packages (Vite handles it)
