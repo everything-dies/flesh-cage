@@ -1,8 +1,9 @@
 # API Proposals: Ergonomics & Adoption Analysis
 
-**Version:** 0.1
+**Version:** 0.2
 **Date:** 2025-12-27
 **Focus:** Developer experience, adoption, and resistance minimization
+**Updated:** Added Vite Plugin API (Flavor 5)
 
 ---
 
@@ -450,6 +451,336 @@ export class Button extends React.Component<ButtonProps> {
 
 ---
 
+## API Flavor 5: Vite Plugin (Convention-Based)
+
+### Basic Usage
+
+```typescript
+// vite.config.ts
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import { shadowComponents } from '@my-lib/vite-plugin'
+
+export default defineConfig({
+  plugins: [
+    react(),
+    shadowComponents({
+      include: 'src/components/**/*.tsx',
+      skinPattern: '*.skin.ts',
+      variantPattern: '*.{variant}.ts',
+    })
+  ]
+})
+```
+
+```typescript
+// components/Button/Button.tsx
+// Just write a normal React component!
+interface ButtonProps {
+  variant?: 'primary' | 'secondary'
+  children: React.ReactNode
+}
+
+export const Button = ({ variant = 'primary', children }: ButtonProps) => (
+  <button part="surface" variant={variant}>
+    <span part="label">{children}</span>
+  </button>
+)
+```
+
+```typescript
+// components/Button/Button.skin.ts
+// Convention: *.skin.ts is the default skin
+import { COLORS } from '@/design-system/tokens'
+
+export default `
+  [part="surface"] {
+    background: ${COLORS.primary};
+    padding: 1rem 2rem;
+    border-radius: 4px;
+  }
+`
+```
+
+```typescript
+// components/Button/Button.dark.ts
+// Convention: *.dark.ts is a variant skin
+export default `
+  [part="surface"] {
+    background: #1a1a1a;
+    color: white;
+  }
+`
+```
+
+**Plugin auto-generates:**
+
+```typescript
+// This is what the plugin outputs (you don't write this!)
+import { createShadowComponent } from '@my-lib/react'
+
+const ButtonBase = ({ variant = 'primary', children }: ButtonProps) => (
+  <button part="surface" variant={variant}>
+    <span part="label">{children}</span>
+  </button>
+)
+
+export const Button = createShadowComponent({
+  name: 'button',
+  skins: {
+    default: () => import('./Button.skin'),
+    dark: () => import('./Button.dark'),
+  },
+  render: ButtonBase
+})
+```
+
+### Advanced Usage (with Directives)
+
+```typescript
+// components/Card/Card.tsx
+/**
+ * @shadow-component
+ * @name custom-card
+ * @default-skin light
+ * @parts container,title,content
+ */
+export const Card = ({ title, children }: CardProps) => (
+  <article part="container">
+    <h2 part="title">{title}</h2>
+    <div part="content">{children}</div>
+  </article>
+)
+```
+
+**Directive reference:**
+- `@shadow-component` - Force enable (even if no skins found yet)
+- `@name custom-name` - Override element name (default: lowercase component name)
+- `@default-skin skinName` - Set default skin
+- `@parts part1,part2` - Export parts list
+- `@no-shadow` - Disable for this component (useful for exceptions)
+
+### Adoption Analysis
+
+**✅ Familiarity:**
+- Looks like **pure React** (the component is just React!)
+- Convention-based like Next.js file routing
+- Similar to CSS Modules naming (`.module.css` → `.skin.ts`)
+- Developers already understand file-based conventions
+
+**✅ Zero Boilerplate:**
+```typescript
+// Traditional (createShadowComponent)
+import { createShadowComponent } from '@my-lib/react'
+
+export const Button = createShadowComponent<ButtonProps>({
+  name: 'button',
+  skins: {
+    material: () => import('./skins/material'),
+  },
+  render: ({ children }) => <button>{children}</button>
+})
+
+// Vite Plugin (convention-based)
+export const Button = ({ children }: ButtonProps) => (
+  <button>{children}</button>
+)
+// + Button.skin.ts file
+
+// 89% less code! (1 line vs 9 lines)
+```
+
+**✅ Progressive Enhancement:**
+```typescript
+// Phase 1: Start with normal component
+export const Button = ({ children }) => <button>{children}</button>
+
+// Phase 2: Add a skin file (plugin auto-detects)
+// Button.skin.ts created
+
+// Phase 3: Add more skins
+// Button.dark.ts, Button.brutalist.ts created
+
+// Component code NEVER changes!
+```
+
+**✅ Mental Model:**
+- "My component is just a component"
+- "Skins are separate files"
+- "Plugin wires them together"
+- No need to understand Shadow DOM internals
+
+**⚠️ Resistance Points:**
+
+1. **Build tool dependency**
+   - Only works with Vite
+   - Can't use with other bundlers (webpack, Rollup, etc.)
+   - Adds magic/indirection
+
+2. **Convention learning**
+   - Need to learn file naming conventions
+   - `*.skin.ts` vs `*.dark.ts` vs `*.{name}.ts`
+   - Where should I put these files?
+
+3. **Less explicit**
+   - Plugin does wiring behind the scenes
+   - May be harder to debug transformation
+   - "Where is the component actually created?"
+
+4. **IDE support**
+   - TypeScript may not immediately see the transformed component
+   - Need to configure types properly
+   - Autocomplete for `skin` prop might lag
+
+**Mitigation:**
+
+1. **Provide explicit fallback**
+   ```typescript
+   // If you don't like the plugin, just use the API directly!
+   import { createShadowComponent } from '@my-lib/react'
+
+   // Both approaches work side-by-side
+   ```
+
+2. **Excellent error messages**
+   ```
+   ❌ No skins found for Button component
+
+   Expected one of:
+     - src/components/Button/Button.skin.ts
+     - src/components/Button/skins/default.ts
+
+   Or disable with: /** @no-shadow */
+   ```
+
+3. **TypeScript integration**
+   ```typescript
+   // Auto-generate types for transformed components
+   declare module '@/components/Button' {
+     export const Button: ShadowComponent<ButtonProps, 'default' | 'dark'>
+   }
+   ```
+
+4. **Clear documentation**
+   - Visual diagram of file structure
+   - Side-by-side with explicit API
+   - Migration guide
+
+### Comparison: Explicit vs Convention
+
+**Explicit API (createShadowComponent):**
+```typescript
+// ✅ Clear: Everything visible in one place
+// ✅ Portable: Works without build plugin
+// ❌ Verbose: More code to write
+// ❌ Coupling: Styles mentioned in component
+
+export const Button = createShadowComponent<ButtonProps>({
+  name: 'button',
+  skins: {
+    material: () => import('./skins/material'),
+    brutalist: () => import('./skins/brutalist'),
+  },
+  render: ({ variant, children }) => (
+    <button part="surface" variant={variant}>
+      {children}
+    </button>
+  )
+})
+```
+
+**Convention-based (Vite Plugin):**
+```typescript
+// ✅ Concise: Just write the component
+// ✅ Separation: Skins are separate files
+// ❌ Implicit: Plugin does the wiring
+// ❌ Vite-only: Not portable to other bundlers
+
+export const Button = ({ variant, children }: ButtonProps) => (
+  <button part="surface" variant={variant}>
+    {children}
+  </button>
+)
+
+// + Button.skin.ts (auto-discovered)
+// + Button.brutalist.ts (auto-discovered)
+```
+
+### File Structure Conventions
+
+**Recommended structure:**
+```
+components/
+├── Button/
+│   ├── Button.tsx           # Component (auto-wrapped by plugin)
+│   ├── Button.skin.ts       # Default skin (required)
+│   ├── Button.dark.ts       # Variant: dark
+│   ├── Button.light.ts      # Variant: light
+│   └── base.ts              # Shared base styles (optional)
+│
+├── Card/
+│   ├── Card.tsx
+│   ├── skins/               # Alternative: skins folder
+│   │   ├── default.ts
+│   │   ├── elevated.ts
+│   │   └── outlined.ts
+│   └── base.ts
+```
+
+**Plugin scans both:**
+1. `ComponentName.{variant}.ts` (sibling files)
+2. `skins/{variant}.ts` (skins folder)
+
+### TypeScript Experience
+
+**Generated types:**
+```typescript
+// Auto-generated by plugin
+import type { ShadowComponentProps } from '@my-lib/react'
+
+// Plugin scans and generates this
+export interface ButtonSkins {
+  default: './Button.skin'
+  dark: './Button.dark'
+  light: './Button.light'
+}
+
+// Augments your component
+export const Button: React.FC<
+  ButtonProps & ShadowComponentProps<keyof ButtonSkins>
+>
+```
+
+**In your code:**
+```typescript
+// Full autocomplete works!
+<Button
+  skin="dark"              // ✅ Autocomplete: 'default' | 'dark' | 'light'
+  variant="primary"        // ✅ From ButtonProps
+  invalidProp="test"       // ❌ TypeScript error
+/>
+```
+
+### Performance Characteristics
+
+**Build-time:**
+- Plugin runs during Vite transform phase
+- One-time cost per component
+- Cached by Vite (fast rebuilds)
+
+**Runtime:**
+- Identical to explicit `createShadowComponent`
+- Same lazy loading behavior
+- Same memory characteristics
+- Zero additional overhead
+
+**Bundle size:**
+- Same as explicit API (plugin just generates it)
+- No extra plugin runtime
+- Tree-shakeable
+
+---
+
 ## Side-by-Side Comparison
 
 ### Simple Button Component
@@ -529,6 +860,30 @@ export const Button = ({ variant, children }) => {
 <Button variant="primary">Click Me</Button>
 ```
 
+#### Option 4: Vite Plugin (Convention)
+
+```typescript
+// Button.tsx - Just write normal React!
+export const Button = ({ variant, children }) => (
+  <button part="surface" variant={variant}>
+    {children}
+  </button>
+)
+
+// Button.skin.ts - Separate file (auto-discovered)
+import { COLORS } from '@/tokens'
+
+export default `
+  [part="surface"] {
+    background: ${COLORS.primary};
+    padding: 1rem 2rem;
+  }
+`
+
+// Usage (plugin auto-adds 'skin' prop)
+<Button skin="default" variant="primary">Click Me</Button>
+```
+
 ---
 
 ## TypeScript Experience
@@ -589,15 +944,28 @@ export const Button: React.FC<ButtonProps> = ({ variant, children }) => {
 
 ## Adoption Scenarios
 
-### Scenario 1: Greenfield Project
+### Scenario 1: Greenfield Project (Vite-based)
 
-**Best choice: createShadowComponent or Hook**
+**Best choice: Vite Plugin**
 
-- No migration concerns
-- Can choose based on team preference
-- Hook for flexibility, factory for simplicity
+- Zero boilerplate (89% less code)
+- Components are just React
+- Convention-based (familiar from Next.js, CSS Modules)
+- Perfect for starting fresh
 
-### Scenario 2: Migrating from styled-components
+**Alternative: createShadowComponent**
+- If you want explicit API
+- If you may switch bundlers later
+
+### Scenario 2: Greenfield Project (Non-Vite)
+
+**Best choice: createShadowComponent**
+
+- Works with any bundler
+- Clean, explicit API
+- Good TypeScript support
+
+### Scenario 3: Migrating from styled-components
 
 **Best choice: HOC or createShadowComponent**
 
@@ -605,7 +973,11 @@ export const Button: React.FC<ButtonProps> = ({ variant, children }) => {
 - createShadowComponent feels familiar (factory pattern)
 - Can migrate gradually (one component at a time)
 
-### Scenario 3: Large Existing Codebase
+**If using Vite: Consider plugin**
+- Can mix plugin + explicit API in same project
+- Migrate components one by one
+
+### Scenario 4: Large Existing Codebase
 
 **Best choice: HOC**
 
@@ -613,13 +985,18 @@ export const Button: React.FC<ButtonProps> = ({ variant, children }) => {
 - Can coexist with existing styling
 - Progressive migration path
 
-### Scenario 4: Performance-Critical
+**If using Vite: Consider plugin for new components**
+- Use HOC for migrated components
+- Use plugin for new components
+- Both can coexist
 
-**Best choice: Macro (if willing to add build step)**
+### Scenario 5: Performance-Critical
 
-- Zero runtime overhead
-- Fully compiled
-- But: adds complexity
+**Best choice: Macro (if willing to add build step) or Vite Plugin**
+
+- Both have zero runtime overhead
+- Plugin is easier to set up (if using Vite)
+- Macro works with any bundler
 
 ---
 
@@ -636,30 +1013,41 @@ import {
   ShadowRoot,               // Component
 } from '@my-lib/react'
 
+// @my-lib/vite-plugin (separate package)
+import { shadowComponents } from '@my-lib/vite-plugin'
+
 // Let developers choose based on their needs
 ```
 
 **Default recommendation hierarchy:**
 
-1. **For most projects:** `createShadowComponent`
+1. **For Vite projects (greenfield):** Vite Plugin
+   - Zero boilerplate (write normal React)
+   - Convention-based (familiar pattern)
+   - Best DX for new projects
+   - Can opt-out to explicit API when needed
+
+2. **For most projects (any bundler):** `createShadowComponent`
    - Best balance of simplicity and features
    - Clear mental model
    - Good TypeScript support
+   - Works everywhere
 
-2. **For existing codebases:** `withShadowStyles` (HOC)
+3. **For existing codebases:** `withShadowStyles` (HOC)
    - Minimal refactoring
    - Wraps existing components
    - Progressive migration
 
-3. **For maximum flexibility:** Hooks + `ShadowRoot`
+4. **For maximum flexibility:** Hooks + `ShadowRoot`
    - Full control
    - Composes with anything
    - Modern React patterns
 
-4. **For build-time optimization:** Macro (optional)
+5. **For build-time optimization (non-Vite):** Macro (optional)
    - Requires additional setup
    - Maximum performance
    - For advanced users
+   - Note: If using Vite, prefer plugin instead
 
 ---
 
@@ -668,7 +1056,7 @@ import {
 ### Phase 1: Core (v1.0)
 
 ```typescript
-// Start with minimal API
+// @my-lib/react - Start with minimal API
 export { createShadowComponent } from './factory'
 export { withShadowStyles } from './hoc'
 ```
@@ -677,11 +1065,25 @@ export { withShadowStyles } from './hoc'
 - Two clear options
 - Cover 90% of use cases
 - Easy to understand
+- Works with any bundler
 
-### Phase 2: Flexibility (v1.1)
+### Phase 2: Vite Plugin (v1.1)
 
 ```typescript
-// Add hook-based API
+// @my-lib/vite-plugin - Separate package for Vite users
+export { shadowComponents } from './plugin'
+```
+
+**Rationale:**
+- Huge DX win for Vite users (89% less code)
+- Convention-based (familiar pattern)
+- Separate package (doesn't bloat core)
+- Optional (can use core API instead)
+
+### Phase 3: Flexibility (v1.2)
+
+```typescript
+// @my-lib/react - Add hook-based API
 export { useShadowStyles, ShadowRoot } from './hooks'
 ```
 
@@ -690,17 +1092,18 @@ export { useShadowStyles, ShadowRoot } from './hooks'
 - Composability
 - Advanced patterns
 
-### Phase 3: Optimization (v1.2+)
+### Phase 4: Optimization (v1.3+)
 
 ```typescript
-// Optional macro package
+// @my-lib/react.macro - Optional macro package
 export { shadow } from '@my-lib/react.macro'
 ```
 
 **Rationale:**
-- For performance-critical apps
+- For performance-critical apps (non-Vite)
 - Separate package (opt-in)
 - Advanced feature
+- Note: Most Vite users can use plugin instead
 
 ---
 
@@ -809,14 +1212,15 @@ const Button = createShadowComponent({
 
 ## Recommendation Matrix
 
-| Factor | createShadowComponent | HOC | Hook | Macro |
-|--------|----------------------|-----|------|-------|
-| **Adoption** | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ |
-| **Resistance** | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ |
-| **TypeScript** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐ |
-| **Flexibility** | ⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐ |
-| **Simplicity** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
-| **Debugging** | ⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐ |
+| Factor | Vite Plugin | createShadowComponent | HOC | Hook | Macro |
+|--------|------------|----------------------|-----|------|-------|
+| **Adoption** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ |
+| **Resistance** | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ |
+| **TypeScript** | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐ |
+| **Flexibility** | ⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐ |
+| **Simplicity** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
+| **Debugging** | ⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐ |
+| **Portability** | ⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ |
 
 **Legend:**
 - ⭐⭐⭐⭐⭐ Excellent
@@ -824,11 +1228,38 @@ const Button = createShadowComponent({
 - ⭐⭐⭐ Good
 - ⭐⭐ Fair
 
+**Notes:**
+- **Vite Plugin**: Best for greenfield Vite projects, but Vite-only (low portability)
+- **createShadowComponent**: Best all-around choice, works everywhere
+- **HOC**: Lowest resistance for teams familiar with React patterns
+- **Hook**: Most flexible but requires more code
+- **Macro**: Highest performance but declining ecosystem support
+
 ---
 
 ## Final Recommendation
 
-### Primary API: `createShadowComponent`
+### Path A: Vite Projects (Recommended for Greenfield)
+
+**Primary: Vite Plugin**
+
+**Why:**
+- Zero boilerplate (89% less code)
+- Components are just React (no new patterns)
+- Convention-based (familiar from Next.js, CSS Modules)
+- Excellent DX (write normal components)
+- Can opt-out to explicit API when needed
+
+**Fallback: `createShadowComponent`**
+- When you need explicit control
+- When you want to see the wiring
+- When debugging plugin transformations
+
+---
+
+### Path B: Non-Vite or Existing Codebases
+
+**Primary: `createShadowComponent`**
 
 **Why:**
 - Best balance of simplicity and features
@@ -836,8 +1267,9 @@ const Button = createShadowComponent({
 - Excellent TypeScript support
 - Low resistance (familiar pattern)
 - Progressive enhancement path
+- Works with any bundler
 
-### Secondary API: `withShadowStyles` (HOC)
+**Secondary: `withShadowStyles` (HOC)**
 
 **Why:**
 - For migrating existing codebases
@@ -845,7 +1277,7 @@ const Button = createShadowComponent({
 - Very low resistance (HOCs are known)
 - Can wrap existing components
 
-### Power User API: Hooks + `ShadowRoot`
+**Power User: Hooks + `ShadowRoot`**
 
 **Why:**
 - Maximum flexibility
@@ -853,14 +1285,38 @@ const Button = createShadowComponent({
 - For advanced use cases
 - Composes with everything
 
-### Optional: Macro
+**Optional: Macro**
 
 **Why:**
 - For performance enthusiasts
 - Separate package (opt-in)
 - Not required for 99% of users
+- Note: If using Vite, prefer plugin instead
 
 ---
 
-**Status:** API proposals defined with adoption analysis.
+## Summary
+
+**For new Vite projects:** Start with Vite Plugin (convention-based)
+- Zero boilerplate
+- Best DX
+- Can drop down to explicit API when needed
+
+**For existing projects or non-Vite:** Start with `createShadowComponent`
+- Clear, explicit API
+- Works everywhere
+- Good balance
+
+**For migration scenarios:** Use `withShadowStyles` (HOC)
+- Minimal refactoring
+- Progressive adoption
+
+**Ship all three** in separate packages:
+- `@my-lib/react` - Core APIs (factory, HOC, hooks)
+- `@my-lib/vite-plugin` - Convention-based plugin (optional)
+- `@my-lib/react.macro` - Macro for non-Vite optimization (optional)
+
+---
+
+**Status:** API proposals complete with 5 flavors + adoption analysis.
 **Next:** Pick API direction(s) and prototype.
