@@ -2,6 +2,7 @@
   "name": "flesh-cage",
   "version": "0.0.0",
   "private": true,
+  "type": "module",
   "description": "Modern CSS-in-TypeScript with Shadow DOM & Constructable Stylesheets",
   "keywords": [
     "css-in-ts",
