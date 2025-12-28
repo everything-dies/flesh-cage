@@ -250,6 +250,7 @@ yarn validate
 ```
 
 This runs:
+
 - `publint` - Checks package.json correctness
 - `@arethetypeswrong/cli` - Validates TypeScript types
 - `size-limit` - Ensures bundle sizes are within limits
@@ -257,21 +258,25 @@ This runs:
 ### Troubleshooting
 
 **"Version Packages" PR not created**
+
 - Check that changesets exist in `.changeset/`
 - Verify GitHub Actions have required permissions
 - Check workflow logs in Actions tab
 
 **Publishing fails with authentication error**
+
 - Verify `NPM_TOKEN` secret is set correctly
 - Ensure token has "Automation" permission
 - Check token hasn't expired
 
 **Package not found after publish**
+
 - Verify you have access to `@everything-dies` scope
 - Check npm for the package: `npm view @everything-dies/flesh-cage`
 - Ensure `publishConfig.access: "public"` in package.json
 
 **Build fails before publish**
+
 - Run `yarn build:packages` locally
 - Fix any TypeScript or build errors
 - Ensure all tests pass: `yarn test`

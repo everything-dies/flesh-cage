@@ -61,6 +61,7 @@ import { shadowComponents } from '@everything-dies/flesh-cage/vite'
 ```
 
 **One install, everything included:**
+
 - ✅ Component macros (Provider, createShadowComponent, HOC, hooks)
 - ✅ Core runtime (SheetsCache, custom elements)
 - ✅ Vite plugin (convention-based, zero boilerplate)

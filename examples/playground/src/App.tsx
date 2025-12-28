@@ -81,7 +81,8 @@ export function App() {
         <h3>How This Works</h3>
         <ul style={{ textAlign: 'left', maxWidth: '600px', margin: '0 auto' }}>
           <li>
-            Components use <code>createShadowComponent</code> from <code>@everything-dies/flesh-cage</code>
+            Components use <code>createShadowComponent</code> from{' '}
+            <code>@everything-dies/flesh-cage</code>
           </li>
           <li>Skins are lazy-loaded via dynamic imports</li>
           <li>Styles are applied using Constructable Stylesheets</li>

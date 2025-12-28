@@ -56,6 +56,7 @@ import { SkinProvider, createShadowComponent, withShadowStyles } from '@everythi
 ```
 
 Framework-agnostic component macros (currently React-compatible). Includes:
+
 - `SkinProvider` - Context-based skin management
 - `createShadowComponent` - Factory for shadow components
 - `withShadowStyles` - HOC for wrapping existing components
@@ -69,6 +70,7 @@ import { SheetsCache, createCustomElement } from '@everything-dies/flesh-cage/co
 ```
 
 For advanced use cases or framework-agnostic implementations:
+
 - `SheetsCache` - Manages Constructable StyleSheet lifecycle
 - `createCustomElement` - Utilities for Shadow DOM components
 

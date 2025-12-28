@@ -1042,29 +1042,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@flesh-cage/core@workspace:*, @flesh-cage/core@workspace:packages/core":
+"@everything-dies/flesh-cage@workspace:*, @everything-dies/flesh-cage@workspace:packages/flesh-cage":
   version: 0.0.0-use.local
-  resolution: "@flesh-cage/core@workspace:packages/core"
+  resolution: "@everything-dies/flesh-cage@workspace:packages/flesh-cage"
   dependencies:
     "@arethetypeswrong/cli": "npm:^0.18.2"
-    "@size-limit/preset-small-lib": "npm:^12.0.0"
-    "@types/node": "npm:^22.10.2"
-    "@vitest/coverage-v8": "npm:^2.1.8"
-    npm-run-all2: "npm:^8.0.4"
-    publint: "npm:^0.3.16"
-    size-limit: "npm:^12.0.0"
-    tsup: "npm:^8.5.1"
-    typescript: "npm:^5.7.2"
-    vitest: "npm:^2.1.8"
-  languageName: unknown
-  linkType: soft
-
-"@flesh-cage/react@workspace:*, @flesh-cage/react@workspace:packages/react":
-  version: 0.0.0-use.local
-  resolution: "@flesh-cage/react@workspace:packages/react"
-  dependencies:
-    "@arethetypeswrong/cli": "npm:^0.18.2"
-    "@flesh-cage/core": "workspace:*"
     "@size-limit/preset-small-lib": "npm:^12.0.0"
     "@testing-library/dom": "npm:^10.4.1"
     "@testing-library/jest-dom": "npm:^6.6.3"
@@ -1082,6 +1064,7 @@ __metadata:
     size-limit: "npm:^12.0.0"
     tsup: "npm:^8.5.1"
     typescript: "npm:^5.7.2"
+    vite: "npm:^6.0.5"
     vitest: "npm:^2.1.8"
   peerDependencies:
     react: ^18.0.0 || ^19.0.0
@@ -1091,26 +1074,8 @@ __metadata:
       optional: false
     react-dom:
       optional: false
-  languageName: unknown
-  linkType: soft
-
-"@flesh-cage/vite-plugin@workspace:packages/vite-plugin":
-  version: 0.0.0-use.local
-  resolution: "@flesh-cage/vite-plugin@workspace:packages/vite-plugin"
-  dependencies:
-    "@arethetypeswrong/cli": "npm:^0.18.2"
-    "@flesh-cage/core": "workspace:*"
-    "@flesh-cage/react": "workspace:*"
-    "@types/node": "npm:^22.10.2"
-    "@vitest/coverage-v8": "npm:^2.1.8"
-    npm-run-all2: "npm:^8.0.4"
-    publint: "npm:^0.3.16"
-    tsup: "npm:^8.5.1"
-    typescript: "npm:^5.7.2"
-    vite: "npm:^6.0.5"
-    vitest: "npm:^2.1.8"
-  peerDependencies:
-    vite: ^5.0.0 || ^6.0.0
+    vite:
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -5723,8 +5688,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "playground@workspace:examples/playground"
   dependencies:
-    "@flesh-cage/core": "workspace:*"
-    "@flesh-cage/react": "workspace:*"
+    "@everything-dies/flesh-cage": "workspace:*"
     "@types/react": "npm:^18.3.18"
     "@types/react-dom": "npm:^18.3.5"
     "@vitejs/plugin-react-swc": "npm:^3.7.2"

@@ -7,9 +7,18 @@ export default defineConfig({
 
   resolve: {
     alias: {
-      '@everything-dies/flesh-cage': path.resolve(__dirname, '../../packages/flesh-cage/src/macros'),
-      '@everything-dies/flesh-cage/core': path.resolve(__dirname, '../../packages/flesh-cage/src/core'),
-      '@everything-dies/flesh-cage/vite': path.resolve(__dirname, '../../packages/flesh-cage/src/vite'),
+      '@everything-dies/flesh-cage': path.resolve(
+        __dirname,
+        '../../packages/flesh-cage/src/macros'
+      ),
+      '@everything-dies/flesh-cage/core': path.resolve(
+        __dirname,
+        '../../packages/flesh-cage/src/core'
+      ),
+      '@everything-dies/flesh-cage/vite': path.resolve(
+        __dirname,
+        '../../packages/flesh-cage/src/vite'
+      ),
     },
   },
 
