@@ -11,7 +11,7 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "clean": "rm -rf dist .turbo *.tsbuildinfo"
+    "clean": "rm -rf dist .turbo; find . -maxdepth 1 -name '*.tsbuildinfo' -delete || true"
   },
   "dependencies": {
     "@everything-dies/flesh-cage": "workspace:*",

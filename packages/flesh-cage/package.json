@@ -84,7 +84,7 @@
     "validate:package": "publint",
     "validate:types": "attw --pack --ignore-rules no-resolution",
     "validate:size": "size-limit",
-    "clean": "rm -rf dist .turbo *.tsbuildinfo"
+    "clean": "rm -rf dist .turbo; find . -maxdepth 1 -name '*.tsbuildinfo' -delete || true"
   },
   "peerDependencies": {
     "react": "^18.0.0 || ^19.0.0",
