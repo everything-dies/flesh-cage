@@ -129,11 +129,170 @@ chore: tooling/config changes
 
 ## Publishing
 
-Releases are automated via GitHub Actions. When PRs are merged to `main`:
+### Prerequisites
 
-1. Changesets creates a "Version Packages" PR
-2. Merge that PR to trigger npm publish
-3. Packages are published with provenance
+Before you can publish packages to npm, ensure the following are configured:
+
+#### 1. npm Organization/Scope
+
+The `@flesh-cage` scope must exist on npm:
+
+```bash
+# Check if you have access to the scope
+npm org ls flesh-cage
+
+# If the scope doesn't exist, either:
+# - Create it at https://www.npmjs.com/org/create
+# - Or change package names to a scope you own
+```
+
+#### 2. NPM_TOKEN Secret
+
+Add your npm automation token to GitHub:
+
+1. Generate token at [npmjs.com/settings/tokens](https://www.npmjs.com/settings/tokens)
+   - Click "Generate New Token" → "Automation"
+   - Copy the token
+2. Add to GitHub at [Repository Settings → Secrets](https://github.com/everything-dies/flesh-cage/settings/secrets/actions)
+   - Name: `NPM_TOKEN`
+   - Value: Your token
+3. Save
+
+#### 3. Build Packages
+
+Ensure all packages build successfully:
+
+```bash
+yarn build:packages
+```
+
+### Creating a Release
+
+#### Step 1: Make Your Changes
+
+Edit files in `packages/*/src/` and commit to `main` or a feature branch.
+
+#### Step 2: Create a Changeset
+
+Describe your changes for the changelog:
+
+```bash
+yarn changeset
+```
+
+Follow the prompts:
+
+- **Select packages**: Choose which packages changed
+- **Bump type**:
+  - `major` (1.0.0 → 2.0.0) - Breaking changes
+  - `minor` (1.0.0 → 1.1.0) - New features
+  - `patch` (1.0.0 → 1.0.1) - Bug fixes
+- **Summary**: Describe the change (used in changelog)
+
+This creates a file in `.changeset/` - commit it:
+
+```bash
+git add .changeset
+git commit -m "chore: add changeset for feature X"
+git push
+```
+
+#### Step 3: Merge to Main
+
+- If working on a branch, open a PR and merge to `main`
+- CI will run tests, linting, type checking
+
+#### Step 4: Version Packages PR
+
+The Changesets bot will automatically:
+
+1. Create a PR titled **"Version Packages"**
+2. Update package versions in `package.json`
+3. Generate/update `CHANGELOG.md` files
+4. Consume changesets from `.changeset/`
+
+**Review the PR** to ensure versions and changelogs look correct.
+
+#### Step 5: Publish to npm
+
+Merge the "Version Packages" PR. This triggers:
+
+1. CI builds all packages
+2. Runs tests and validation
+3. Publishes to npm with provenance
+4. Creates git tags for versions
+
+Check [npm](https://www.npmjs.com/org/flesh-cage) to verify packages are published.
+
+### Testing Before Publish
+
+#### Local Dry Run
+
+Test what would be published without actually publishing:
+
+```bash
+# Build packages
+yarn build:packages
+
+# Dry run for each package
+yarn --cwd packages/core pack --dry-run
+yarn --cwd packages/react pack --dry-run
+yarn --cwd packages/vite-plugin pack --dry-run
+```
+
+#### Validate Package Quality
+
+Run validation checks:
+
+```bash
+yarn validate
+```
+
+This runs:
+- `publint` - Checks package.json correctness
+- `@arethetypeswrong/cli` - Validates TypeScript types
+- `size-limit` - Ensures bundle sizes are within limits
+
+### Troubleshooting
+
+**"Version Packages" PR not created**
+- Check that changesets exist in `.changeset/`
+- Verify GitHub Actions have required permissions
+- Check workflow logs in Actions tab
+
+**Publishing fails with authentication error**
+- Verify `NPM_TOKEN` secret is set correctly
+- Ensure token has "Automation" permission
+- Check token hasn't expired
+
+**Package not found after publish**
+- Verify you have access to `@flesh-cage` scope
+- Check npm for the package: `npm view @flesh-cage/core`
+- Ensure `publishConfig.access: "public"` in package.json
+
+**Build fails before publish**
+- Run `yarn build:packages` locally
+- Fix any TypeScript or build errors
+- Ensure all tests pass: `yarn test`
+
+### Release Workflow Summary
+
+```
+1. Developer makes changes
+   ↓
+2. yarn changeset (describe changes)
+   ↓
+3. Commit and push to main
+   ↓
+4. Bot creates "Version Packages" PR
+   ↓
+5. Review and merge PR
+   ↓
+6. Packages auto-publish to npm
+   ✓ Published with provenance
+   ✓ Git tags created
+   ✓ Changelogs updated
+```
 
 ## Need Help?
 
