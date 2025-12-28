@@ -3,9 +3,9 @@
   "compilerOptions": {
     "noEmit": true,
     "paths": {
-      "@everything-dies/flesh-cage": ["../../packages/flesh-cage/src/macros"],
-      "@everything-dies/flesh-cage/core": ["../../packages/flesh-cage/src/core"],
-      "@everything-dies/flesh-cage/vite": ["../../packages/flesh-cage/src/vite"]
+      "@everything-dies/flesh-cage": ["../../packages/flesh-cage/src/macros/index.ts"],
+      "@everything-dies/flesh-cage/core": ["../../packages/flesh-cage/src/core/index.ts"],
+      "@everything-dies/flesh-cage/vite": ["../../packages/flesh-cage/src/vite/index.ts"]
     }
   },
   "include": ["src/**/*"]
