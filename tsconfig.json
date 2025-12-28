@@ -26,9 +26,8 @@
     /* Path mapping */
     "baseUrl": ".",
     "paths": {
-      "@flesh-cage/core": ["./packages/core/src"],
-      "@flesh-cage/react": ["./packages/react/src"],
-      "@flesh-cage/vite-plugin": ["./packages/vite-plugin/src"]
+      "@everything-dies/flesh-cage": ["./packages/flesh-cage/src/macros"],
+      "@everything-dies/flesh-cage/*": ["./packages/flesh-cage/src/*"]
     }
   }
 }
