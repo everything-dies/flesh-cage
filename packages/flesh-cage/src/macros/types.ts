@@ -1,5 +1,5 @@
 import type { ReactNode, ComponentType } from 'react'
-import type { SkinMap } from '@flesh-cage/core'
+import type { SkinMap } from '../core'
 
 /**
  * Props for SkinProvider component

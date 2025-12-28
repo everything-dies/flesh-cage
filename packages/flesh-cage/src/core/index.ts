@@ -1,5 +1,5 @@
 /**
- * @flesh-cage/core
+ * @everything-dies/flesh-cage/core
  *
  * Core runtime for flesh-cage library.
  * Provides:

@@ -1,6 +1,6 @@
 import { useRef, useEffect, type ComponentType, type FC } from 'react'
 import { createPortal } from 'react-dom'
-import { SheetsCache, createCustomElement } from '@flesh-cage/core'
+import { SheetsCache, createCustomElement } from '../core'
 import { useSkinContextOptional } from './context'
 import type { CreateShadowComponentConfig } from './types'
 

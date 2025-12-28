@@ -7,13 +7,14 @@ export default defineConfig({
 
   resolve: {
     alias: {
-      '@flesh-cage/core': path.resolve(__dirname, '../../packages/core/src'),
-      '@flesh-cage/react': path.resolve(__dirname, '../../packages/react/src'),
+      '@everything-dies/flesh-cage': path.resolve(__dirname, '../../packages/flesh-cage/src/macros'),
+      '@everything-dies/flesh-cage/core': path.resolve(__dirname, '../../packages/flesh-cage/src/core'),
+      '@everything-dies/flesh-cage/vite': path.resolve(__dirname, '../../packages/flesh-cage/src/vite'),
     },
   },
 
   optimizeDeps: {
-    exclude: ['@flesh-cage/core', '@flesh-cage/react'],
+    exclude: ['@everything-dies/flesh-cage'],
   },
 
   server: {

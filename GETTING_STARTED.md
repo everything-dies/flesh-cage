@@ -20,57 +20,52 @@ The playground will open at http://localhost:3000 with hot reload enabled.
 ```
 flesh-cage/
 ├── packages/
-│   ├── core/                  # @flesh-cage/core
-│   │   ├── src/
-│   │   │   ├── sheets-cache.ts      # Ref-counted stylesheet cache
-│   │   │   ├── custom-element.ts    # Custom element utilities
-│   │   │   └── types.ts
-│   │   ├── tsup.config.ts           # Library build config
-│   │   └── package.json
-│   │
-│   ├── react/                 # @flesh-cage/react
-│   │   ├── src/
-│   │   │   ├── context.tsx                  # SkinProvider + useSkinContext
-│   │   │   ├── create-shadow-component.tsx  # Factory API
-│   │   │   ├── with-shadow-styles.tsx       # HOC API
-│   │   │   ├── use-shadow-styles.ts         # Hook API
-│   │   │   ├── shadow-root.tsx              # Component API
-│   │   │   └── types.ts
-│   │   └── package.json
-│   │
-│   └── vite-plugin/           # @flesh-cage/vite-plugin
+│   └── flesh-cage/                 # @everything-dies/flesh-cage
 │       ├── src/
-│       │   ├── index.ts       # Plugin implementation (placeholder)
-│       │   └── types.ts
-│       └── package.json
+│       │   ├── core/               # Core runtime (entry: @everything-dies/flesh-cage/core)
+│       │   │   ├── sheets-cache.ts      # Ref-counted stylesheet cache
+│       │   │   ├── custom-element.ts    # Custom element utilities
+│       │   │   └── types.ts
+│       │   ├── macros/             # Component macros (main entry)
+│       │   │   ├── context.tsx              # SkinProvider + useSkinContext
+│       │   │   ├── create-shadow-component.tsx  # Factory API
+│       │   │   ├── with-shadow-styles.tsx   # HOC API
+│       │   │   ├── use-shadow-styles.ts     # Hook API
+│       │   │   ├── shadow-root.tsx          # Component API
+│       │   │   └── types.ts
+│       │   └── vite/               # Vite plugin (entry: @everything-dies/flesh-cage/vite)
+│       │       ├── index.ts        # Plugin implementation
+│       │       └── types.ts
+│       ├── tsup.config.ts          # Multi-entry build config
+│       └── package.json            # Single package with 3 exports
 │
 ├── examples/
-│   └── playground/            # Local development app
+│   └── playground/                 # Local development app
 │       ├── src/
 │       │   ├── components/
-│       │   │   └── Button/    # Example component with 3 skins
+│       │   │   └── Button/         # Example component with 3 skins
 │       │   ├── App.tsx
 │       │   └── main.tsx
-│       └── vite.config.ts     # Aliases to packages/*/src
+│       └── vite.config.ts          # Aliases to packages/flesh-cage/src/*
 │
 ├── .github/
 │   └── workflows/
-│       ├── ci.yml             # Tests, lint, type check, build
-│       └── release.yml        # Automated publishing via changesets
+│       ├── ci.yml                  # Tests, lint, type check, build
+│       └── release.yml             # Automated publishing via changesets
 │
 └── .idea/
-    └── design-docs/           # All design documentation
+    └── design-docs/                # All design documentation
 ```
 
 ## Development Workflow
 
-### 1. Make Changes to Packages
+### 1. Make Changes to Package
 
-Edit files in `packages/*/src/`. Changes hot reload instantly in the playground.
+Edit files in `packages/flesh-cage/src/`. Changes hot reload instantly in the playground.
 
 ```bash
 # Edit a file
-vim packages/react/src/context.tsx
+vim packages/flesh-cage/src/macros/context.tsx
 
 # Save - Vite automatically reloads
 # No build step needed!
@@ -78,19 +73,16 @@ vim packages/react/src/context.tsx
 
 ### 2. Test Your Changes
 
-**Unit Tests (Per Package):**
+**Unit Tests:**
 
 ```bash
-cd packages/core
+cd packages/flesh-cage
 yarn test              # Run once
 yarn test:watch        # Watch mode
 yarn test:coverage     # With coverage
-```
 
-**All Tests (Root):**
-
-```bash
-yarn test              # Run all package tests
+# Or from root
+yarn test              # Run all tests
 yarn test:coverage     # With coverage report
 ```
 
@@ -107,10 +99,11 @@ yarn test:e2e:ui       # Open Playwright UI
 # Build all packages
 yarn build
 
-# Build only packages (not playground)
+# Build only the package (not playground)
 yarn build:packages
 
 # Watch mode (rebuilds on change)
+cd packages/flesh-cage
 yarn build:watch
 ```
 
@@ -197,7 +190,7 @@ mkdir examples/playground/src/components/Card/skins
 
 ```tsx
 // index.tsx
-import { createShadowComponent } from '@flesh-cage/react'
+import { createShadowComponent } from '@everything-dies/flesh-cage'
 
 export const Card = createShadowComponent({
   name: 'card',
@@ -254,18 +247,10 @@ import { Card } from './components/Card'
 
 ## Common Tasks
 
-### Add New Package
-
-```bash
-mkdir -p packages/new-package/src
-cp packages/core/package.json packages/new-package/
-# Edit package.json, add to turbo.json
-```
-
 ### Add Dependency to Package
 
 ```bash
-cd packages/react
+cd packages/flesh-cage
 yarn add @some/package
 ```
 
@@ -288,7 +273,7 @@ yarn test:watch
 ### Check Bundle Size
 
 ```bash
-cd packages/core
+cd packages/flesh-cage
 yarn validate:size
 
 # To see what's in the bundle
@@ -300,7 +285,7 @@ ls -lh dist/
 
 ### "Module not found" in Playground
 
-Check `vite.config.ts` aliases point to `packages/*/src` correctly.
+Check `vite.config.ts` aliases point to `packages/flesh-cage/src/*` correctly.
 
 ### TypeScript Errors in IDE
 

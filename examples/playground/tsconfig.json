@@ -3,8 +3,9 @@
   "compilerOptions": {
     "noEmit": true,
     "paths": {
-      "@flesh-cage/core": ["../../packages/core/src"],
-      "@flesh-cage/react": ["../../packages/react/src"]
+      "@everything-dies/flesh-cage": ["../../packages/flesh-cage/src/macros"],
+      "@everything-dies/flesh-cage/core": ["../../packages/flesh-cage/src/core"],
+      "@everything-dies/flesh-cage/vite": ["../../packages/flesh-cage/src/vite"]
     }
   },
   "include": ["src/**/*"]

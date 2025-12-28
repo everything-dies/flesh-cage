@@ -14,8 +14,7 @@
     "clean": "rm -rf dist .turbo *.tsbuildinfo"
   },
   "dependencies": {
-    "@flesh-cage/core": "workspace:*",
-    "@flesh-cage/react": "workspace:*",
+    "@everything-dies/flesh-cage": "workspace:*",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },

@@ -1,6 +1,6 @@
 import { useRef, useEffect, type FC } from 'react'
 import { createPortal } from 'react-dom'
-import { createCustomElement } from '@flesh-cage/core'
+import { createCustomElement } from '../core'
 import { useShadowStyles } from './use-shadow-styles'
 import { useSkinContextOptional } from './context'
 import type { ShadowRootProps } from './types'

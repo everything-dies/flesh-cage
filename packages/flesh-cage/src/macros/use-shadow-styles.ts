@@ -1,6 +1,6 @@
 import { useRef, useEffect, useState } from 'react'
-import { SheetsCache } from '@flesh-cage/core'
-import type { SkinMap } from '@flesh-cage/core'
+import { SheetsCache } from '../core'
+import type { SkinMap } from '../core'
 
 /**
  * useShadowStyles - Hook for manual shadow DOM + stylesheet management

@@ -1,4 +1,4 @@
-import { createShadowComponent } from '@flesh-cage/react'
+import { createShadowComponent } from '@everything-dies/flesh-cage'
 import type { ComponentProps } from 'react'
 
 interface ButtonProps extends ComponentProps<'button'> {

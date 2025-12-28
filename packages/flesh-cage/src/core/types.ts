@@ -1,5 +1,5 @@
 /**
- * Type definitions for @flesh-cage/core
+ * Type definitions for @everything-dies/flesh-cage/core
  */
 
 /**

@@ -37,31 +37,34 @@ yarn build
 ```
 flesh-cage/
 ├── packages/
-│   ├── core/           # Core runtime
-│   ├── react/          # React bindings
-│   └── vite-plugin/    # Vite plugin
+│   └── flesh-cage/          # Single publishable package
+│       ├── src/
+│       │   ├── core/        # Core runtime
+│       │   ├── macros/      # Component macros (main export)
+│       │   └── vite/        # Vite plugin
+│       └── package.json     # @everything-dies/flesh-cage
 ├── examples/
-│   └── playground/     # Local development environment
+│   └── playground/          # Local development environment
 ├── .github/
-│   └── workflows/      # CI/CD pipelines
+│   └── workflows/           # CI/CD pipelines
 └── .idea/
-    └── design-docs/    # Design documentation
+    └── design-docs/         # Design documentation
 ```
 
 ## Development Workflow
 
 ### 1. Make Changes
 
-Edit files in `packages/*/src/`. The playground hot reloads automatically.
+Edit files in `packages/flesh-cage/src/`. The playground hot reloads automatically.
 
 ### 2. Add Tests
 
 ```bash
-# Run tests for a specific package
-cd packages/core
+# Run tests for the package
+cd packages/flesh-cage
 yarn test
 
-# Run all tests
+# Run all tests from root
 yarn test
 
 # Coverage
@@ -135,15 +138,15 @@ Before you can publish packages to npm, ensure the following are configured:
 
 #### 1. npm Organization/Scope
 
-The `@flesh-cage` scope must exist on npm:
+The `@everything-dies` scope must exist on npm:
 
 ```bash
 # Check if you have access to the scope
-npm org ls flesh-cage
+npm org ls everything-dies
 
 # If the scope doesn't exist, either:
 # - Create it at https://www.npmjs.com/org/create
-# - Or change package names to a scope you own
+# - Or change the package name to a scope you own
 ```
 
 #### 2. NPM_TOKEN Secret
@@ -222,7 +225,7 @@ Merge the "Version Packages" PR. This triggers:
 3. Publishes to npm with provenance
 4. Creates git tags for versions
 
-Check [npm](https://www.npmjs.com/org/flesh-cage) to verify packages are published.
+Check [npm](https://www.npmjs.com/package/@everything-dies/flesh-cage) to verify the package is published.
 
 ### Testing Before Publish
 
@@ -234,10 +237,8 @@ Test what would be published without actually publishing:
 # Build packages
 yarn build:packages
 
-# Dry run for each package
-yarn --cwd packages/core pack --dry-run
-yarn --cwd packages/react pack --dry-run
-yarn --cwd packages/vite-plugin pack --dry-run
+# Dry run for the package
+yarn --cwd packages/flesh-cage pack --dry-run
 ```
 
 #### Validate Package Quality
@@ -266,8 +267,8 @@ This runs:
 - Check token hasn't expired
 
 **Package not found after publish**
-- Verify you have access to `@flesh-cage` scope
-- Check npm for the package: `npm view @flesh-cage/core`
+- Verify you have access to `@everything-dies` scope
+- Check npm for the package: `npm view @everything-dies/flesh-cage`
 - Ensure `publishConfig.access: "public"` in package.json
 
 **Build fails before publish**

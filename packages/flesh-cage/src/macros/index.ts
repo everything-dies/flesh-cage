@@ -1,5 +1,5 @@
 /**
- * @flesh-cage/react
+ * @everything-dies/flesh-cage
  *
  * React bindings for flesh-cage library.
  * Provides:
@@ -24,4 +24,4 @@ export type {
 } from './types'
 
 // Re-export core types for convenience
-export type { SkinLoader, SkinMap } from '@flesh-cage/core'
+export type { SkinLoader, SkinMap } from '../core'

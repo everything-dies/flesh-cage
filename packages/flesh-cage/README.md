@@ -1,4 +1,4 @@
-# Flesh Cage
+# @everything-dies/flesh-cage
 
 > Modern CSS-in-TypeScript with Shadow DOM & Constructable Stylesheets
 
@@ -45,25 +45,40 @@ function App() {
 }
 ```
 
-## Package Structure
+## Package Exports
 
-This is a **single-package library** with multiple entry points:
+This package provides multiple entry points for different use cases:
+
+### Main Export (Component Macros)
 
 ```typescript
-// Main export (Component macros) - Most common
-import { SkinProvider, createShadowComponent } from '@everything-dies/flesh-cage'
+import { SkinProvider, createShadowComponent, withShadowStyles } from '@everything-dies/flesh-cage'
+```
 
-// Core utilities (advanced use)
-import { SheetsCache } from '@everything-dies/flesh-cage/core'
+Framework-agnostic component macros (currently React-compatible). Includes:
+- `SkinProvider` - Context-based skin management
+- `createShadowComponent` - Factory for shadow components
+- `withShadowStyles` - HOC for wrapping existing components
+- `ShadowRoot` - Component for manual shadow DOM
+- `useSkinContext`, `useShadowStyles` - Hooks
 
-// Vite plugin (dev dependency)
+### Core Utilities
+
+```typescript
+import { SheetsCache, createCustomElement } from '@everything-dies/flesh-cage/core'
+```
+
+For advanced use cases or framework-agnostic implementations:
+- `SheetsCache` - Manages Constructable StyleSheet lifecycle
+- `createCustomElement` - Utilities for Shadow DOM components
+
+### Vite Plugin
+
+```typescript
 import { shadowComponents } from '@everything-dies/flesh-cage/vite'
 ```
 
-**One install, everything included:**
-- ✅ Component macros (Provider, createShadowComponent, HOC, hooks)
-- ✅ Core runtime (SheetsCache, custom elements)
-- ✅ Vite plugin (convention-based, zero boilerplate)
+Convention-based Vite plugin (future feature - currently placeholder).
 
 ## Features
 
@@ -117,51 +132,19 @@ export const Button = ({ children }) => (
 - **99% memory savings** - Shared CSSStyleSheet objects (not duplicated strings)
 - **Lazy loading** - Dynamic imports for code-splitting
 - **Fast theme switching** - 8× faster than traditional CSS-in-JS
-- **Small bundle** - ~10 KB total (gzipped), tree-shakeable
+- **Small bundle** - ~10 KB total (gzipped)
 
-## Development
+## Documentation
 
-```bash
-# Install dependencies
-yarn install
-
-# Start playground
-yarn dev
-
-# Run tests
-yarn test
-
-# Build packages
-yarn build
-
-# Lint & format
-yarn lint
-yarn format
-```
-
-## Local Development
-
-The monorepo includes a **playground** for testing packages locally:
-
-```bash
-yarn dev  # Starts Vite on http://localhost:3000
-```
-
-Changes to packages hot-reload instantly - no build step needed!
-
-## Philosophy
-
-Read the design documentation:
-
-- [Complete Architecture](./ideas/design-docs/ARCHITECTURE_COMPLETE.md)
-- [Skins vs Themes Philosophy](./ideas/design-docs/SKINS_VS_THEMES_PHILOSOPHY.md)
-- [Attribute-Driven Styling](./ideas/design-docs/ATTRIBUTE_DRIVEN_STYLING.md)
-- [Provider Pattern](./ideas/design-docs/PROVIDER_PATTERN.md)
-- [Benchmark Results](./ideas/design-docs/BENCHMARK_CORRECTION_SUMMARY.md)
+- [Complete Architecture](https://github.com/everything-dies/flesh-cage/blob/main/.idea/design-docs/ARCHITECTURE_COMPLETE.md)
+- [Skins vs Themes Philosophy](https://github.com/everything-dies/flesh-cage/blob/main/.idea/design-docs/SKINS_VS_THEMES_PHILOSOPHY.md)
+- [Attribute-Driven Styling](https://github.com/everything-dies/flesh-cage/blob/main/.idea/design-docs/ATTRIBUTE_DRIVEN_STYLING.md)
+- [Provider Pattern](https://github.com/everything-dies/flesh-cage/blob/main/.idea/design-docs/PROVIDER_PATTERN.md)
+- [Benchmark Results](https://github.com/everything-dies/flesh-cage/blob/main/.idea/design-docs/BENCHMARK_CORRECTION_SUMMARY.md)
 
 ## Contributing
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for development guidelines.
+See [CONTRIBUTING.md](https://github.com/everything-dies/flesh-cage/blob/main/CONTRIBUTING.md) for development guidelines.
 
 ## License
 

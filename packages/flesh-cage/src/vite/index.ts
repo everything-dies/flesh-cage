@@ -1,5 +1,5 @@
 /**
- * @flesh-cage/vite-plugin
+ * @everything-dies/flesh-cage/vite
  *
  * Vite plugin for convention-based shadow components
  *
@@ -19,7 +19,7 @@ import type { ShadowComponentsOptions } from './types'
  * @example
  * ```ts
  * // vite.config.ts
- * import { shadowComponents } from '@flesh-cage/vite-plugin'
+ * import { shadowComponents } from '@everything-dies/flesh-cage/vite'
  *
  * export default defineConfig({
  *   plugins: [

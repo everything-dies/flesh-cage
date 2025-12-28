@@ -27,17 +27,16 @@ The playground uses **workspace protocol** to import packages locally:
 ```json
 {
   "dependencies": {
-    "@flesh-cage/core": "workspace:*",
-    "@flesh-cage/react": "workspace:*"
+    "@everything-dies/flesh-cage": "workspace:*"
   }
 }
 ```
 
 This means:
 
-- ✅ Changes to packages are immediately reflected
+- ✅ Changes to the package are immediately reflected
 - ✅ Full TypeScript support with source maps
-- ✅ No need to rebuild packages (Vite handles it)
+- ✅ No need to rebuild the package (Vite handles it)
 - ✅ Real-world testing environment
 
 ## What's Included
@@ -49,7 +48,7 @@ This means:
 
 ## Testing Your Changes
 
-1. Make changes to packages (e.g., `packages/react/src/context.tsx`)
+1. Make changes to the package (e.g., `packages/flesh-cage/src/macros/context.tsx`)
 2. Save the file
 3. Vite hot reloads instantly
 4. See changes in the browser
