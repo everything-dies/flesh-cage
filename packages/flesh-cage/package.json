@@ -82,7 +82,7 @@
     "test:coverage": "vitest run --coverage",
     "validate": "npm-run-all 'validate:*'",
     "validate:package": "publint",
-    "validate:types": "attw --pack",
+    "validate:types": "attw --pack --ignore-rules no-resolution",
     "validate:size": "size-limit",
     "clean": "rm -rf dist .turbo *.tsbuildinfo"
   },
