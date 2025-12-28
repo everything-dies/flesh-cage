@@ -264,7 +264,7 @@ yarn add -D -W some-dev-tool
 
 ```bash
 # Add debugger statement in test
-cd packages/core
+cd packages/flesh-cage
 yarn test:watch
 
 # Or use VS Code debugger with breakpoints

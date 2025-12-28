@@ -154,11 +154,11 @@ Changes to packages hot-reload instantly - no build step needed!
 
 Read the design documentation:
 
-- [Complete Architecture](./ideas/design-docs/ARCHITECTURE_COMPLETE.md)
-- [Skins vs Themes Philosophy](./ideas/design-docs/SKINS_VS_THEMES_PHILOSOPHY.md)
-- [Attribute-Driven Styling](./ideas/design-docs/ATTRIBUTE_DRIVEN_STYLING.md)
-- [Provider Pattern](./ideas/design-docs/PROVIDER_PATTERN.md)
-- [Benchmark Results](./ideas/design-docs/BENCHMARK_CORRECTION_SUMMARY.md)
+- [Complete Architecture](./.idea/design-docs/ARCHITECTURE_COMPLETE.md)
+- [Skins vs Themes Philosophy](./.idea/design-docs/SKINS_VS_THEMES_PHILOSOPHY.md)
+- [Attribute-Driven Styling](./.idea/design-docs/ATTRIBUTE_DRIVEN_STYLING.md)
+- [Provider Pattern](./.idea/design-docs/PROVIDER_PATTERN.md)
+- [Benchmark Results](./.idea/design-docs/BENCHMARK_CORRECTION_SUMMARY.md)
 
 ## Contributing
 

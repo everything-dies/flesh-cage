@@ -173,7 +173,7 @@ yarn build:packages
 
 #### Step 1: Make Your Changes
 
-Edit files in `packages/*/src/` and commit to `main` or a feature branch.
+Edit files in `packages/flesh-cage/src/` and commit to `main` or a feature branch.
 
 #### Step 2: Create a Changeset
 
@@ -302,7 +302,7 @@ This runs:
 
 ## Need Help?
 
-- 📖 Read the [design docs](./ideas/design-docs/)
+- 📖 Read the [design docs](./.idea/design-docs/)
 - 💬 Open a [discussion](https://github.com/everything-dies/flesh-cage/discussions)
 - 🐛 Report a [bug](https://github.com/everything-dies/flesh-cage/issues)
 
