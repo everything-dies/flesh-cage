@@ -1,13 +1,6 @@
-/**
- * @everything-dies/flesh-cage/core
- *
- * Core runtime for flesh-cage library.
- * Provides:
- * - SheetsCache: Manages Constructable StyleSheet lifecycle with ref-counting
- * - Custom element utilities for Shadow DOM
- * - Type-safe skin loading and caching
- */
-
-export { SheetsCache } from './sheets-cache'
-export { createCustomElement } from './custom-element'
-export type { SkinLoader, SkinMap, SheetsCacheOptions } from './types'
+export type { SkinLoader, SkinMap, SheetsCacheOptions, ProviderProps } from './types'
+export type { StyledConfig } from './styled'
+export { styled } from './styled'
+export { useCore } from './use-core'
+export { Provider } from './provider'
+export { useContext } from './use-context'

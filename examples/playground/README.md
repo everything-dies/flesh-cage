@@ -43,7 +43,7 @@ This means:
 
 - **Button Component**: Example using `createShadowComponent`
 - **Three Skins**: Material, Brutalist, Glassmorphic
-- **Provider Demo**: Shows `SkinProvider` and nesting
+- **Provider Demo**: Shows `Provider` and nesting
 - **Interactive UI**: Switch skins and see live updates
 
 ## Testing Your Changes
@@ -74,7 +74,7 @@ playground/
 │   │           ├── material.ts    # Material skin
 │   │           ├── brutalist.ts   # Brutalist skin
 │   │           └── glassmorphic.ts # Glassmorphic skin
-│   ├── App.tsx                    # Main app with SkinProvider
+│   ├── App.tsx                    # Main app with Provider
 │   ├── App.css
 │   ├── main.tsx                   # Entry point
 │   └── index.css

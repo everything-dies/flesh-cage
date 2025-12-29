@@ -2,6 +2,8 @@
  * Type definitions for @everything-dies/flesh-cage/core
  */
 
+import type { ReactNode } from 'react'
+
 /**
  * A function that lazy-loads a skin CSS string
  */
@@ -11,6 +13,32 @@ export type SkinLoader = () => Promise<{ default: string }>
  * Map of skin names to their loaders
  */
 export type SkinMap<T extends string = string> = Record<T, SkinLoader>
+
+/**
+ * Props for Provider component
+ */
+export interface ProviderProps {
+  /**
+   * The skin to apply to all descendant components
+   */
+  skin: string
+
+  /**
+   * Children components
+   */
+  children: ReactNode
+
+  /**
+   * Preload skin immediately (don't wait for component mount)
+   * @default false
+   */
+  preload?: boolean
+
+  /**
+   * Fallback to render while skin is loading
+   */
+  fallback?: ReactNode
+}
 
 /**
  * Options for SheetsCache

@@ -23,7 +23,7 @@ yarn add @everything-dies/flesh-cage
 ```
 
 ```tsx
-import { createShadowComponent, SkinProvider } from '@everything-dies/flesh-cage'
+import { createShadowComponent, Provider } from '@everything-dies/flesh-cage'
 
 // Define component with multiple skins
 const Button = createShadowComponent({
@@ -38,9 +38,9 @@ const Button = createShadowComponent({
 // Use with Provider (no prop drilling!)
 function App() {
   return (
-    <SkinProvider skin="material">
+    <Provider skin="material">
       <Button>Click Me</Button>
-    </SkinProvider>
+    </Provider>
   )
 }
 ```
@@ -51,7 +51,7 @@ This is a **single-package library** with multiple entry points:
 
 ```typescript
 // Main export (Component macros) - Most common
-import { SkinProvider, createShadowComponent } from '@everything-dies/flesh-cage'
+import { Provider, createShadowComponent } from '@everything-dies/flesh-cage'
 
 // Core utilities (advanced use)
 import { SheetsCache } from '@everything-dies/flesh-cage/core'
@@ -71,14 +71,14 @@ import { shadowComponents } from '@everything-dies/flesh-cage/vite'
 ### ✨ Provider Pattern (No Prop Drilling!)
 
 ```tsx
-<SkinProvider skin="material">
+<Provider skin="material">
   <Button>Uses material</Button>
 
   {/* Nested providers override */}
-  <SkinProvider skin="dark">
+  <Provider skin="dark">
     <Button>Uses dark</Button>
-  </SkinProvider>
-</SkinProvider>
+  </Provider>
+</Provider>
 ```
 
 ### 🎨 Multiple API Flavors

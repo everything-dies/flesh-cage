@@ -6,7 +6,7 @@
  * Features:
  * - Auto-discovers skin files based on naming conventions
  * - Zero boilerplate - just write components
- * - Auto-wires useSkinContext() internally
+ * - Auto-wires useContext() internally
  * - Optional directives for customization
  */
 
@@ -56,7 +56,7 @@ export function shadowComponents(_options: ShadowComponentsOptions = {}): Plugin
       // 2. Search for skin files using the conventions
       // 3. Parse directives from comments
       // 4. Transform the component to wrap it with createShadowComponent
-      // 5. Auto-inject useSkinContext() call
+      // 5. Auto-inject useContext() call
 
       return null
     },

@@ -2,32 +2,6 @@ import type { ReactNode, ComponentType } from 'react'
 import type { SkinMap } from '../core'
 
 /**
- * Props for SkinProvider component
- */
-export interface SkinProviderProps {
-  /**
-   * The skin to apply to all descendant components
-   */
-  skin: string
-
-  /**
-   * Children components
-   */
-  children: ReactNode
-
-  /**
-   * Preload skin immediately (don't wait for component mount)
-   * @default false
-   */
-  preload?: boolean
-
-  /**
-   * Fallback to render while skin is loading
-   */
-  fallback?: ReactNode
-}
-
-/**
  * Configuration for createShadowComponent
  */
 export interface CreateShadowComponentConfig<Props = unknown, SkinNames extends string = string> {

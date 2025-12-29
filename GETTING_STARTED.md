@@ -27,7 +27,7 @@ flesh-cage/
 │       │   │   ├── custom-element.ts    # Custom element utilities
 │       │   │   └── types.ts
 │       │   ├── macros/             # Component macros (main entry)
-│       │   │   ├── context.tsx              # SkinProvider + useSkinContext
+│       │   │   ├── context.tsx              # Provider + useContext
 │       │   │   ├── create-shadow-component.tsx  # Factory API
 │       │   │   ├── with-shadow-styles.tsx   # HOC API
 │       │   │   ├── use-shadow-styles.ts     # Hook API
@@ -171,7 +171,7 @@ When your PR merges to `main`:
 
 The playground demonstrates:
 
-- **SkinProvider** with dynamic skin switching
+- **Provider** with dynamic skin switching
 - **Nested providers** (different skins per section)
 - **Three skins**: Material, Brutalist, Glassmorphic
 - **Hot reload** when you edit skins or components
@@ -219,9 +219,9 @@ export default `
 
 ```tsx
 import { Card } from './components/Card'
-;<SkinProvider skin="material">
+;<Provider skin="material">
   <Card>Hello World!</Card>
-</SkinProvider>
+</Provider>
 ```
 
 ## Testing Strategies
@@ -229,7 +229,7 @@ import { Card } from './components/Card'
 ### Unit Tests
 
 - Test individual functions (SheetsCache, custom element creation)
-- Test React hooks (useSkinContext, useShadowStyles)
+- Test React hooks (useContext, useShadowStyles)
 - Test component rendering
 
 ### Integration Tests

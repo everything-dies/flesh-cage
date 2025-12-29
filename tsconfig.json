@@ -26,8 +26,7 @@
     /* Path mapping */
     "baseUrl": ".",
     "paths": {
-      "@everything-dies/flesh-cage": ["./packages/flesh-cage/src/macros"],
-      "@everything-dies/flesh-cage/*": ["./packages/flesh-cage/src/*"]
+      "@everything-dies/flesh-cage": ["./packages/flesh-cage/src/core"]
     }
   }
 }

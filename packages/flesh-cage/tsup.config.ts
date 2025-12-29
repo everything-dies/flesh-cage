@@ -2,9 +2,7 @@ import { defineConfig } from 'tsup'
 
 export default defineConfig({
   entry: {
-    index: 'src/macros/index.ts', // Main export = Component macros
-    core: 'src/core/index.ts', // Core utilities
-    vite: 'src/vite/index.ts', // Vite plugin
+    index: 'src/core/index.ts', // Main export = Core
   },
   format: ['esm', 'cjs'],
   dts: true,
@@ -13,5 +11,5 @@ export default defineConfig({
   treeshake: true,
   splitting: false,
   target: 'es2020',
-  external: ['react', 'react-dom', 'vite'],
+  external: ['react', 'react-dom'],
 })

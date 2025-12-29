@@ -23,7 +23,7 @@ yarn add @everything-dies/flesh-cage
 ```
 
 ```tsx
-import { createShadowComponent, SkinProvider } from '@everything-dies/flesh-cage'
+import { createShadowComponent, Provider } from '@everything-dies/flesh-cage'
 
 // Define component with multiple skins
 const Button = createShadowComponent({
@@ -38,9 +38,9 @@ const Button = createShadowComponent({
 // Use with Provider (no prop drilling!)
 function App() {
   return (
-    <SkinProvider skin="material">
+    <Provider skin="material">
       <Button>Click Me</Button>
-    </SkinProvider>
+    </Provider>
   )
 }
 ```
@@ -52,16 +52,16 @@ This package provides multiple entry points for different use cases:
 ### Main Export (Component Macros)
 
 ```typescript
-import { SkinProvider, createShadowComponent, withShadowStyles } from '@everything-dies/flesh-cage'
+import { Provider, createShadowComponent, withShadowStyles } from '@everything-dies/flesh-cage'
 ```
 
 Framework-agnostic component macros (currently React-compatible). Includes:
 
-- `SkinProvider` - Context-based skin management
+- `Provider` - Context-based skin management
 - `createShadowComponent` - Factory for shadow components
 - `withShadowStyles` - HOC for wrapping existing components
 - `ShadowRoot` - Component for manual shadow DOM
-- `useSkinContext`, `useShadowStyles` - Hooks
+- `useContext`, `useShadowStyles` - Hooks
 
 ### Core Utilities
 
@@ -87,14 +87,14 @@ Convention-based Vite plugin (future feature - currently placeholder).
 ### ✨ Provider Pattern (No Prop Drilling!)
 
 ```tsx
-<SkinProvider skin="material">
+<Provider skin="material">
   <Button>Uses material</Button>
 
   {/* Nested providers override */}
-  <SkinProvider skin="dark">
+  <Provider skin="dark">
     <Button>Uses dark</Button>
-  </SkinProvider>
-</SkinProvider>
+  </Provider>
+</Provider>
 ```
 
 ### 🎨 Multiple API Flavors
