@@ -7,25 +7,29 @@ This guide documents all configuration points that need updating when adding, re
 When a consumer imports from your package, the resolution goes through multiple configuration layers:
 
 ```mermaid
-Consumer Code
-    ↓
-package.json exports (defines what's publicly available)
-    ↓
-tsup.config.ts (builds the dist files)
-    ↓
-src/[entry]/index.ts (source code)
+flowchart TD
+    A["Consumer Code<br/>import { styled } from '@everything-dies/flesh-cage'"]
+    B["package.json exports<br/>(defines what's publicly available)<br/>'.': { 'import': './dist/index.js' }"]
+    C["tsup.config.ts<br/>(builds the dist files)<br/>entry: { index: 'src/core/index.ts' }"]
+    D["src/core/index.ts<br/>(source code)<br/>export { styled } from './styled'"]
+
+    A --> B
+    B --> C
+    C --> D
 ```
 
 For **local development** (monorepo), there are additional layers:
 
 ```mermaid
-Playground Code
-    ↓
-vite.config.ts aliases (dev-time resolution)
-    ↓
-tsconfig.json paths (TypeScript resolution)
-    ↓
-src/[entry]/index.ts (source code)
+flowchart TD
+    A["Playground Code<br/>import { styled } from '@everything-dies/flesh-cage'"]
+    B["vite.config.ts aliases<br/>(dev-time resolution)<br/>'@everything-dies/flesh-cage': path.resolve(..., 'src/core')"]
+    C["tsconfig.json paths<br/>(TypeScript resolution)<br/>'@everything-dies/flesh-cage': ['./packages/.../src/core']"]
+    D["src/core/index.ts<br/>(source code)<br/>export { styled } from './styled'"]
+
+    A --> B
+    B --> C
+    C --> D
 ```
 
 ---
