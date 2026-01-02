@@ -1,6 +1,6 @@
 {
   "name": "@everything-dies/flesh-cage",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Modern CSS-in-TypeScript with Shadow DOM & Constructable Stylesheets",
   "keywords": [
     "css-in-ts",
