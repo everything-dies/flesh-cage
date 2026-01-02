@@ -23,16 +23,23 @@ yarn add @everything-dies/flesh-cage
 ```
 
 ```tsx
-import { createShadowComponent, Provider } from '@everything-dies/flesh-cage'
+import { styled, Provider } from '@everything-dies/flesh-cage'
 
-// Define component with multiple skins
-const Button = createShadowComponent({
-  name: 'button',
+// Define base component
+const ButtonBase = ({ children }) => (
+  <button part="surface">
+    <span part="label">{children}</span>
+  </button>
+)
+
+// Create shadow component with multiple skins
+export const Button = styled(ButtonBase, {
+  name: 'styled-button',
   skins: {
     material: () => import('./skins/material'),
     brutalist: () => import('./skins/brutalist'),
   },
-  render: ({ children }) => <button part="surface">{children}</button>,
+  exportparts: 'label, surface',
 })
 
 // Use with Provider (no prop drilling!)
@@ -49,38 +56,30 @@ function App() {
 
 This package provides multiple entry points for different use cases:
 
-### Main Export (Component Macros)
+### Main Export (Component API)
 
 ```typescript
-import { Provider, createShadowComponent, withShadowStyles } from '@everything-dies/flesh-cage'
+import { styled, Provider, useContext, useCore } from '@everything-dies/flesh-cage'
 ```
 
-Framework-agnostic component macros (currently React-compatible). Includes:
+React-compatible component API. Includes:
 
+- `styled()` - Create shadow components with skins
 - `Provider` - Context-based skin management
-- `createShadowComponent` - Factory for shadow components
-- `withShadowStyles` - HOC for wrapping existing components
-- `ShadowRoot` - Component for manual shadow DOM
-- `useContext`, `useShadowStyles` - Hooks
+- `useContext()` - Access current skin from context
+- `useCore()` - Low-level hook for custom elements
 
 ### Core Utilities
 
 ```typescript
-import { SheetsCache, createCustomElement } from '@everything-dies/flesh-cage/core'
+import { Sheets } from '@everything-dies/flesh-cage/core'
+import type { SkinLoader, Skins } from '@everything-dies/flesh-cage/core'
 ```
 
-For advanced use cases or framework-agnostic implementations:
+For advanced use cases:
 
-- `SheetsCache` - Manages Constructable StyleSheet lifecycle
-- `createCustomElement` - Utilities for Shadow DOM components
-
-### Vite Plugin
-
-```typescript
-import { shadowComponents } from '@everything-dies/flesh-cage/vite'
-```
-
-Convention-based Vite plugin (future feature - currently placeholder).
+- `Sheets` - Manages CSSStyleSheet loading and caching
+- Type definitions for custom integrations
 
 ## Features
 
@@ -97,36 +96,37 @@ Convention-based Vite plugin (future feature - currently placeholder).
 </Provider>
 ```
 
-### 🎨 Multiple API Flavors
+### 🎨 Core API
 
-**1. createShadowComponent (Factory)**
-
-```tsx
-const Button = createShadowComponent({
-  name: 'button',
-  skins: { material: () => import('./material') },
-  render: ({ children }) => <button>{children}</button>,
-})
-```
-
-**2. withShadowStyles (HOC)**
+**`styled(Component, config)`** - Create shadow components
 
 ```tsx
 const ButtonBase = ({ children }) => <button>{children}</button>
-export const Button = withShadowStyles(ButtonBase, {
-  name: 'button',
+
+export const Button = styled(ButtonBase, {
+  name: 'styled-button',
   skins: { material: () => import('./material') },
+  exportparts: 'label, surface',
 })
 ```
 
-**3. Hooks + ShadowRoot**
+**`Provider`** - Context-based skin management
 
 ```tsx
-export const Button = ({ children }) => (
-  <ShadowRoot name="button" skins={{ material: () => import('./material') }}>
-    <button>{children}</button>
-  </ShadowRoot>
-)
+<Provider skin="material">
+  <Button>Uses material skin</Button>
+</Provider>
+```
+
+**`useContext()`** - Access current skin
+
+```tsx
+import { useContext } from '@everything-dies/flesh-cage'
+
+function MyComponent() {
+  const { skin } = useContext()
+  return <div>Current skin: {skin}</div>
+}
 ```
 
 ### 📊 Performance
@@ -138,11 +138,22 @@ export const Button = ({ children }) => (
 
 ## Documentation
 
+### Essential
+
+- **[Current vs Planned Features](https://github.com/everything-dies/flesh-cage/blob/main/docs/CURRENT_VS_PLANNED.md)** - What's implemented vs planned
+- [Getting Started](https://github.com/everything-dies/flesh-cage/blob/main/GETTING_STARTED.md)
+
+### Design Philosophy
+
 - [Complete Architecture](https://github.com/everything-dies/flesh-cage/blob/main/.idea/design-docs/ARCHITECTURE_COMPLETE.md)
 - [Skins vs Themes Philosophy](https://github.com/everything-dies/flesh-cage/blob/main/.idea/design-docs/SKINS_VS_THEMES_PHILOSOPHY.md)
 - [Attribute-Driven Styling](https://github.com/everything-dies/flesh-cage/blob/main/.idea/design-docs/ATTRIBUTE_DRIVEN_STYLING.md)
 - [Provider Pattern](https://github.com/everything-dies/flesh-cage/blob/main/.idea/design-docs/PROVIDER_PATTERN.md)
 - [Benchmark Results](https://github.com/everything-dies/flesh-cage/blob/main/.idea/design-docs/BENCHMARK_CORRECTION_SUMMARY.md)
+
+### Future Features
+
+- [Proposals](https://github.com/everything-dies/flesh-cage/blob/main/docs/proposals/) - Planned features (not yet implemented)
 
 ## Contributing
 

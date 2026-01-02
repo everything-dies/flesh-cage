@@ -23,16 +23,23 @@ yarn add @everything-dies/flesh-cage
 ```
 
 ```tsx
-import { createShadowComponent, Provider } from '@everything-dies/flesh-cage'
+import { styled, Provider } from '@everything-dies/flesh-cage'
 
-// Define component with multiple skins
-const Button = createShadowComponent({
-  name: 'button',
+// Define base component
+const ButtonBase = ({ children }) => (
+  <button part="surface">
+    <span part="label">{children}</span>
+  </button>
+)
+
+// Create shadow component with multiple skins
+export const Button = styled(ButtonBase, {
+  name: 'styled-button',
   skins: {
     material: () => import('./skins/material'),
     brutalist: () => import('./skins/brutalist'),
   },
-  render: ({ children }) => <button part="surface">{children}</button>,
+  exportparts: 'label, surface',
 })
 
 // Use with Provider (no prop drilling!)
@@ -50,21 +57,21 @@ function App() {
 This is a **single-package library** with multiple entry points:
 
 ```typescript
-// Main export (Component macros) - Most common
-import { Provider, createShadowComponent } from '@everything-dies/flesh-cage'
+// Main export (Component API) - Most common
+import { styled, Provider, useContext } from '@everything-dies/flesh-cage'
 
 // Core utilities (advanced use)
-import { SheetsCache } from '@everything-dies/flesh-cage/core'
+import { Sheets } from '@everything-dies/flesh-cage/core'
 
-// Vite plugin (dev dependency)
-import { shadowComponents } from '@everything-dies/flesh-cage/vite'
+// Type definitions
+import type { SkinLoader, Skins, StyledConfig } from '@everything-dies/flesh-cage'
 ```
 
 **One install, everything included:**
 
-- ✅ Component macros (Provider, createShadowComponent, HOC, hooks)
-- ✅ Core runtime (SheetsCache, custom elements)
-- ✅ Vite plugin (convention-based, zero boilerplate)
+- ✅ Component API (`styled()`, `Provider`, hooks)
+- ✅ Core runtime (`Sheets`, custom elements, Shadow DOM)
+- ✅ TypeScript types (full type safety)
 
 ## Features
 
@@ -81,36 +88,37 @@ import { shadowComponents } from '@everything-dies/flesh-cage/vite'
 </Provider>
 ```
 
-### 🎨 Multiple API Flavors
+### 🎨 Core API
 
-**1. createShadowComponent (Factory)**
-
-```tsx
-const Button = createShadowComponent({
-  name: 'button',
-  skins: { material: () => import('./material') },
-  render: ({ children }) => <button>{children}</button>,
-})
-```
-
-**2. withShadowStyles (HOC)**
+**`styled(Component, config)`** - Create shadow components
 
 ```tsx
 const ButtonBase = ({ children }) => <button>{children}</button>
-export const Button = withShadowStyles(ButtonBase, {
-  name: 'button',
+
+export const Button = styled(ButtonBase, {
+  name: 'styled-button',
   skins: { material: () => import('./material') },
+  exportparts: 'label, surface',
 })
 ```
 
-**3. Hooks + ShadowRoot**
+**`Provider`** - Context-based skin management
 
 ```tsx
-export const Button = ({ children }) => (
-  <ShadowRoot name="button" skins={{ material: () => import('./material') }}>
-    <button>{children}</button>
-  </ShadowRoot>
-)
+<Provider skin="material">
+  <Button>Uses material skin</Button>
+</Provider>
+```
+
+**`useContext()`** - Access current skin
+
+```tsx
+import { useContext } from '@everything-dies/flesh-cage'
+
+function MyComponent() {
+  const { skin } = useContext()
+  return <div>Current skin: {skin}</div>
+}
 ```
 
 ### 📊 Performance
@@ -150,15 +158,25 @@ yarn dev  # Starts Vite on http://localhost:3000
 
 Changes to packages hot-reload instantly - no build step needed!
 
-## Philosophy
+## Documentation
 
-Read the design documentation:
+### Current Features
+
+- **[Current vs Planned Features](./docs/CURRENT_VS_PLANNED.md)** - Clear distinction between implemented and planned features
+- [Getting Started](./GETTING_STARTED.md) - Quick start guide
+- [Verification Checklist](./VERIFICATION.md) - System verification
+
+### Design Philosophy
 
 - [Complete Architecture](./.idea/design-docs/ARCHITECTURE_COMPLETE.md)
 - [Skins vs Themes Philosophy](./.idea/design-docs/SKINS_VS_THEMES_PHILOSOPHY.md)
 - [Attribute-Driven Styling](./.idea/design-docs/ATTRIBUTE_DRIVEN_STYLING.md)
 - [Provider Pattern](./.idea/design-docs/PROVIDER_PATTERN.md)
 - [Benchmark Results](./.idea/design-docs/BENCHMARK_CORRECTION_SUMMARY.md)
+
+### Future Proposals
+
+See [docs/proposals/](./docs/proposals/) for planned features (not yet implemented)
 
 ## Contributing
 
