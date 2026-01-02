@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { use, useLayoutEffect, useRef, useState } from 'react'
 
 import { useContext } from './use-context'
 
@@ -12,7 +12,7 @@ export const useCore = () => {
 
   useLayoutEffect(() => attach(ref.current?.shadowRoot as ShadowRoot), [])
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const element = ref.current as HTMLElement
     const suspend = (event: Event) => {
       const { detail } = event as CustomEvent<Promise<unknown>>
@@ -25,9 +25,15 @@ export const useCore = () => {
     return element.removeEventListener.bind(element, 'suspend', suspend)
   }, [])
 
+  useLayoutEffect(() => {
+    const element = ref.current as HTMLElement
+
+    element.dispatchEvent(new CustomEvent('change', { detail: { skin } }))
+  }, [skin])
+
   if (suspension) {
-    throw suspension
+    use(suspension)
   }
 
-  return { container, ref, skin } as const
+  return { container, ref } as const
 }

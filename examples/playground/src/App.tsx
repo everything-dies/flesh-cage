@@ -1,75 +1,68 @@
-import { type MouseEventHandler, useCallback, useState } from 'react'
+import { type MouseEventHandler, Suspense, useCallback, useState } from 'react'
 import { Provider } from '@everything-dies/flesh-cage'
 
 import { Button } from './components/Button'
-import './App.css'
+import { Counter } from './components/Counter'
 
 type Skins = 'material' | 'brutalist' | 'glassmorphic'
 
 export function App() {
-  const [count, setCount] = useState(0)
   const [skin, setSkin] = useState<Skins>('material')
 
-  const toggleSkin: MouseEventHandler<HTMLButtonElement> = useCallback(
-    ({ currentTarget: { value } }) => setSkin(value as Skins),
+  const toggle: MouseEventHandler<HTMLButtonElement> = useCallback(
+    ({ currentTarget: { value } }) => {
+      setSkin(value as Skins)
+    },
     []
   )
 
-  const decrementCounter = useCallback(() => {
-    setCount((count) => count - 1)
-  }, [])
-
-  const incrementCounter = useCallback(() => {
-    setCount((count) => count + 1)
-  }, [])
-
   return (
-    <div className="App">
-      <h1>Flesh Cage Playground</h1>
+    <Provider skin={skin}>
+      <div>
+        <h1>Flesh Cage Playground</h1>
 
-      <div className="skin-selector">
-        <h2>Select Skin:</h2>
+        <div>
+          <Suspense fallback="Loading style...">
+            <h2>Select Skin:</h2>
 
-        <button onClick={toggleSkin} value="material">
-          Material
-        </button>
+            <Button onClick={toggle} value="material">
+              Material
+            </Button>
 
-        <button onClick={toggleSkin} value="brutalist">
-          Brutalist
-        </button>
+            <Button onClick={toggle} value="brutalist">
+              Brutalist
+            </Button>
 
-        <button onClick={toggleSkin} value="glassmorphic">
-          Glassmorphic
-        </button>
+            <Button onClick={toggle} value="glassmorphic">
+              Glassmorphic
+            </Button>
 
-        <p>
-          Current: <strong>{skin}</strong>
-        </p>
-      </div>
-
-      <Provider skin={skin}>
-        <div className="card">
-          <h2>Test Button with Shadow DOM</h2>
-
-          <Button onClick={incrementCounter}>Count is {count}</Button>
-
-          <p className="hint">Click the button to increment. Change skins to see visual changes.</p>
+            <p>
+              Current: <strong>{skin}</strong>
+            </p>
+          </Suspense>
         </div>
 
-        <div className="nested-example">
-          <h2>Nested Providers Example</h2>
+        <Suspense fallback="Loading style...">
+          <Counter />
+        </Suspense>
 
-          <Button onClick={incrementCounter}>Uses {skin} skin</Button>
+        <Provider skin="brutalist">
+          <div>
+            <h2>Nested Providers Example</h2>
 
-          <Provider skin="brutalist">
             <div>
-              <p>Nested provider (brutalist):</p>
+              <code>
+                <pre>{`<Provider skin="brutalist" />`}</pre>
+              </code>
 
-              <Button onClick={decrementCounter}>Always brutalist (count: {count})</Button>
+              <Button onClick={toggle} value="brutalist">
+                Always brutalist
+              </Button>
             </div>
-          </Provider>
-        </div>
-      </Provider>
-    </div>
+          </div>
+        </Provider>
+      </div>
+    </Provider>
   )
 }

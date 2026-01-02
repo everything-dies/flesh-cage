@@ -1,12 +1,10 @@
 import type { ComponentProps } from 'react'
 import { styled } from '@everything-dies/flesh-cage'
 
-interface ButtonProps extends ComponentProps<'button'> {
-  variant?: 'primary' | 'secondary'
-}
+export type Props = ComponentProps<'button'>
 
-export const ButtonBase = ({ children, variant, ...props }: ButtonProps) => (
-  <button part="surface" data-variant={variant} {...props}>
+export const ButtonBase = ({ children, ...props }: Props) => (
+  <button part="surface" {...props}>
     <span part="label">{children}</span>
   </button>
 )
@@ -17,5 +15,6 @@ export const Button = styled(ButtonBase, {
     glassmorphic: () => import('./skins/glassmorphic'),
     material: () => import('./skins/material'),
   },
+  exportparts: 'label, surface',
   name: 'styled-button',
 })

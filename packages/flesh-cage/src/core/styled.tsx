@@ -1,27 +1,20 @@
 import { createPortal } from 'react-dom'
-import {
-  type ComponentType,
-  type HTMLAttributes,
-  type ReactNode,
-  Suspense,
-  createElement,
-} from 'react'
+import { type ComponentType, type HTMLAttributes, createElement } from 'react'
+
+import type { Skins } from './types'
+import { Sheets } from './sheets'
 import { useCore } from './use-core'
 
-import type { SkinMap } from './types'
-import { Sheets } from './sheets'
-
-export interface StyledConfig<T extends string = string> extends Partial<
+export interface StyledConfig<Names extends string = string> extends Partial<
   HTMLAttributes<HTMLElement>
 > {
-  fallback?: ReactNode
   name: string
-  skins: SkinMap<T>
+  skins: Skins<Names>
 }
 
-export const styled = <Props extends {}, T extends string = string>(
+export const styled = <Props extends {}, Names extends string = string>(
   Component: ComponentType<Props>,
-  { fallback, name, skins, ...attributes }: StyledConfig<T>
+  { name, skins, ...attributes }: StyledConfig<Names>
 ): ComponentType<Props> => {
   const sheets = new Sheets({ skins })
 
@@ -34,64 +27,63 @@ export const styled = <Props extends {}, T extends string = string>(
 
     shadow = this.attachShadow({ mode: 'open' })
 
-    adorn(skin: string) {
+    adorn = (skin: string) => {
       const adopt = (sheet: CSSStyleSheet) =>
         Object.assign(this.shadow, { adoptedStyleSheets: [sheet] })
 
-      return new Promise<CSSStyleSheet>((resolve, reject) =>
-        !sheets.validate(skin) ? reject(new Error('Invalid skin')) : resolve(sheets.get(skin))
-      ).then(adopt)
+      return new Promise<CSSStyleSheet>((resolve, reject) => {
+        return !sheets.validate(skin)
+          ? reject(new Error('Invalid skin'))
+          : resolve(sheets.get(skin))
+      }).then(adopt)
     }
 
     attributeChangedCallback<Attribute extends (typeof CustomElement.observedAttributes)[number]>(
       name: Attribute,
-      current: string,
-      next: string
+      _: string,
+      skin: string
     ) {
       switch (true) {
-        case !current:
-          return
         case name.trim().toLowerCase() === 'skin':
-          return this.suspend(this.adorn(next))
+          return this.suspend(this.adorn(skin))
       }
     }
 
-    connectedCallback() {
-      const skin = (this.getAttribute('skin') ?? '').trim().toLowerCase()
+    change = (event: Event) => {
+      const { detail } = event as CustomEvent<{ skin: string }>
+      const skin = (this.getAttribute('skin') ?? detail.skin ?? '').trim().toLowerCase()
 
       return this.suspend(this.adorn(skin))
     }
 
-    disconnectedCallback() {
-      this.shadow.adoptedStyleSheets = []
+    connectedCallback() {
+      this.addEventListener('change', this.change)
     }
 
-    suspend(promise: Promise<unknown>) {
-      const detail = promise.finally(this.dispatchEvent.bind(this, new CustomEvent('suspend')))
+    disconnectedCallback() {
+      this.shadow.adoptedStyleSheets = []
 
-      return queueMicrotask(this.dispatchEvent.bind(this, new CustomEvent('suspend', { detail })))
+      this.removeEventListener('change', this.change)
+    }
+
+    suspend = (promise: Promise<unknown>) => {
+      const receive = () => this.dispatchEvent(new CustomEvent('suspend'))
+      const detail = promise.finally(receive)
+      const retrieve = () => this.dispatchEvent(new CustomEvent('suspend', { detail }))
+
+      return queueMicrotask(retrieve)
     }
   }
 
   customElements.define(name, CustomElement)
 
-  const Test = (props: Props) => {
+  const Styled = (props: Props) => {
     const { container, ...core } = useCore()
 
     return createElement(
       name,
       { ...attributes, ...core },
       createPortal(<Component {...props} />, container)
-    )
-  }
-
-  // const Lazy = lazy(() => Promise.resolve({ default: Test })) as unknown as ComponentType<Props>
-
-  const Styled = (props: Props) => {
-    return (
-      <Suspense fallback={fallback}>
-        <Test {...props} />
-      </Suspense>
     )
   }
 

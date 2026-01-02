@@ -1,9 +1,16 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react-swc'
+import eslint from 'vite-plugin-eslint2'
 import path from 'path'
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    eslint({
+      lintOnStart: false, // Don't lint all files on server start
+      lintDirtyOnly: true, // Only lint changed files
+    }),
+  ],
 
   resolve: {
     alias: {

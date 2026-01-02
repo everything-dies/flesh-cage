@@ -1,5 +1,5 @@
 import type { ReactNode, ComponentType } from 'react'
-import type { SkinMap } from '../core'
+import type { Skins } from '../core'
 
 /**
  * Configuration for createShadowComponent
@@ -13,7 +13,7 @@ export interface CreateShadowComponentConfig<Props = unknown, SkinNames extends 
   /**
    * Map of skin names to loaders
    */
-  skins: SkinMap<SkinNames>
+  skins: Skins<SkinNames>
 
   /**
    * Default skin to use if none specified in context
@@ -49,7 +49,7 @@ export interface WithShadowStylesConfig<SkinNames extends string = string> {
   /**
    * Map of skin names to loaders
    */
-  skins: SkinMap<SkinNames>
+  skins: Skins<SkinNames>
 
   /**
    * Default skin to use if none specified in context
@@ -80,7 +80,7 @@ export interface ShadowRootProps<SkinNames extends string = string> {
   /**
    * Map of skin names to loaders
    */
-  skins: SkinMap<SkinNames>
+  skins: Skins<SkinNames>
 
   /**
    * Override skin from context

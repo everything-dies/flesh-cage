@@ -1,4 +1,4 @@
-export type { SkinLoader, SkinMap, SheetsCacheOptions, ProviderProps } from './types'
+export type { SkinLoader, Skins, SheetsCacheOptions, ProviderProps } from './types'
 export type { StyledConfig } from './styled'
 export { styled } from './styled'
 export { useCore } from './use-core'

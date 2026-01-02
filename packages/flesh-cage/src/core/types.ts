@@ -12,7 +12,7 @@ export type SkinLoader = () => Promise<{ default: string }>
 /**
  * Map of skin names to their loaders
  */
-export type SkinMap<T extends string = string> = Record<T, SkinLoader>
+export type Skins<T extends string = string> = Record<T, SkinLoader>
 
 /**
  * Props for Provider component
