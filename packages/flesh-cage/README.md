@@ -58,7 +58,11 @@ function App() {
 
 ```typescript
 import { styled, Provider, useContext } from '@everything-dies/flesh-cage'
-import type { SkinLoader, Skins, StyledConfig } from '@everything-dies/flesh-cage'
+import type {
+  SkinLoader,
+  Skins,
+  StyledConfig,
+} from '@everything-dies/flesh-cage'
 ```
 
 **Component API:**

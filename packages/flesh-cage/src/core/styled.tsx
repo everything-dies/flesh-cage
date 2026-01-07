@@ -1,14 +1,23 @@
 import { createPortal } from 'react-dom'
-import { type ComponentType, type PropsWithChildren, createElement } from 'react'
+import {
+  type ComponentType,
+  type PropsWithChildren,
+  createElement,
+} from 'react'
 
 import type { StyledConfig } from './types'
 import { Sheets } from './sheets'
 import { useCore } from './use-core'
 
 export const verify = (error: Error) =>
-  error.name === 'AbortError' ? Promise.resolve(error) : Promise.reject(error)
+  error instanceof DOMException && error.name === 'AbortError'
+    ? Promise.resolve(error)
+    : Promise.reject(error)
 
-export const styled = <Props extends PropsWithChildren, Names extends string = string>(
+export const styled = <
+  Props extends PropsWithChildren,
+  Names extends string = string,
+>(
   Component: ComponentType<Props>,
   { suspendable = false, name, skins, ...attributes }: StyledConfig<Names>
 ): ComponentType<Props> => {
@@ -40,8 +49,8 @@ export const styled = <Props extends PropsWithChildren, Names extends string = s
         .catch(verify)
     }
 
-    attributeChangedCallback<Attribute extends (typeof CustomElement.observedAttributes)[number]>(
-      name: Attribute,
+    attributeChangedCallback(
+      name: (typeof CustomElement.observedAttributes)[number],
       _: string,
       skin: string
     ) {
@@ -53,7 +62,9 @@ export const styled = <Props extends PropsWithChildren, Names extends string = s
 
     change = (event: Event) => {
       const { detail } = event as CustomEvent<{ skin: string }>
-      const skin = (this.getAttribute('skin') ?? detail.skin ?? '').trim().toLowerCase()
+      const skin = (this.getAttribute('skin') ?? detail.skin)
+        .trim()
+        .toLowerCase()
 
       return this.suspend(this.adorn(skin))
     }
@@ -72,7 +83,8 @@ export const styled = <Props extends PropsWithChildren, Names extends string = s
 
     suspend = (promise: Promise<unknown>) => {
       const detail = promise.finally(this.resume)
-      const retrieve = () => this.dispatchEvent(new CustomEvent('suspend', { detail }))
+      const retrieve = () =>
+        this.dispatchEvent(new CustomEvent('suspend', { detail }))
 
       return queueMicrotask(retrieve)
     }

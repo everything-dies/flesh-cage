@@ -1,4 +1,4 @@
-import { use, useLayoutEffect, useRef, useState } from 'react'
+import { startTransition, use, useLayoutEffect, useRef, useState } from 'react'
 
 import { useContext } from './use-context'
 
@@ -10,7 +10,11 @@ export const useCore = ({ suspendable }: { suspendable: boolean }) => {
     document.createDocumentFragment()
   )
 
-  useLayoutEffect(() => attach(ref.current?.shadowRoot as ShadowRoot), [])
+  useLayoutEffect(() => {
+    const transition = () => attach(ref.current?.shadowRoot as ShadowRoot)
+
+    return startTransition(transition)
+  }, [])
 
   useLayoutEffect(() => {
     const element = ref.current as HTMLElement

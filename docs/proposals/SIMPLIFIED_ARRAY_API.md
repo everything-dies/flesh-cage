@@ -174,7 +174,9 @@ export class Sheets<T extends string = string> extends Map<
 
       case 'legacy':
         // Single-chunk promise - convert to generator
-        stream = this.legacyToStream(loader as () => Promise<{ default: string }>)
+        stream = this.legacyToStream(
+          loader as () => Promise<{ default: string }>
+        )
         break
 
       default:
@@ -202,7 +204,11 @@ export class Sheets<T extends string = string> extends Map<
       const result = loader()
 
       // Check if it's an async generator
-      if (result && typeof result === 'object' && Symbol.asyncIterator in result) {
+      if (
+        result &&
+        typeof result === 'object' &&
+        Symbol.asyncIterator in result
+      ) {
         return 'generator'
       }
 
@@ -383,7 +389,10 @@ export const material = defineSkin({
 export const Button = styled(ButtonBase, {
   skins: {
     // Mode 1: Array (simplest!)
-    material: [() => import('./material/critical'), () => import('./material/animations')],
+    material: [
+      () => import('./material/critical'),
+      () => import('./material/animations'),
+    ],
 
     // Mode 2: Async generator (manual control)
     glassmorphic: async function* () {
@@ -532,7 +541,10 @@ export const invalid = [
 
 ```typescript
 // Consumer code (simple!)
-export const material = [() => import('./critical'), () => import('./animations')]
+export const material = [
+  () => import('./critical'),
+  () => import('./animations'),
+]
 ```
 
 **Pros**:
@@ -607,7 +619,10 @@ export default `[part="surface"] { background: blue; }`
 export default `[part="surface"]:hover { background: darkblue; }`
 
 // material.ts
-export const material = [() => import('./material/critical'), () => import('./material/animations')]
+export const material = [
+  () => import('./material/critical'),
+  () => import('./material/animations'),
+]
 
 // Button/index.tsx
 import { material } from './skins/material'
@@ -634,7 +649,10 @@ skins: {
 **After** (1 minute):
 
 ```typescript
-export const material = [() => import('./critical'), () => import('./animations')]
+export const material = [
+  () => import('./critical'),
+  () => import('./animations'),
+]
 
 skins: {
   material
@@ -703,7 +721,10 @@ export const material = [
 export default `/* all css */`
 
 // Output: material.skin.stream.ts (auto-generated)
-export const material = [() => import('./material.critical'), () => import('./material.animations')]
+export const material = [
+  () => import('./material.critical'),
+  () => import('./material.animations'),
+]
 ```
 
 ---
@@ -713,7 +734,10 @@ export const material = [() => import('./material.critical'), () => import('./ma
 **For library consumers** (simplest):
 
 ```typescript
-export const material = [() => import('./critical'), () => import('./animations')]
+export const material = [
+  () => import('./critical'),
+  () => import('./animations'),
+]
 ```
 
 **For library authors** (with metadata):

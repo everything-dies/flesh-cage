@@ -52,9 +52,11 @@ if (import.meta.hot) {
     sheetsInstance.invalidate(skinName)
 
     // 4. Update all active custom elements
-    document.querySelectorAll('styled-button[skin="material"]').forEach((el) => {
-      el.shadowRoot.adoptedStyleSheets = [newSheet]
-    })
+    document
+      .querySelectorAll('styled-button[skin="material"]')
+      .forEach((el) => {
+        el.shadowRoot.adoptedStyleSheets = [newSheet]
+      })
   })
 }
 ```

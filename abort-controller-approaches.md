@@ -50,14 +50,14 @@ class CustomElement extends HTMLElement {
       invalid ? reject(new Error('Invalid skin')) : resolve(sheets.get(skin))
     )
       .then(adopt)
-      .catch((error) => (error.name === 'AbortError' ? undefined : Promise.reject(error)))
+      .catch((error) =>
+        error.name === 'AbortError' ? undefined : Promise.reject(error)
+      )
   }
 
-  attributeChangedCallback<Attribute extends (typeof CustomElement.observedAttributes)[number]>(
-    name: Attribute,
-    _: string,
-    skin: string
-  ) {
+  attributeChangedCallback<
+    Attribute extends (typeof CustomElement.observedAttributes)[number],
+  >(name: Attribute, _: string, skin: string) {
     switch (true) {
       case name.trim().toLowerCase() === 'skin':
         return this.suspend(this.adorn(skin))
@@ -66,7 +66,9 @@ class CustomElement extends HTMLElement {
 
   change = (event: Event) => {
     const { detail } = event as CustomEvent<{ skin: string }>
-    const skin = (this.getAttribute('skin') ?? detail.skin ?? '').trim().toLowerCase()
+    const skin = (this.getAttribute('skin') ?? detail.skin ?? '')
+      .trim()
+      .toLowerCase()
 
     return this.suspend(this.adorn(skin))
   }
@@ -85,7 +87,8 @@ class CustomElement extends HTMLElement {
 
   suspend = (promise: Promise<unknown>) => {
     const detail = promise.finally(this.resume)
-    const retrieve = () => this.dispatchEvent(new CustomEvent('suspend', { detail }))
+    const retrieve = () =>
+      this.dispatchEvent(new CustomEvent('suspend', { detail }))
 
     return queueMicrotask(retrieve)
   }
@@ -185,15 +188,25 @@ export class Sheets<Names extends string = string> extends Map<
     return !!skin && Object.prototype.hasOwnProperty.call(this.#skins, skin)
   }
 
-  override get(skin: Names, signal?: AbortSignal): CSSStyleSheet | Promise<CSSStyleSheet> {
+  override get(
+    skin: Names,
+    signal?: AbortSignal
+  ): CSSStyleSheet | Promise<CSSStyleSheet> {
     return super.get(skin) || this.load(skin, signal)
   }
 
   load(skin: Names, signal?: AbortSignal): Promise<CSSStyleSheet> {
     const { [skin]: load } = this.#skins
     const promise = load(signal)
-      .then(({ default: style }) => (signal?.throwIfAborted(), new CSSStyleSheet().replace(style)))
-      .then((sheet) => (signal?.throwIfAborted(), super.set(skin, sheet), sheet))
+      .then(
+        ({ default: style }) => (
+          signal?.throwIfAborted(),
+          new CSSStyleSheet().replace(style)
+        )
+      )
+      .then(
+        (sheet) => (signal?.throwIfAborted(), super.set(skin, sheet), sheet)
+      )
 
     super.set(skin, promise)
 
@@ -238,17 +251,19 @@ export const styled = <Props extends {}, Names extends string = string>(
         Object.assign(this.shadow, { adoptedStyleSheets: [sheet] })
 
       return new Promise<CSSStyleSheet>((resolve, reject) =>
-        invalid ? reject(new Error('Invalid skin')) : resolve(sheets.get(skin, signal))
+        invalid
+          ? reject(new Error('Invalid skin'))
+          : resolve(sheets.get(skin, signal))
       )
         .then(adopt)
-        .catch((error) => (error.name === 'AbortError' ? undefined : Promise.reject(error)))
+        .catch((error) =>
+          error.name === 'AbortError' ? undefined : Promise.reject(error)
+        )
     }
 
-    attributeChangedCallback<Attribute extends (typeof CustomElement.observedAttributes)[number]>(
-      name: Attribute,
-      _: string,
-      skin: string
-    ) {
+    attributeChangedCallback<
+      Attribute extends (typeof CustomElement.observedAttributes)[number],
+    >(name: Attribute, _: string, skin: string) {
       switch (true) {
         case name.trim().toLowerCase() === 'skin':
           return this.suspend(this.adorn(skin))
@@ -257,7 +272,9 @@ export const styled = <Props extends {}, Names extends string = string>(
 
     change = (event: Event) => {
       const { detail } = event as CustomEvent<{ skin: string }>
-      const skin = (this.getAttribute('skin') ?? detail.skin ?? '').trim().toLowerCase()
+      const skin = (this.getAttribute('skin') ?? detail.skin ?? '')
+        .trim()
+        .toLowerCase()
 
       return this.suspend(this.adorn(skin))
     }
@@ -276,7 +293,8 @@ export const styled = <Props extends {}, Names extends string = string>(
 
     suspend = (promise: Promise<unknown>) => {
       const detail = promise.finally(this.resume)
-      const retrieve = () => this.dispatchEvent(new CustomEvent('suspend', { detail }))
+      const retrieve = () =>
+        this.dispatchEvent(new CustomEvent('suspend', { detail }))
 
       return queueMicrotask(retrieve)
     }
@@ -368,11 +386,9 @@ export const styled = <Props extends {}, Names extends string = string>(
       ).then(adopt)
     }
 
-    attributeChangedCallback<Attribute extends (typeof CustomElement.observedAttributes)[number]>(
-      name: Attribute,
-      _: string,
-      skin: string
-    ) {
+    attributeChangedCallback<
+      Attribute extends (typeof CustomElement.observedAttributes)[number],
+    >(name: Attribute, _: string, skin: string) {
       switch (true) {
         case name.trim().toLowerCase() === 'skin':
           return this.suspend(this.adorn(skin))
@@ -381,7 +397,9 @@ export const styled = <Props extends {}, Names extends string = string>(
 
     change = (event: Event) => {
       const { detail } = event as CustomEvent<{ skin: string }>
-      const skin = (this.getAttribute('skin') ?? detail.skin ?? '').trim().toLowerCase()
+      const skin = (this.getAttribute('skin') ?? detail.skin ?? '')
+        .trim()
+        .toLowerCase()
 
       return this.suspend(this.adorn(skin))
     }
@@ -400,7 +418,8 @@ export const styled = <Props extends {}, Names extends string = string>(
 
     suspend = (promise: Promise<unknown>) => {
       const detail = promise.finally(this.resume)
-      const retrieve = () => this.dispatchEvent(new CustomEvent('suspend', { detail }))
+      const retrieve = () =>
+        this.dispatchEvent(new CustomEvent('suspend', { detail }))
 
       return queueMicrotask(retrieve)
     }

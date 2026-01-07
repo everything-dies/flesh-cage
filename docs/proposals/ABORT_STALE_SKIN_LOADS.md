@@ -145,9 +145,9 @@ export class Sheets<T extends string = string> extends Map<
           break
 
         case 'generator':
-          stream = (loader as (signal?: AbortSignal) => AsyncGenerator<SkinChunk>)(
-            controller.signal
-          )
+          stream = (
+            loader as (signal?: AbortSignal) => AsyncGenerator<SkinChunk>
+          )(controller.signal)
           break
 
         case 'legacy':
@@ -219,7 +219,11 @@ export class Sheets<T extends string = string> extends Map<
     if (typeof loader === 'function') {
       const result = loader()
 
-      if (result && typeof result === 'object' && Symbol.asyncIterator in result) {
+      if (
+        result &&
+        typeof result === 'object' &&
+        Symbol.asyncIterator in result
+      ) {
         return 'generator'
       }
 
@@ -550,7 +554,9 @@ export interface SkinChunk {
 export type SkinLoader = () => Promise<{ default: string }>
 
 // Streaming loader with optional abort signal
-export type SkinStreamLoader = (signal?: AbortSignal) => AsyncGenerator<SkinChunk, void, unknown>
+export type SkinStreamLoader = (
+  signal?: AbortSignal
+) => AsyncGenerator<SkinChunk, void, unknown>
 
 // Array-based loader
 export type SkinArrayLoader = SkinChunkArray
@@ -976,7 +982,10 @@ test('can manually abort loads', async () => {
    ```typescript
    // ❌ Bad: Sharing controller between multiple operations
    const controller = new AbortController()
-   Promise.all([loadCritical(controller.signal), loadAnimations(controller.signal)])
+   Promise.all([
+     loadCritical(controller.signal),
+     loadAnimations(controller.signal),
+   ])
    controller.abort() // Aborts both!
 
    // ✅ Good: Separate controllers or linked signals

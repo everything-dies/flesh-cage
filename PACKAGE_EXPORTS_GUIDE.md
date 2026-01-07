@@ -195,7 +195,9 @@ import fleshCagePlugin from '@everything-dies/flesh-cage/vite'
     "baseUrl": ".",
     "paths": {
       "@everything-dies/flesh-cage": ["./packages/flesh-cage/src/core"],
-      "@everything-dies/flesh-cage/macros": ["./packages/flesh-cage/src/macros"],
+      "@everything-dies/flesh-cage/macros": [
+        "./packages/flesh-cage/src/macros"
+      ],
       "@everything-dies/flesh-cage/vite": ["./packages/flesh-cage/src/vite"]
     }
   }
@@ -237,7 +239,9 @@ import fleshCagePlugin from '@everything-dies/flesh-cage/vite'
     "baseUrl": ".",
     "paths": {
       "@everything-dies/flesh-cage": ["../../packages/flesh-cage/src/core"],
-      "@everything-dies/flesh-cage/macros": ["../../packages/flesh-cage/src/macros"],
+      "@everything-dies/flesh-cage/macros": [
+        "../../packages/flesh-cage/src/macros"
+      ],
       "@everything-dies/flesh-cage/vite": ["../../packages/flesh-cage/src/vite"]
     }
   }
@@ -264,7 +268,10 @@ import path from 'path'
 export default defineConfig({
   resolve: {
     alias: {
-      '@everything-dies/flesh-cage': path.resolve(__dirname, '../../packages/flesh-cage/src/core'),
+      '@everything-dies/flesh-cage': path.resolve(
+        __dirname,
+        '../../packages/flesh-cage/src/core'
+      ),
     },
   },
 })
@@ -278,7 +285,10 @@ import path from 'path'
 export default defineConfig({
   resolve: {
     alias: {
-      '@everything-dies/flesh-cage': path.resolve(__dirname, '../../packages/flesh-cage/src/core'),
+      '@everything-dies/flesh-cage': path.resolve(
+        __dirname,
+        '../../packages/flesh-cage/src/core'
+      ),
       '@everything-dies/flesh-cage/macros': path.resolve(
         __dirname,
         '../../packages/flesh-cage/src/macros'
@@ -370,7 +380,9 @@ export default defineConfig({
 {
   "paths": {
     "@everything-dies/flesh-cage": ["../../packages/flesh-cage/src/core"],
-    "@everything-dies/flesh-cage/macros": ["../../packages/flesh-cage/src/macros"] // ← ADD THIS
+    "@everything-dies/flesh-cage/macros": [
+      "../../packages/flesh-cage/src/macros"
+    ] // ← ADD THIS
   }
 }
 ```
@@ -382,7 +394,10 @@ export default defineConfig({
 export default defineConfig({
   resolve: {
     alias: {
-      '@everything-dies/flesh-cage': path.resolve(__dirname, '../../packages/flesh-cage/src/core'),
+      '@everything-dies/flesh-cage': path.resolve(
+        __dirname,
+        '../../packages/flesh-cage/src/core'
+      ),
       '@everything-dies/flesh-cage/macros': path.resolve(
         __dirname,
         '../../packages/flesh-cage/src/macros'
@@ -475,7 +490,10 @@ export default defineConfig({
 export default defineConfig({
   resolve: {
     alias: {
-      '@everything-dies/flesh-cage': path.resolve(__dirname, '../../packages/flesh-cage/src/core'),
+      '@everything-dies/flesh-cage': path.resolve(
+        __dirname,
+        '../../packages/flesh-cage/src/core'
+      ),
       // '@everything-dies/flesh-cage/macros': ... // ← REMOVE THIS
     },
   },

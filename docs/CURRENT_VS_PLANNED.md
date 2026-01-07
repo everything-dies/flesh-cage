@@ -119,7 +119,11 @@ export const Button = styled(ButtonBase, {
 ### Type System
 
 ```typescript
-import type { SkinLoader, Skins, StyledConfig } from '@everything-dies/flesh-cage'
+import type {
+  SkinLoader,
+  Skins,
+  StyledConfig,
+} from '@everything-dies/flesh-cage'
 
 // SkinLoader = () => Promise<{ default: string }>
 // Skins<T> = Record<T, SkinLoader>

@@ -14,7 +14,8 @@ export const Button = styled(ButtonBase, {
     brutalist: () => import('./skins/brutalist'),
     glassmorphic: () =>
       import('./skins/glassmorphic').then(
-        (module) => new Promise((resolve) => window.setTimeout(resolve, 2_500, module))
+        (module) =>
+          new Promise((resolve) => window.setTimeout(resolve, 2_500, module))
       ),
     material: () => import('./skins/material'),
   },

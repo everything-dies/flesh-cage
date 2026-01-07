@@ -61,7 +61,11 @@ This is a **single-package library** focused on the core component API:
 import { styled, Provider, useContext } from '@everything-dies/flesh-cage'
 
 // Type definitions
-import type { SkinLoader, Skins, StyledConfig } from '@everything-dies/flesh-cage'
+import type {
+  SkinLoader,
+  Skins,
+  StyledConfig,
+} from '@everything-dies/flesh-cage'
 ```
 
 **One install, everything included:**

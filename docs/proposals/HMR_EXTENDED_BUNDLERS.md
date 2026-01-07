@@ -235,7 +235,10 @@ export function detectBundler(): BundlerType {
     }
 
     // Rspack (checks for specific global)
-    if (typeof __webpack_require__ !== 'undefined' && typeof __rspack_version__ !== 'undefined') {
+    if (
+      typeof __webpack_require__ !== 'undefined' &&
+      typeof __rspack_version__ !== 'undefined'
+    ) {
       return 'rspack'
     }
 
@@ -253,7 +256,9 @@ export function detectBundler(): BundlerType {
 }
 
 // Normalize into API families for easier handling
-export function getHMRFamily(bundler: BundlerType): 'esm' | 'commonjs' | 'custom' | 'none' {
+export function getHMRFamily(
+  bundler: BundlerType
+): 'esm' | 'commonjs' | 'custom' | 'none' {
   switch (bundler) {
     case 'vite':
     case 'farm':

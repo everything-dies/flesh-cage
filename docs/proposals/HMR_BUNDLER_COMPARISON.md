@@ -285,7 +285,10 @@ export function FleshCageHMRPlugin() {
 // Document that esbuild requires full reload
 
 // packages/flesh-cage/src/core/hmr.ts
-export function setupHMR(skinName: string, updateCallback: (css: string) => void) {
+export function setupHMR(
+  skinName: string,
+  updateCallback: (css: string) => void
+) {
   // Vite (native)
   if (import.meta.hot) {
     import.meta.hot.accept((newModule) => {

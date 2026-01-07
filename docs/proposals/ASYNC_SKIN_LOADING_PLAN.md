@@ -286,8 +286,16 @@ export function chunkSkinsPlugin() {
 
       const ast = parseCss(code)
       const chunks = {
-        critical: extractSelectors(ast, ['[part]', ':not(:hover)', ':not(:active)']),
-        animations: extractSelectors(ast, ['transition', 'animation', 'transform']),
+        critical: extractSelectors(ast, [
+          '[part]',
+          ':not(:hover)',
+          ':not(:active)',
+        ]),
+        animations: extractSelectors(ast, [
+          'transition',
+          'animation',
+          'transform',
+        ]),
         responsive: extractMediaQueries(ast),
         variants: extractSelectors(ast, ['[data-variant]']),
       }
@@ -381,12 +389,18 @@ export class Sheets<T extends string = string> extends Map<
 
     if (Symbol.asyncIterator in result) {
       // Streaming mode
-      const promise = this.loadStreamed(result as AsyncGenerator<SkinChunk>, sheets)
+      const promise = this.loadStreamed(
+        result as AsyncGenerator<SkinChunk>,
+        sheets
+      )
       super.set(skin, promise)
       return promise
     } else {
       // Legacy mode (single chunk)
-      const promise = this.loadLegacy(result as Promise<{ default: string }>, sheets)
+      const promise = this.loadLegacy(
+        result as Promise<{ default: string }>,
+        sheets
+      )
       super.set(skin, promise)
       return promise
     }
