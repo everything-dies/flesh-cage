@@ -10,17 +10,14 @@ export const useCore = ({ suspendable }: { suspendable: boolean }) => {
     document.createDocumentFragment()
   )
 
-  useLayoutEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    attach(ref.current?.shadowRoot as ShadowRoot)
-  }, [])
+  useLayoutEffect(() => attach(ref.current?.shadowRoot as ShadowRoot), [])
 
   useLayoutEffect(() => {
     const element = ref.current as HTMLElement
     const suspend = (event: Event) => {
       const { detail } = event as CustomEvent<Promise<unknown>>
 
-      persist(detail)
+      return persist(detail)
     }
 
     element.addEventListener('suspend', suspend)

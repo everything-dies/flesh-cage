@@ -8,7 +8,7 @@ import { useCore } from './use-core'
 export const verify = (error: Error) =>
   error.name === 'AbortError' ? void error : Promise.reject(error)
 
-export const styled = <Props extends Record<string, unknown>, Names extends string = string>(
+export const styled = <Props extends {}, Names extends string = string>(
   Component: ComponentType<Props>,
   { suspendable = false, name, skins, ...attributes }: StyledConfig<Names>
 ): ComponentType<Props> => {
@@ -16,6 +16,10 @@ export const styled = <Props extends Record<string, unknown>, Names extends stri
 
   class CustomElement extends HTMLElement {
     static observedAttributes = ['skin'] as const
+
+    constructor() {
+      super()
+    }
 
     controller = new AbortController()
 
@@ -33,29 +37,29 @@ export const styled = <Props extends Record<string, unknown>, Names extends stri
 
       previous.abort()
 
-      return new Promise<CSSStyleSheet>((resolve, reject) => {
-        if (invalid) {
-          reject(new Error('Invalid skin'))
-        } else {
-          resolve(sheets.get(skin))
-        }
-      })
+      return new Promise<CSSStyleSheet>((resolve, reject) =>
+        invalid ? reject(new Error('Invalid skin')) : resolve(sheets.get(skin))
+      )
         .then(adopt)
         .catch(verify)
     }
 
-    attributeChangedCallback(name: string, _: string, skin: string) {
+    attributeChangedCallback<Attribute extends (typeof CustomElement.observedAttributes)[number]>(
+      name: Attribute,
+      _: string,
+      skin: string
+    ) {
       switch (true) {
         case name.trim().toLowerCase() === 'skin':
-          this.suspend(this.adorn(skin))
+          return this.suspend(this.adorn(skin))
       }
     }
 
     change = (event: Event) => {
       const { detail } = event as CustomEvent<{ skin: string }>
-      const skin = (this.getAttribute('skin') ?? detail.skin).trim().toLowerCase()
+      const skin = (this.getAttribute('skin') ?? detail.skin ?? '').trim().toLowerCase()
 
-      this.suspend(this.adorn(skin))
+      return this.suspend(this.adorn(skin))
     }
 
     connectedCallback() {
@@ -74,7 +78,7 @@ export const styled = <Props extends Record<string, unknown>, Names extends stri
       const detail = promise.finally(this.resume)
       const retrieve = () => this.dispatchEvent(new CustomEvent('suspend', { detail }))
 
-      queueMicrotask(retrieve)
+      return queueMicrotask(retrieve)
     }
   }
 
