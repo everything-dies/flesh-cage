@@ -14,10 +14,7 @@ export default defineConfig({
 
   resolve: {
     alias: {
-      '@everything-dies/flesh-cage': path.resolve(
-        __dirname,
-        '../../packages/flesh-cage/src/core'
-      ),
+      '@everything-dies/flesh-cage': path.resolve(__dirname, '../../packages/flesh-cage/src/core'),
     },
   },
 

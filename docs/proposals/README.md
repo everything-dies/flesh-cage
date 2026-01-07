@@ -3,6 +3,7 @@
 This directory contains **planning documents** for future features that are **not yet implemented**.
 
 These documents represent design explorations and architectural proposals. They are useful for:
+
 - Understanding the long-term vision for the library
 - Discussing potential features before implementation
 - Reference material for future development work
@@ -12,6 +13,7 @@ These documents represent design explorations and architectural proposals. They 
 ⚠️ **None of these features are currently implemented in the codebase.**
 
 For current, working features, see:
+
 - [Root README](../../README.md) - Current API and features
 - [Package README](../../packages/flesh-cage/README.md) - Package documentation
 - [CURRENT_VS_PLANNED.md](../CURRENT_VS_PLANNED.md) - Clear comparison
@@ -47,6 +49,7 @@ To propose a new feature:
 ## Timeline
 
 These proposals have no set timeline for implementation. They represent exploratory work and may be implemented, modified, or discarded based on:
+
 - User feedback
 - Technical constraints
 - Priority shifts

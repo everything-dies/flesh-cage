@@ -7,16 +7,16 @@ Instead of writing async generators manually, consumers just provide an array:
 ```typescript
 // Consumer writes this (simple!)
 export const materialSkin = [
-  () => import('./critical'),      // Dynamic import (lazy)
-  () => import('./animations'),    // Dynamic import (lazy)
-  () => import('./variants'),      // Dynamic import (lazy)
+  () => import('./critical'), // Dynamic import (lazy)
+  () => import('./animations'), // Dynamic import (lazy)
+  () => import('./variants'), // Dynamic import (lazy)
 ]
 
 // Or even simpler - direct imports/strings
 export const brutalistSkin = [
-  import('./critical'),             // Promise (eager)
-  'inline css here',                // String (inline)
-  () => import('./animations'),     // Function (lazy)
+  import('./critical'), // Promise (eager)
+  'inline css here', // String (inline)
+  () => import('./animations'), // Function (lazy)
 ]
 ```
 
@@ -37,11 +37,11 @@ import type { SkinChunk } from './types'
  * Supported chunk types in the array
  */
 export type SkinChunkInput =
-  | string                                           // Inline CSS
-  | Promise<{ default: string }>                     // Eager import
-  | (() => Promise<{ default: string }>)             // Lazy import (recommended)
-  | { default: string }                              // Already resolved module
-  | SkinChunk                                        // Full chunk object
+  | string // Inline CSS
+  | Promise<{ default: string }> // Eager import
+  | (() => Promise<{ default: string }>) // Lazy import (recommended)
+  | { default: string } // Already resolved module
+  | SkinChunk // Full chunk object
 
 /**
  * Array of skin chunks (consumer-facing API)
@@ -118,9 +118,9 @@ export type SkinArrayLoader = SkinChunkArray
 
 // Unified type supporting all 3 modes
 export type UnifiedSkinLoader =
-  | SkinLoader           // () => import('./skin')
-  | SkinStreamLoader     // async generator function
-  | SkinArrayLoader      // [import(...), import(...)]
+  | SkinLoader // () => import('./skin')
+  | SkinStreamLoader // async generator function
+  | SkinArrayLoader // [import(...), import(...)]
 
 export type Skins<T extends string = string> = Record<T, UnifiedSkinLoader>
 ```
@@ -190,9 +190,7 @@ export class Sheets<T extends string = string> extends Map<
   /**
    * Detect what type of loader was provided
    */
-  private detectLoaderType(
-    loader: any
-  ): 'array' | 'generator' | 'legacy' {
+  private detectLoaderType(loader: any): 'array' | 'generator' | 'legacy' {
     // Check if it's an array
     if (Array.isArray(loader)) {
       return 'array'
@@ -220,14 +218,14 @@ export class Sheets<T extends string = string> extends Map<
   /**
    * Convert legacy single-chunk loader to stream
    */
-  private async* legacyToStream(
+  private async *legacyToStream(
     loader: () => Promise<{ default: string }>
   ): AsyncGenerator<SkinChunk> {
     const { default: css } = await loader()
     yield {
       name: 'legacy',
       priority: 'critical',
-      css
+      css,
     }
   }
 
@@ -256,9 +254,11 @@ export class Sheets<T extends string = string> extends Map<
    */
   private dispatchUpdate(sheets: CSSStyleSheet[]) {
     if (typeof window !== 'undefined') {
-      window.dispatchEvent(new CustomEvent('skin-chunk-loaded', {
-        detail: { sheets }
-      }))
+      window.dispatchEvent(
+        new CustomEvent('skin-chunk-loaded', {
+          detail: { sheets },
+        })
+      )
     }
   }
 }
@@ -271,6 +271,7 @@ export class Sheets<T extends string = string> extends Map<
 ### Example 1: Simple Array (Recommended)
 
 **Button/skins/material.ts**:
+
 ```typescript
 // Super simple - just export an array!
 export const material = [
@@ -281,6 +282,7 @@ export const material = [
 ```
 
 **Button/index.tsx**:
+
 ```typescript
 import { styled } from 'flesh-cage'
 import { ButtonBase } from './ButtonBase'
@@ -288,9 +290,9 @@ import { material } from './skins/material'
 
 export const Button = styled(ButtonBase, {
   skins: {
-    material,  // Just pass the array!
+    material, // Just pass the array!
   },
-  name: 'styled-button'
+  name: 'styled-button',
 })
 ```
 
@@ -321,8 +323,8 @@ export const customSkin = [
       @media (max-width: 768px) {
         [part="surface"] { padding: 8px; }
       }
-    `
-  }
+    `,
+  },
 ]
 ```
 
@@ -331,6 +333,7 @@ export const customSkin = [
 Create a helper for better control:
 
 **packages/flesh-cage/src/core/define-skin.ts**:
+
 ```typescript
 import type { SkinChunkArray } from './create-skin-stream'
 
@@ -346,12 +349,12 @@ export interface SkinDefinition {
 export function defineSkin(definition: SkinDefinition): SkinChunkArray {
   // Store metadata on the array for later use
   const chunks = definition.chunks as SkinChunkArray & {
-    __meta?: { names?: string[], priority?: ('critical' | 'high' | 'low')[] }
+    __meta?: { names?: string[]; priority?: ('critical' | 'high' | 'low')[] }
   }
 
   chunks.__meta = {
     names: definition.names,
-    priority: definition.priority
+    priority: definition.priority,
   }
 
   return chunks
@@ -359,6 +362,7 @@ export function defineSkin(definition: SkinDefinition): SkinChunkArray {
 ```
 
 **Usage**:
+
 ```typescript
 import { defineSkin } from 'flesh-cage'
 
@@ -369,7 +373,7 @@ export const material = defineSkin({
     () => import('./material/variants'),
   ],
   names: ['critical', 'animations', 'variants'],
-  priority: ['critical', 'high', 'low']
+  priority: ['critical', 'high', 'low'],
 })
 ```
 
@@ -379,29 +383,26 @@ export const material = defineSkin({
 export const Button = styled(ButtonBase, {
   skins: {
     // Mode 1: Array (simplest!)
-    material: [
-      () => import('./material/critical'),
-      () => import('./material/animations'),
-    ],
+    material: [() => import('./material/critical'), () => import('./material/animations')],
 
     // Mode 2: Async generator (manual control)
     glassmorphic: async function* () {
       yield {
         name: 'critical',
         priority: 'critical',
-        css: (await import('./glass/critical')).default
+        css: (await import('./glass/critical')).default,
       }
       yield {
         name: 'effects',
         priority: 'high',
-        css: (await import('./glass/effects')).default
+        css: (await import('./glass/effects')).default,
       }
     },
 
     // Mode 3: Legacy single-chunk (backwards compatible)
     brutalist: () => import('./skins/brutalist'),
   },
-  name: 'styled-button'
+  name: 'styled-button',
 })
 ```
 
@@ -413,18 +414,19 @@ For critical CSS that must be inline in the main bundle:
 
 ```typescript
 // Import at top of file (bundled immediately)
-import criticalCSS from './critical?raw'  // Vite's raw import
+import criticalCSS from './critical?raw' // Vite's raw import
 import animationsPromise from './animations'
 
 // Export as array (mix static and dynamic)
 export const material = [
-  criticalCSS,              // String (already in bundle)
-  animationsPromise,        // Promise (loads async)
+  criticalCSS, // String (already in bundle)
+  animationsPromise, // Promise (loads async)
   () => import('./variants'), // Lazy (loads on demand)
 ]
 ```
 
 This gives you maximum flexibility:
+
 - Critical CSS: Static import (bundled, instant)
 - Animations: Eager import (starts loading immediately)
 - Variants: Lazy import (loads only when needed)
@@ -434,6 +436,7 @@ This gives you maximum flexibility:
 ## Type Safety
 
 **Full type inference**:
+
 ```typescript
 import type { SkinChunkArray } from 'flesh-cage'
 
@@ -447,15 +450,16 @@ export const material: SkinChunkArray = [
 // Autocomplete and error checking works!
 export const Button = styled(ButtonBase, {
   skins: {
-    material,  // ✅ Type-safe
-  }
+    material, // ✅ Type-safe
+  },
 })
 ```
 
 **Invalid types are caught**:
+
 ```typescript
 export const invalid = [
-  123,  // ❌ Error: number is not assignable to SkinChunkInput
+  123, // ❌ Error: number is not assignable to SkinChunkInput
   null, // ❌ Error: null is not assignable to SkinChunkInput
 ]
 ```
@@ -465,30 +469,34 @@ export const invalid = [
 ## Performance Comparison
 
 ### Array API (Lazy Imports)
+
 ```typescript
-[
-  () => import('./critical'),    // Chunk 1: 4 KB
-  () => import('./animations'),  // Chunk 2: 2 KB
-  () => import('./variants'),    // Chunk 3: 1 KB
+;[
+  () => import('./critical'), // Chunk 1: 4 KB
+  () => import('./animations'), // Chunk 2: 2 KB
+  () => import('./variants'), // Chunk 3: 1 KB
 ]
 ```
 
 **Timeline**:
+
 - 0ms: Component mounts
 - 50ms: Chunk 1 loads → renders with critical styles ✅
 - 100ms: Chunk 2 loads → animations enabled
 - 120ms: Chunk 3 loads → variants available
 
 ### Array API (Eager Imports)
+
 ```typescript
-[
-  import('./critical'),    // Starts loading immediately
-  import('./animations'),  // Starts loading immediately
-  import('./variants'),    // Starts loading immediately
+;[
+  import('./critical'), // Starts loading immediately
+  import('./animations'), // Starts loading immediately
+  import('./variants'), // Starts loading immediately
 ]
 ```
 
 **Timeline**:
+
 - 0ms: All chunks start loading in parallel
 - 50ms: Chunk 1 completes → yields first
 - 75ms: Chunk 2 completes → yields second
@@ -497,15 +505,17 @@ export const invalid = [
 **Trade-off**: Eager loads all chunks (slightly more bandwidth), but critical chunk still applies first.
 
 ### Array API (Mixed)
+
 ```typescript
-[
-  'inline critical css',         // Instant (0ms)
-  import('./animations'),        // Eager (starts at 0ms)
-  () => import('./variants'),    // Lazy (starts when generator reaches it)
+;[
+  'inline critical css', // Instant (0ms)
+  import('./animations'), // Eager (starts at 0ms)
+  () => import('./variants'), // Lazy (starts when generator reaches it)
 ]
 ```
 
 **Timeline**:
+
 - 0ms: Inline CSS yields immediately → instant render ✅
 - 0ms: Animations start loading (parallel)
 - 50ms: Animations load → yields
@@ -522,13 +532,11 @@ export const invalid = [
 
 ```typescript
 // Consumer code (simple!)
-export const material = [
-  () => import('./critical'),
-  () => import('./animations'),
-]
+export const material = [() => import('./critical'), () => import('./animations')]
 ```
 
 **Pros**:
+
 - ✅ Simple syntax (just an array)
 - ✅ No need to understand generators
 - ✅ Easy to read and maintain
@@ -536,6 +544,7 @@ export const material = [
 - ✅ Supports inline CSS
 
 **Cons**:
+
 - ❌ Less control over timing
 - ❌ Can't add logic between chunks
 
@@ -554,11 +563,13 @@ export async function* streamMaterial() {
 ```
 
 **Pros**:
+
 - ✅ Full control over timing
 - ✅ Can add logic between yields
 - ✅ Can conditionally load chunks
 
 **Cons**:
+
 - ❌ More complex syntax
 - ❌ Requires understanding generators
 - ❌ More code to write
@@ -572,6 +583,7 @@ export async function* streamMaterial() {
 ### From Single Chunk to Array
 
 **Before**:
+
 ```typescript
 // material.ts
 export default `
@@ -586,6 +598,7 @@ skins: {
 ```
 
 **After** (5 minutes):
+
 ```typescript
 // material/critical.ts
 export default `[part="surface"] { background: blue; }`
@@ -594,19 +607,19 @@ export default `[part="surface"] { background: blue; }`
 export default `[part="surface"]:hover { background: darkblue; }`
 
 // material.ts
-export const material = [
-  () => import('./material/critical'),
-  () => import('./material/animations'),
-]
+export const material = [() => import('./material/critical'), () => import('./material/animations')]
 
 // Button/index.tsx
 import { material } from './skins/material'
-skins: { material }
+skins: {
+  material
+}
 ```
 
 ### From AsyncGenerator to Array
 
 **Before**:
+
 ```typescript
 export async function* streamMaterial() {
   yield { css: (await import('./critical')).default }
@@ -619,13 +632,13 @@ skins: {
 ```
 
 **After** (1 minute):
-```typescript
-export const material = [
-  () => import('./critical'),
-  () => import('./animations'),
-]
 
-skins: { material }
+```typescript
+export const material = [() => import('./critical'), () => import('./animations')]
+
+skins: {
+  material
+}
 ```
 
 ---
@@ -633,17 +646,17 @@ skins: { material }
 ## FAQ
 
 ### Q: Can I mix strings and imports in the array?
+
 **A:** Yes! Any combination works:
+
 ```typescript
-[
-  'inline css',
-  () => import('./chunk1'),
-  import('./chunk2'),
-]
+;['inline css', () => import('./chunk1'), import('./chunk2')]
 ```
 
 ### Q: What if I need custom logic between chunks?
+
 **A:** Use async generator for that use case:
+
 ```typescript
 async function* customLoader() {
   yield { css: await loadCritical() }
@@ -657,37 +670,40 @@ async function* customLoader() {
 ```
 
 ### Q: Can I use static imports?
+
 **A:** Yes, but they'll be bundled in the main chunk:
+
 ```typescript
-import critical from './critical?raw'  // Vite raw import
+import critical from './critical?raw' // Vite raw import
 
 export const material = [
-  critical,  // Already in bundle (instant)
-  () => import('./animations'),  // Lazy loaded
+  critical, // Already in bundle (instant)
+  () => import('./animations'), // Lazy loaded
 ]
 ```
 
 ### Q: Does the array order matter?
+
 **A:** Yes! Chunks yield in array order. Put critical CSS first:
+
 ```typescript
-[
-  () => import('./critical'),    // Yields first
-  () => import('./animations'),  // Yields second
-  () => import('./variants'),    // Yields last
+;[
+  () => import('./critical'), // Yields first
+  () => import('./animations'), // Yields second
+  () => import('./variants'), // Yields last
 ]
 ```
 
 ### Q: Can I use this with the Vite plugin?
+
 **A:** Yes! The plugin can auto-generate arrays:
+
 ```typescript
 // Input: material.skin.ts (single file)
 export default `/* all css */`
 
 // Output: material.skin.stream.ts (auto-generated)
-export const material = [
-  () => import('./material.critical'),
-  () => import('./material.animations'),
-]
+export const material = [() => import('./material.critical'), () => import('./material.animations')]
 ```
 
 ---
@@ -695,28 +711,25 @@ export const material = [
 ## Recommended API
 
 **For library consumers** (simplest):
+
 ```typescript
-export const material = [
-  () => import('./critical'),
-  () => import('./animations'),
-]
+export const material = [() => import('./critical'), () => import('./animations')]
 ```
 
 **For library authors** (with metadata):
+
 ```typescript
 import { defineSkin } from 'flesh-cage'
 
 export const material = defineSkin({
-  chunks: [
-    () => import('./critical'),
-    () => import('./animations'),
-  ],
+  chunks: [() => import('./critical'), () => import('./animations')],
   names: ['critical', 'animations'],
-  priority: ['critical', 'high']
+  priority: ['critical', 'high'],
 })
 ```
 
 **For advanced use cases** (full control):
+
 ```typescript
 export async function* streamMaterial() {
   const critical = await import('./critical')
@@ -749,6 +762,7 @@ export async function* streamMaterial() {
 ## Conclusion
 
 The array API provides the best developer experience:
+
 - ✅ Simple syntax (just an array)
 - ✅ Type-safe
 - ✅ Supports all chunk types (strings, imports, functions)

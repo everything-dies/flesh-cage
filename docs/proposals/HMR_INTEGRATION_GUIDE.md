@@ -3,6 +3,7 @@
 ## Current Architecture Summary
 
 Your CSS-in-JS library uses a unique architecture:
+
 - **Custom Elements** with Shadow DOM for style encapsulation
 - **Lazy-loaded skins** via dynamic imports (`() => import('./skins/material')`)
 - **Constructable Stylesheets** (`new CSSStyleSheet().replace(css)`)
@@ -12,6 +13,7 @@ Your CSS-in-JS library uses a unique architecture:
 ### Critical Challenge
 
 When a skin file changes (e.g., `material.ts`), the current implementation:
+
 1. ✅ Vite will detect the change and reload the module
 2. ❌ The `Sheets` Map still holds the old `CSSStyleSheet` object
 3. ❌ Active custom elements still reference the old cached sheet
@@ -22,16 +24,19 @@ When a skin file changes (e.g., `material.ts`), the current implementation:
 ### Option 1: Cache Invalidation with Sheet Replacement (Recommended)
 
 **Pros:**
+
 - Preserves all React state
 - No component remounting
 - Works with existing Suspense boundaries
 - Minimal user disruption
 
 **Cons:**
+
 - Requires custom Vite plugin or HMR API integration
 - Need to track active custom elements
 
 **Implementation approach:**
+
 ```typescript
 // In Vite plugin or skin loader
 if (import.meta.hot) {
@@ -47,10 +52,9 @@ if (import.meta.hot) {
     sheetsInstance.invalidate(skinName)
 
     // 4. Update all active custom elements
-    document.querySelectorAll('styled-button[skin="material"]')
-      .forEach(el => {
-        el.shadowRoot.adoptedStyleSheets = [newSheet]
-      })
+    document.querySelectorAll('styled-button[skin="material"]').forEach((el) => {
+      el.shadowRoot.adoptedStyleSheets = [newSheet]
+    })
   })
 }
 ```
@@ -58,16 +62,19 @@ if (import.meta.hot) {
 ### Option 2: Full Component Refresh
 
 **Pros:**
+
 - Simpler implementation
 - Guaranteed fresh state
 - Works with React Fast Refresh
 
 **Cons:**
+
 - Loses React component state
 - Triggers Suspense boundaries
 - More disruptive to dev experience
 
 **Implementation approach:**
+
 - Mark skin imports as non-cacheable during dev
 - Let React Fast Refresh handle component updates
 - Accept losing state on style changes
@@ -75,11 +82,13 @@ if (import.meta.hot) {
 ### Option 3: Hybrid Approach with Import Map Invalidation
 
 **Pros:**
+
 - Leverages Vite's module graph
 - Clean separation of concerns
 - Can preserve state for simple changes
 
 **Cons:**
+
 - Complex to implement
 - May still lose state in edge cases
 
@@ -90,6 +99,7 @@ if (import.meta.hot) {
 **Problem:** `Sheets` Map caches `CSSStyleSheet` objects indefinitely
 
 **Solutions:**
+
 - Add `Sheets.invalidate(skinName)` method to clear cache entries
 - Add `Sheets.replace(skinName, newSheet)` to update cache atomically
 - Use WeakMap for tracking which custom elements use which sheets
@@ -98,11 +108,13 @@ if (import.meta.hot) {
 ### 2. Custom Element State Preservation
 
 **Current state that needs preservation:**
+
 - `shadowRoot.adoptedStyleSheets` array
 - Event listeners (already handled by connectedCallback/disconnectedCallback)
 - `skin` attribute value
 
 **Approaches:**
+
 - Keep custom element instance alive, only swap stylesheets
 - Use MutationObserver to track skin attribute changes
 - Maintain a registry of active custom elements per skin
@@ -110,11 +122,13 @@ if (import.meta.hot) {
 ### 3. React State Preservation
 
 **Good news:** React state lives outside the custom element, so:
+
 - Component props/state will survive if you don't remount
 - Suspense boundaries should not re-trigger if you update sheets in-place
 - Portal content (children) remains stable
 
 **Watch out for:**
+
 - If you invalidate the entire styled component, React will remount
 - Suspense `use()` hook might re-trigger if promise changes
 
@@ -132,7 +146,9 @@ export function fleshCageHMR() {
     transform(code, id) {
       if (id.endsWith('.ts') && code.includes('export default `')) {
         return {
-          code: code + `\n\nif (import.meta.hot) {
+          code:
+            code +
+            `\n\nif (import.meta.hot) {
             import.meta.hot.accept((newMod) => {
               const event = new CustomEvent('flesh-cage:skin-update', {
                 detail: {
@@ -143,7 +159,7 @@ export function fleshCageHMR() {
               window.dispatchEvent(event)
             })
           }`,
-          map: null
+          map: null,
         }
       }
     },
@@ -154,7 +170,7 @@ export function fleshCageHMR() {
         // Invalidate module graph
         // Notify client
       }
-    }
+    },
   }
 }
 ```
@@ -178,7 +194,7 @@ if (import.meta.hot) {
     // This is the tricky part - need a registry
     customElementRegistry.forEach((element, tagName) => {
       const instances = document.querySelectorAll(tagName)
-      instances.forEach(instance => {
+      instances.forEach((instance) => {
         if (instance.getAttribute('skin') === skinName) {
           instance.shadowRoot.adoptedStyleSheets = [newSheet]
         }
@@ -210,6 +226,7 @@ skinRegistry.get(skin)?.add(new WeakRef(this))
 **Problem:** Mapping file paths to skin names
 
 **Solutions:**
+
 - During build, create a manifest: `{ './skins/material.ts': 'material' }`
 - Parse the import path at runtime
 - Use Vite's module graph API
@@ -217,11 +234,13 @@ skinRegistry.get(skin)?.add(new WeakRef(this))
 ### 8. Potential Race Conditions
 
 **Watch out for:**
+
 - Sheet replacement during active skin transitions
 - Multiple rapid HMR updates
 - Concurrent skin loads and invalidations
 
 **Mitigations:**
+
 - Use microtask queue for updates
 - Debounce HMR events
 - Lock during sheet replacement
@@ -230,23 +249,27 @@ skinRegistry.get(skin)?.add(new WeakRef(this))
 ## Recommended Implementation Path
 
 ### Phase 1: Foundation
+
 1. Add `Sheets.invalidate(skin)` and `Sheets.replace(skin, sheet)` methods
 2. Create a custom element registry system
 3. Add dev-mode detection (`import.meta.env.DEV`)
 
 ### Phase 2: Basic HMR
+
 1. Create Vite plugin skeleton
 2. Inject HMR accept handlers into skin files
 3. Implement cache invalidation on changes
 4. Test with single component/skin
 
 ### Phase 3: Full Integration
+
 1. Add global event bus for skin updates
 2. Implement bulk sheet replacement
 3. Handle concurrent updates
 4. Add error boundaries and fallbacks
 
 ### Phase 4: Polish
+
 1. Add console warnings for HMR events (dev only)
 2. Performance metrics (time to update sheets)
 3. Developer tools integration
@@ -255,17 +278,20 @@ skinRegistry.get(skin)?.add(new WeakRef(this))
 ## Testing Strategy
 
 ### Unit Tests
+
 - `Sheets.invalidate()` clears correct entry
 - `Sheets.replace()` updates cache atomically
 - Registry tracks elements correctly
 
 ### Integration Tests
+
 - Skin change updates visible styles
 - React state preserved after update
 - Suspense boundaries don't re-trigger
 - Multiple skins update independently
 
 ### E2E Tests
+
 - Full HMR flow in Vite dev server
 - Rapid successive changes
 - Switching skins during HMR
@@ -276,6 +302,7 @@ skinRegistry.get(skin)?.add(new WeakRef(this))
 If full HMR is too complex initially, consider:
 
 1. **Dev-only cache bypass:**
+
    ```typescript
    load(skin: Names): Promise<CSSStyleSheet> {
      if (import.meta.env.DEV) {
@@ -337,12 +364,12 @@ If full HMR is too complex initially, consider:
 
 ## Decision Matrix
 
-| Approach | State Preservation | Complexity | DX Quality | Recommended? |
-|----------|-------------------|------------|------------|--------------|
-| Cache Invalidation + Sheet Replacement | ✅ Full | High | Excellent | **Yes** |
-| Full Component Refresh | ❌ Lost | Low | Good | For MVP |
-| Hybrid with Import Map | ⚠️ Partial | Very High | Excellent | Future |
-| Manual Refresh Prompt | ✅ Full | Very Low | Poor | Last Resort |
+| Approach                               | State Preservation | Complexity | DX Quality | Recommended? |
+| -------------------------------------- | ------------------ | ---------- | ---------- | ------------ |
+| Cache Invalidation + Sheet Replacement | ✅ Full            | High       | Excellent  | **Yes**      |
+| Full Component Refresh                 | ❌ Lost            | Low        | Good       | For MVP      |
+| Hybrid with Import Map                 | ⚠️ Partial         | Very High  | Excellent  | Future       |
+| Manual Refresh Prompt                  | ✅ Full            | Very Low   | Poor       | Last Resort  |
 
 ## Next Steps
 

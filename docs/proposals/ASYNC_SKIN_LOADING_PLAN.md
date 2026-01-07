@@ -1,6 +1,7 @@
 # Async Skin Loading with ReadableStream: Implementation Plan
 
 ## Table of Contents
+
 1. [Current Architecture Overview](#current-architecture-overview)
 2. [Problem Statement](#problem-statement)
 3. [Proposed Solution](#proposed-solution)
@@ -36,6 +37,7 @@ load(skin: T): Promise<CSSStyleSheet> {
 ```
 
 **Current Flow**:
+
 1. **Import-based loading**: Skins are loaded via dynamic `import()` statements
 2. **All-or-nothing**: Entire CSS string must load before any styles apply
 3. **Single chunk**: No granular control over what loads first
@@ -43,6 +45,7 @@ load(skin: T): Promise<CSSStyleSheet> {
 5. **CSSStyleSheet API**: Converts string → CSSStyleSheet via `.replace()`
 
 **Example Skin Definition**:
+
 ```typescript
 // Button/index.tsx
 skins: {
@@ -52,6 +55,7 @@ skins: {
 ```
 
 **Example Skin File** (`material.ts`):
+
 ```typescript
 export default `
   [part="surface"] {
@@ -79,6 +83,7 @@ adorn(skin: string) {
 ```
 
 When a skin loads:
+
 1. `sheets.get(skin)` triggers load
 2. CSS string → `CSSStyleSheet`
 3. Assigned to Shadow DOM's `adoptedStyleSheets`
@@ -114,6 +119,7 @@ When a skin loads:
 ### Real-World Impact
 
 **Scenario**: Material Design skin with:
+
 - 15 KB base styles (colors, layout, typography)
 - 25 KB animations (ripple effects, transitions)
 - 10 KB responsive rules (mobile, tablet, desktop)
@@ -130,6 +136,7 @@ When a skin loads:
 ### ReadableStream-Based Chunked Loading
 
 Replace static imports with fetch + ReadableStream to:
+
 1. **Split skins into chunks** (critical + enhancements)
 2. **Stream chunks progressively** via HTTP
 3. **Apply styles incrementally** using multiple CSSStyleSheets
@@ -186,6 +193,7 @@ Replace static imports with fetch + ReadableStream to:
 ### 1. Manual Chunking (Immediate Implementation)
 
 **Directory Structure**:
+
 ```
 Button/
 ├── skins/
@@ -198,6 +206,7 @@ Button/
 ```
 
 **critical.ts**:
+
 ```typescript
 export default `
   [part="surface"] {
@@ -213,6 +222,7 @@ export default `
 ```
 
 **animations.ts**:
+
 ```typescript
 export default `
   [part="surface"] {
@@ -227,6 +237,7 @@ export default `
 ```
 
 **material.stream.ts**:
+
 ```typescript
 export interface SkinChunk {
   name: string
@@ -239,21 +250,21 @@ export async function* streamSkin() {
   yield {
     name: 'critical',
     priority: 'critical',
-    css: (await import('./critical')).default
+    css: (await import('./critical')).default,
   }
 
   // Chunk 2: Animations (yield after critical)
   yield {
     name: 'animations',
     priority: 'high',
-    css: (await import('./animations')).default
+    css: (await import('./animations')).default,
   }
 
   // Chunk 3: Responsive (lower priority)
   yield {
     name: 'responsive',
     priority: 'low',
-    css: (await import('./responsive')).default
+    css: (await import('./responsive')).default,
   }
 }
 ```
@@ -263,6 +274,7 @@ export async function* streamSkin() {
 Use AST parsing to auto-extract critical CSS:
 
 **Vite Plugin**:
+
 ```typescript
 // packages/flesh-cage/src/vite/chunk-skins.ts
 export function chunkSkinsPlugin() {
@@ -277,11 +289,11 @@ export function chunkSkinsPlugin() {
         critical: extractSelectors(ast, ['[part]', ':not(:hover)', ':not(:active)']),
         animations: extractSelectors(ast, ['transition', 'animation', 'transform']),
         responsive: extractMediaQueries(ast),
-        variants: extractSelectors(ast, ['[data-variant]'])
+        variants: extractSelectors(ast, ['[data-variant]']),
       }
 
       return generateStreamedSkin(chunks)
-    }
+    },
   }
 }
 ```
@@ -291,6 +303,7 @@ export function chunkSkinsPlugin() {
 Generate ReadableStream on server:
 
 **Express/Node**:
+
 ```typescript
 app.get('/skins/:name.stream', async (req, res) => {
   const { name } = req.params
@@ -300,10 +313,12 @@ app.get('/skins/:name.stream', async (req, res) => {
   res.setHeader('Transfer-Encoding', 'chunked')
 
   // Send critical CSS immediately
-  res.write(JSON.stringify({
-    chunk: 'critical',
-    css: skin.critical
-  }))
+  res.write(
+    JSON.stringify({
+      chunk: 'critical',
+      css: skin.critical,
+    })
+  )
 
   // Flush to client (HTTP/2 push)
   res.flush()
@@ -311,10 +326,12 @@ app.get('/skins/:name.stream', async (req, res) => {
   // Send remaining chunks
   for (const chunk of ['animations', 'responsive', 'variants']) {
     await delay(0) // Yield to event loop
-    res.write(JSON.stringify({
-      chunk,
-      css: skin[chunk]
-    }))
+    res.write(
+      JSON.stringify({
+        chunk,
+        css: skin[chunk],
+      })
+    )
   }
 
   res.end()
@@ -416,9 +433,11 @@ export class Sheets<T extends string = string> extends Map<
   private dispatchUpdate(sheets: CSSStyleSheet[]) {
     // Emit event for reactive updates
     if (typeof window !== 'undefined') {
-      window.dispatchEvent(new CustomEvent('skin-chunk-loaded', {
-        detail: { sheets }
-      }))
+      window.dispatchEvent(
+        new CustomEvent('skin-chunk-loaded', {
+          detail: { sheets },
+        })
+      )
     }
   }
 }
@@ -554,6 +573,7 @@ export type Skins<T extends string = string> = Record<T, UnifiedSkinLoader>
 ### Phase 4: Fetch-Based Streaming (Alternative to Imports)
 
 **Create Stream Helper**:
+
 ```typescript
 // packages/flesh-cage/src/core/stream-loader.ts
 
@@ -598,6 +618,7 @@ export async function* loadSkinStream(url: string): AsyncGenerator<SkinChunk> {
 ```
 
 **Usage in Component**:
+
 ```typescript
 import { loadSkinStream } from 'flesh-cage/stream-loader'
 
@@ -610,9 +631,9 @@ export const Button = styled(ButtonBase, {
     brutalist: () => streamSkin(), // From material.stream.ts
 
     // Legacy single-chunk
-    simple: () => import('./skins/simple')
+    simple: () => import('./skins/simple'),
   },
-  name: 'styled-button'
+  name: 'styled-button',
 })
 ```
 
@@ -623,6 +644,7 @@ export const Button = styled(ButtonBase, {
 ### Step 1: Add Streaming Support (No Breaking Changes)
 
 **Week 1-2**: Implement dual-mode loading
+
 - ✅ Existing skins continue working
 - ✅ Add `UnifiedSkinLoader` type
 - ✅ Update `Sheets.load()` to detect stream vs promise
@@ -631,6 +653,7 @@ export const Button = styled(ButtonBase, {
 ### Step 2: Migrate High-Impact Skins
 
 **Week 3-4**: Convert large skins to streaming
+
 - Material Design → 3 chunks (critical, animations, responsive)
 - Glassmorphic → 2 chunks (critical, effects)
 - Keep Brutalist as single chunk (small size)
@@ -638,6 +661,7 @@ export const Button = styled(ButtonBase, {
 ### Step 3: Add Build Tooling
 
 **Week 5-6**: Automate chunking
+
 - Vite plugin for auto-detection
 - AST-based critical CSS extraction
 - Generate `.stream.ts` files automatically
@@ -645,6 +669,7 @@ export const Button = styled(ButtonBase, {
 ### Step 4: Server-Side Streaming (Optional)
 
 **Week 7+**: Add server streaming for dynamic skins
+
 - Express middleware for `.stream` endpoint
 - HTTP/2 server push for critical chunks
 - CDN integration for cached chunks
@@ -655,17 +680,18 @@ export const Button = styled(ButtonBase, {
 
 ### Metrics to Improve
 
-| Metric | Current | Target | Improvement |
-|--------|---------|--------|-------------|
-| **First Contentful Paint (FCP)** | 500ms | 150ms | 70% faster |
-| **Time to Interactive (TTI)** | 800ms | 300ms | 62% faster |
-| **Largest Contentful Paint (LCP)** | 600ms | 250ms | 58% faster |
-| **Total Blocking Time (TBT)** | 200ms | 50ms | 75% reduction |
-| **Bundle Size (initial)** | 55 KB | 15 KB | 73% smaller |
+| Metric                             | Current | Target | Improvement   |
+| ---------------------------------- | ------- | ------ | ------------- |
+| **First Contentful Paint (FCP)**   | 500ms   | 150ms  | 70% faster    |
+| **Time to Interactive (TTI)**      | 800ms   | 300ms  | 62% faster    |
+| **Largest Contentful Paint (LCP)** | 600ms   | 250ms  | 58% faster    |
+| **Total Blocking Time (TBT)**      | 200ms   | 50ms   | 75% reduction |
+| **Bundle Size (initial)**          | 55 KB   | 15 KB  | 73% smaller   |
 
 ### Network Waterfall Comparison
 
 **Before (Single Chunk)**:
+
 ```
 0ms ────────────────────────────────────────────────────────────── 500ms
      |                                                            |
@@ -677,6 +703,7 @@ export const Button = styled(ButtonBase, {
 ```
 
 **After (Streaming)**:
+
 ```
 0ms ──────────────────────────────────────────────────────────────── 500ms
      |      |           |              |                            |
@@ -693,6 +720,7 @@ export const Button = styled(ButtonBase, {
 ### Memory Considerations
 
 **Impact**: Multiple `CSSStyleSheet` objects vs single sheet
+
 - **Before**: 1 sheet × 55 KB = 55 KB RAM
 - **After**: 4 sheets × (15+25+10+5) KB = 55 KB RAM + ~2 KB overhead
 - **Trade-off**: Minimal memory increase (~3.6%) for significant UX improvement
@@ -700,6 +728,7 @@ export const Button = styled(ButtonBase, {
 ### Bundle Splitting
 
 Streaming enables better code splitting:
+
 ```typescript
 // Critical path (always loaded)
 import { styled } from 'flesh-cage'
@@ -718,19 +747,20 @@ skins: {
 
 ### Required APIs
 
-| API | Chrome | Firefox | Safari | Edge |
-|-----|--------|---------|--------|------|
-| **CSSStyleSheet.replace()** | 73+ | 101+ | 16.4+ | 79+ |
-| **Constructable Stylesheets** | 73+ | 101+ | 16.4+ | 79+ |
-| **ReadableStream** | 43+ | 65+ | 10.1+ | 14+ |
-| **AsyncGenerator** | 63+ | 55+ | 12+ | 79+ |
-| **Shadow DOM** | 53+ | 63+ | 10+ | 79+ |
+| API                           | Chrome | Firefox | Safari | Edge |
+| ----------------------------- | ------ | ------- | ------ | ---- |
+| **CSSStyleSheet.replace()**   | 73+    | 101+    | 16.4+  | 79+  |
+| **Constructable Stylesheets** | 73+    | 101+    | 16.4+  | 79+  |
+| **ReadableStream**            | 43+    | 65+     | 10.1+  | 14+  |
+| **AsyncGenerator**            | 63+    | 55+     | 12+    | 79+  |
+| **Shadow DOM**                | 53+    | 63+     | 10+    | 79+  |
 
 **Coverage**: ~95% of global browser usage (2024 data)
 
 ### Polyfill Strategy
 
 For older browsers:
+
 ```typescript
 // packages/flesh-cage/src/core/polyfills.ts
 
@@ -746,7 +776,7 @@ export async function ensureStreamSupport() {
         const style = document.createElement('style')
         style.textContent = css
         return Promise.resolve(style.sheet!)
-      }
+      },
     }
   }
 }
@@ -759,12 +789,14 @@ export async function ensureStreamSupport() {
 ### Approach 1: ReadableStream (Recommended)
 
 **Pros**:
+
 - ✅ Fine-grained control over chunking
 - ✅ True streaming (apply styles before full download)
 - ✅ Server-side push support
 - ✅ Works with CDN/static hosting
 
 **Cons**:
+
 - ❌ More complex implementation
 - ❌ Requires server changes for full benefits
 - ❌ Slight increase in bundle size (chunking logic)
@@ -782,11 +814,13 @@ skins: {
 ```
 
 **Pros**:
+
 - ✅ Simpler implementation
 - ✅ Works with existing bundler
 - ✅ No server changes needed
 
 **Cons**:
+
 - ❌ No true streaming (chunks load in parallel, not progressive)
 - ❌ Can't prioritize critical over non-critical
 - ❌ Module overhead (extra HTTP requests)
@@ -795,17 +829,21 @@ skins: {
 
 ```css
 /* critical.css */
-[part="surface"] { /* base styles */ }
+[part='surface'] {
+  /* base styles */
+}
 
 @import url('./animations.css') layer(animations);
 @import url('./responsive.css') layer(responsive);
 ```
 
 **Pros**:
+
 - ✅ Browser-native loading
 - ✅ Cascade layers for priority
 
 **Cons**:
+
 - ❌ Loses Shadow DOM encapsulation
 - ❌ No programmatic control over load order
 - ❌ Network waterfalls (serial loading)
@@ -817,6 +855,7 @@ skins: {
 ### Example 1: Convert Material Skin to Streaming
 
 **Before** (`material.ts`):
+
 ```typescript
 export default `
   [part="surface"] {
@@ -855,6 +894,7 @@ export default `
 ```
 
 **After** (`material/index.stream.ts`):
+
 ```typescript
 import type { SkinChunk } from 'flesh-cage'
 
@@ -878,7 +918,7 @@ export async function* streamMaterialSkin() {
       [part="label"] {
         display: inline-block;
       }
-    `
+    `,
   } as SkinChunk
 
   // Chunk 2: Animations (2 KB) - yield after critical
@@ -902,7 +942,7 @@ export async function* streamMaterialSkin() {
         box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
         transform: translateY(0);
       }
-    `
+    `,
   } as SkinChunk
 
   // Chunk 3: Variants (1 KB) - yield last
@@ -917,12 +957,13 @@ export async function* streamMaterialSkin() {
       [part="surface"][data-variant="secondary"]:hover {
         background: #616161;
       }
-    `
+    `,
   } as SkinChunk
 }
 ```
 
 **Usage**:
+
 ```typescript
 import { streamMaterialSkin } from './skins/material/index.stream'
 
@@ -931,13 +972,14 @@ export const Button = styled(ButtonBase, {
     material: streamMaterialSkin,
     brutalist: () => import('./skins/brutalist'), // Legacy still works
   },
-  name: 'styled-button'
+  name: 'styled-button',
 })
 ```
 
 ### Example 2: Server-Side Streaming Endpoint
 
 **Server** (`server/skins.ts`):
+
 ```typescript
 import express from 'express'
 
@@ -970,14 +1012,15 @@ app.listen(3000)
 ```
 
 **Client**:
+
 ```typescript
 import { loadSkinStream } from 'flesh-cage/stream-loader'
 
 export const Button = styled(ButtonBase, {
   skins: {
-    material: () => loadSkinStream('/api/skins/material.ndjson')
+    material: () => loadSkinStream('/api/skins/material.ndjson'),
   },
-  name: 'styled-button'
+  name: 'styled-button',
 })
 ```
 
@@ -993,8 +1036,7 @@ export class Sheets<T extends string = string> {
 
     // Feature detection: streaming support?
     const supportsStreaming =
-      typeof ReadableStream !== 'undefined' &&
-      Symbol.asyncIterator in result
+      typeof ReadableStream !== 'undefined' && Symbol.asyncIterator in result
 
     if (supportsStreaming) {
       // Use streaming for modern browsers
@@ -1027,21 +1069,22 @@ export default defineConfig({
       chunks: {
         critical: {
           include: ['[part]', ':root', 'base styles'],
-          exclude: [':hover', ':active', 'animation', '@media']
+          exclude: [':hover', ':active', 'animation', '@media'],
         },
         animations: {
-          include: ['transition', 'animation', 'transform']
+          include: ['transition', 'animation', 'transform'],
         },
         responsive: {
-          include: ['@media']
-        }
-      }
-    })
-  ]
+          include: ['@media'],
+        },
+      },
+    }),
+  ],
 })
 ```
 
 **Input** (`button.skin.ts`):
+
 ```typescript
 export default `
   [part="surface"] { background: blue; }
@@ -1051,25 +1094,26 @@ export default `
 ```
 
 **Output** (generated by plugin):
+
 ```typescript
 // button.skin.stream.ts (auto-generated)
 export async function* streamButtonSkin() {
   yield {
     name: 'critical',
     priority: 'critical',
-    css: '[part="surface"] { background: blue; }'
+    css: '[part="surface"] { background: blue; }',
   }
 
   yield {
     name: 'animations',
     priority: 'high',
-    css: '[part="surface"]:hover { background: darkblue; }'
+    css: '[part="surface"]:hover { background: darkblue; }',
   }
 
   yield {
     name: 'responsive',
     priority: 'low',
-    css: '@media (max-width: 768px) { [part="surface"] { padding: 8px; } }'
+    css: '@media (max-width: 768px) { [part="surface"] { padding: 8px; } }',
   }
 }
 ```
@@ -1079,6 +1123,7 @@ export async function* streamButtonSkin() {
 ## Recommended Implementation Timeline
 
 ### Phase 1: Foundation (Week 1-2)
+
 - [ ] Update `Sheets` class to handle `CSSStyleSheet[]`
 - [ ] Add `UnifiedSkinLoader` type support
 - [ ] Implement dual-mode detection (streaming vs legacy)
@@ -1086,6 +1131,7 @@ export async function* streamButtonSkin() {
 - [ ] Add unit tests for both modes
 
 ### Phase 2: Manual Streaming (Week 3-4)
+
 - [ ] Create `stream-loader.ts` helper
 - [ ] Convert Material skin to 3 chunks
 - [ ] Convert Glassmorphic skin to 2 chunks
@@ -1093,6 +1139,7 @@ export async function* streamButtonSkin() {
 - [ ] Document streaming API
 
 ### Phase 3: Developer Experience (Week 5-6)
+
 - [ ] Create Vite plugin for auto-chunking
 - [ ] Add AST-based critical CSS extraction
 - [ ] Generate `.stream.ts` files at build time
@@ -1100,6 +1147,7 @@ export async function* streamButtonSkin() {
 - [ ] Create migration guide
 
 ### Phase 4: Server Streaming (Week 7-8, Optional)
+
 - [ ] Add Express middleware for `.ndjson` endpoints
 - [ ] Implement HTTP/2 server push
 - [ ] Add CDN integration guide
@@ -1111,18 +1159,21 @@ export async function* streamButtonSkin() {
 ## Success Metrics
 
 ### User Experience
+
 - ✅ 70% faster First Contentful Paint
 - ✅ 60% faster Time to Interactive
 - ✅ Zero FOUC (Flash of Unstyled Content)
 - ✅ Progressive enhancement (basic → enhanced)
 
 ### Developer Experience
+
 - ✅ Backwards compatible (existing skins work)
 - ✅ Opt-in (developers choose streaming vs legacy)
 - ✅ Auto-chunking via build plugin (zero config)
 - ✅ Type-safe streaming API
 
 ### Performance
+
 - ✅ 73% reduction in initial bundle size
 - ✅ 75% reduction in Total Blocking Time
 - ✅ Parallel chunk loading (HTTP/2 multiplexing)
@@ -1133,6 +1184,7 @@ export async function* streamButtonSkin() {
 ## Appendix: Alternative Streaming Formats
 
 ### Option 1: Newline-Delimited JSON (NDJSON)
+
 ```
 {"name":"critical","priority":"critical","css":"[part] { ... }"}
 {"name":"animations","priority":"high","css":":hover { ... }"}
@@ -1142,6 +1194,7 @@ export async function* streamButtonSkin() {
 **Cons**: No binary support, JSON overhead
 
 ### Option 2: Binary Stream (Custom Protocol)
+
 ```
 [4 bytes length][chunk data][4 bytes length][chunk data]...
 ```
@@ -1150,6 +1203,7 @@ export async function* streamButtonSkin() {
 **Cons**: Complex implementation, debugging harder
 
 ### Option 3: Server-Sent Events (SSE)
+
 ```
 event: chunk
 data: {"name":"critical","css":"..."}
@@ -1170,6 +1224,7 @@ data: {"name":"animations","css":"..."}
 This plan provides a comprehensive path to implement chunked, streaming skin loading while maintaining backwards compatibility. The ReadableStream approach offers the best balance of performance, developer experience, and progressive enhancement.
 
 **Next Steps**:
+
 1. Review this plan with team
 2. Prototype `Sheets` class changes (Phase 1)
 3. Benchmark performance improvements
@@ -1177,6 +1232,7 @@ This plan provides a comprehensive path to implement chunked, streaming skin loa
 5. Create migration guide for existing skins
 
 **Estimated Impact**:
+
 - 70% faster initial render
 - 73% smaller critical bundle
 - Zero breaking changes for existing code

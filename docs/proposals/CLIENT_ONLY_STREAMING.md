@@ -11,6 +11,7 @@ You can implement streaming skins with **ZERO server-side code** and **ZERO buil
 ### Step 1: Split Your Skin Into Files
 
 **Directory structure** (just organize your CSS):
+
 ```
 Button/
 ├── skins/
@@ -21,6 +22,7 @@ Button/
 ```
 
 **critical.ts** (base styles):
+
 ```typescript
 export default `
   [part="surface"] {
@@ -36,6 +38,7 @@ export default `
 ```
 
 **animations.ts** (enhancements):
+
 ```typescript
 export default `
   [part="surface"] {
@@ -50,6 +53,7 @@ export default `
 ```
 
 **variants.ts** (optional styles):
+
 ```typescript
 export default `
   [part="surface"][data-variant="secondary"] {
@@ -61,27 +65,28 @@ export default `
 ### Step 2: Create AsyncGenerator Function
 
 **material/index.ts** (streaming coordinator):
+
 ```typescript
 export async function* streamMaterialSkin() {
   // Chunk 1: Critical (loads immediately)
   yield {
     name: 'critical',
     priority: 'critical',
-    css: (await import('./critical')).default
+    css: (await import('./critical')).default,
   }
 
   // Chunk 2: Animations (loads after critical)
   yield {
     name: 'animations',
     priority: 'high',
-    css: (await import('./animations')).default
+    css: (await import('./animations')).default,
   }
 
   // Chunk 3: Variants (loads last)
   yield {
     name: 'variants',
     priority: 'low',
-    css: (await import('./variants')).default
+    css: (await import('./variants')).default,
   }
 }
 ```
@@ -89,6 +94,7 @@ export async function* streamMaterialSkin() {
 ### Step 3: Use in Component
 
 **Button/index.tsx**:
+
 ```typescript
 import { styled } from 'flesh-cage'
 import { ButtonBase } from './ButtonBase'
@@ -96,10 +102,10 @@ import { streamMaterialSkin } from './skins/material'
 
 export const Button = styled(ButtonBase, {
   skins: {
-    material: streamMaterialSkin,           // Streaming (3 chunks)
+    material: streamMaterialSkin, // Streaming (3 chunks)
     brutalist: () => import('./skins/brutalist'), // Legacy (1 chunk)
   },
-  name: 'styled-button'
+  name: 'styled-button',
 })
 ```
 
@@ -158,17 +164,17 @@ export const Button = styled(ButtonBase, {
 
 ## Comparison: Client vs Server Approaches
 
-| Feature | Client-Only (AsyncGenerator) | Server Streaming (fetch) | Vite Plugin |
-|---------|------------------------------|-------------------------|-------------|
-| **Server code required** | ❌ No | ✅ Yes (Node/Express) | ❌ No |
-| **Build plugin required** | ❌ No | ❌ No | ✅ Yes |
-| **Manual chunk splitting** | ✅ Yes (simple) | ✅ Yes | ❌ No (auto) |
-| **Works with static hosting** | ✅ Yes | ❌ No | ✅ Yes |
-| **CDN friendly** | ✅ Yes | ⚠️ Complex | ✅ Yes |
-| **HTTP/2 multiplexing** | ✅ Yes | ✅ Yes | ✅ Yes |
-| **Zero config** | ✅ Yes | ❌ No | ⚠️ Requires setup |
-| **TypeScript support** | ✅ Native | ⚠️ Manual | ✅ Generated |
-| **Deployment** | Simple (any host) | Complex (Node server) | Simple (any host) |
+| Feature                       | Client-Only (AsyncGenerator) | Server Streaming (fetch) | Vite Plugin       |
+| ----------------------------- | ---------------------------- | ------------------------ | ----------------- |
+| **Server code required**      | ❌ No                        | ✅ Yes (Node/Express)    | ❌ No             |
+| **Build plugin required**     | ❌ No                        | ❌ No                    | ✅ Yes            |
+| **Manual chunk splitting**    | ✅ Yes (simple)              | ✅ Yes                   | ❌ No (auto)      |
+| **Works with static hosting** | ✅ Yes                       | ❌ No                    | ✅ Yes            |
+| **CDN friendly**              | ✅ Yes                       | ⚠️ Complex               | ✅ Yes            |
+| **HTTP/2 multiplexing**       | ✅ Yes                       | ✅ Yes                   | ✅ Yes            |
+| **Zero config**               | ✅ Yes                       | ❌ No                    | ⚠️ Requires setup |
+| **TypeScript support**        | ✅ Native                    | ⚠️ Manual                | ✅ Generated      |
+| **Deployment**                | Simple (any host)            | Complex (Node server)    | Simple (any host) |
 
 **Recommendation**: Start with **Client-Only AsyncGenerator** approach. It's the simplest and requires zero infrastructure changes.
 
@@ -177,6 +183,7 @@ export const Button = styled(ButtonBase, {
 ## Advanced: Why You Might Want Server/Plugin Later
 
 ### Vite Plugin Benefits (Optional)
+
 - **Auto-chunking**: No manual file splitting
 - **AST analysis**: Automatically detect critical CSS
 - **Zero boilerplate**: Generates AsyncGenerator functions
@@ -185,6 +192,7 @@ export const Button = styled(ButtonBase, {
 **When to use**: Large teams, many skins, don't want manual chunking
 
 ### Server Streaming Benefits (Optional)
+
 - **Dynamic theming**: Generate skins on-the-fly based on user preferences
 - **A/B testing**: Serve different skin variants
 - **Personalization**: User-specific color schemes
@@ -199,6 +207,7 @@ export const Button = styled(ButtonBase, {
 ### How Vite Handles Dynamic Imports (Automatic Code Splitting)
 
 When you write:
+
 ```typescript
 yield {
   css: (await import('./critical')).default
@@ -206,6 +215,7 @@ yield {
 ```
 
 Vite automatically:
+
 1. **Creates separate chunk**: `critical-abc123.js`
 2. **Adds to manifest**: Maps `./critical` → `critical-abc123.js`
 3. **Generates import**: Browser fetches `/assets/critical-abc123.js`
@@ -241,6 +251,7 @@ Vite automatically:
 ### Before (Single Chunk)
 
 **material.ts** (7 KB):
+
 ```typescript
 export default `
   [part="surface"] {
@@ -276,6 +287,7 @@ export default `
 ```
 
 **Usage**:
+
 ```typescript
 skins: {
   material: () => import('./skins/material') // 7 KB, all or nothing
@@ -287,6 +299,7 @@ skins: {
 **Step 1**: Split into 3 files
 
 **material/critical.ts** (4 KB):
+
 ```typescript
 export default `
   [part="surface"] {
@@ -306,6 +319,7 @@ export default `
 ```
 
 **material/animations.ts** (2 KB):
+
 ```typescript
 export default `
   [part="surface"] {
@@ -326,6 +340,7 @@ export default `
 ```
 
 **material/variants.ts** (1 KB):
+
 ```typescript
 export default `
   [part="surface"][data-variant="secondary"] {
@@ -337,24 +352,25 @@ export default `
 **Step 2**: Create streaming coordinator
 
 **material/index.ts**:
+
 ```typescript
 export async function* streamMaterialSkin() {
   yield {
     name: 'critical',
     priority: 'critical',
-    css: (await import('./critical')).default
+    css: (await import('./critical')).default,
   }
 
   yield {
     name: 'animations',
     priority: 'high',
-    css: (await import('./animations')).default
+    css: (await import('./animations')).default,
   }
 
   yield {
     name: 'variants',
     priority: 'low',
-    css: (await import('./variants')).default
+    css: (await import('./variants')).default,
   }
 }
 ```
@@ -376,12 +392,14 @@ skins: {
 ## Performance: Client-Only vs Single Chunk
 
 ### Single Chunk (Current)
+
 ```
 Component Mount → Download 7 KB → Parse → Apply → Render
 0ms              100ms           150ms    160ms    160ms ✅
 ```
 
 ### Client Streaming (Proposed)
+
 ```
 Component Mount → Download 4 KB → Parse → Apply → Render (critical)
 0ms              50ms            70ms     75ms     75ms ✅
@@ -394,6 +412,7 @@ Component Mount → Download 4 KB → Parse → Apply → Render (critical)
 ```
 
 **Result**:
+
 - **53% faster** first render (160ms → 75ms)
 - **Same total load time** (chunks download in parallel)
 - **Progressive enhancement** (works with partial load)
@@ -403,19 +422,25 @@ Component Mount → Download 4 KB → Parse → Apply → Render (critical)
 ## FAQ
 
 ### Q: Do I need a special server to host these files?
+
 **A:** No! Any static file hosting works (Vercel, Netlify, S3, GitHub Pages, nginx, Apache).
 
 ### Q: Will Vite bundle all chunks into one file?
+
 **A:** No, Vite automatically code-splits each `import()` into separate files. This is standard Vite behavior.
 
 ### Q: What if a chunk fails to load?
+
 **A:** The component suspends (React Suspense boundary), shows fallback. You can add error boundaries for retry logic.
 
 ### Q: Can I use this with SSR (Server-Side Rendering)?
+
 **A:** Yes! The AsyncGenerator runs client-side after hydration. Critical styles can be inlined during SSR.
 
 ### Q: Does this work with existing skins?
+
 **A:** Yes! Mix and match:
+
 ```typescript
 skins: {
   material: streamMaterialSkin,              // Streaming
@@ -424,12 +449,15 @@ skins: {
 ```
 
 ### Q: How do I deploy this?
+
 **A:** Just run `vite build` and deploy the `dist/` folder to any static host. Zero changes to deployment pipeline.
 
 ### Q: What about caching?
+
 **A:** Each chunk gets a unique hash (e.g., `critical-abc123.js`), so browser caches them indefinitely. When you update CSS, hash changes, browser fetches new version.
 
 ### Q: Can I test this locally?
+
 **A:** Yes! Run `vite dev` or `vite preview`. Vite serves chunks automatically.
 
 ---
@@ -452,11 +480,13 @@ skins: {
 ## When to Add Server/Plugin Later
 
 ### Add Vite Plugin When:
+
 - ❌ You have 10+ skins and manual chunking is tedious
 - ❌ You want automatic critical CSS extraction
 - ❌ You need team-wide consistency in chunking strategy
 
 ### Add Server Streaming When:
+
 - ❌ You need dynamic themes (user-generated color schemes)
 - ❌ You want A/B testing of styles
 - ❌ You need real-time style updates without redeploying

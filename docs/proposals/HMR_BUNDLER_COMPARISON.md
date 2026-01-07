@@ -43,6 +43,7 @@ import.meta.hot.data // Persists across reloads
 ```
 
 **Key characteristics:**
+
 - Modern ESM-first API
 - `import.meta.hot` is standard (part of Vite spec)
 - Fast HMR via native ESM
@@ -84,6 +85,7 @@ module.hot.addStatusHandler((status) => {})
 ```
 
 **Key characteristics:**
+
 - CommonJS-style API
 - More granular status lifecycle
 - Can decline updates explicitly
@@ -111,6 +113,7 @@ module.hot.dispose((data) => {
 ```
 
 **Key characteristics:**
+
 - Webpack-compatible API (subset)
 - Simpler than Webpack
 - Automatic HMR for many file types
@@ -127,6 +130,7 @@ if (import.meta.hot) {
 ```
 
 **Key characteristics:**
+
 - No built-in HMR
 - Plugin-dependent API
 - Often mimics Vite's API
@@ -135,23 +139,24 @@ if (import.meta.hot) {
 ### esbuild
 
 **No native HMR support** (as of 2025)
+
 - Must use external solutions (esbuild-plugin-livereload, etc.)
 - Usually falls back to full page reload
 - Not a concern for most library authors
 
 ## API Differences Matrix
 
-| Feature | Vite | Webpack | Parcel | Rollup |
-|---------|------|---------|--------|--------|
-| Detection | `import.meta.hot` | `module.hot` | `module.hot` | Plugin-dependent |
-| Accept self | ✅ | ✅ | ✅ | ✅ (via plugin) |
-| Accept deps | ✅ | ✅ | ✅ | ✅ (via plugin) |
-| Dispose | ✅ | ✅ | ✅ | ✅ (via plugin) |
-| Decline | `invalidate()` | `decline()` | ❌ | Varies |
-| Status API | ❌ | ✅ | ❌ | ❌ |
-| Custom events | ✅ | ❌ | ❌ | Varies |
-| Data persistence | `.data` | dispose callback | dispose callback | Varies |
-| Module object | New module arg | Re-require | Re-require | New module arg |
+| Feature          | Vite              | Webpack          | Parcel           | Rollup           |
+| ---------------- | ----------------- | ---------------- | ---------------- | ---------------- |
+| Detection        | `import.meta.hot` | `module.hot`     | `module.hot`     | Plugin-dependent |
+| Accept self      | ✅                | ✅               | ✅               | ✅ (via plugin)  |
+| Accept deps      | ✅                | ✅               | ✅               | ✅ (via plugin)  |
+| Dispose          | ✅                | ✅               | ✅               | ✅ (via plugin)  |
+| Decline          | `invalidate()`    | `decline()`      | ❌               | Varies           |
+| Status API       | ❌                | ✅               | ❌               | ❌               |
+| Custom events    | ✅                | ❌               | ❌               | Varies           |
+| Data persistence | `.data`           | dispose callback | dispose callback | Varies           |
+| Module object    | New module arg    | Re-require       | Re-require       | New module arg   |
 
 ## Unified Detection Strategy
 
@@ -191,7 +196,7 @@ function createHMRAdapter(): HMRAdapter | null {
         accept: (cb) => import.meta.hot!.accept(cb),
         dispose: (cb) => import.meta.hot!.dispose(cb),
         invalidate: () => import.meta.hot!.invalidate(),
-        data: import.meta.hot!.data || {}
+        data: import.meta.hot!.data || {},
       }
 
     case 'webpack':
@@ -206,7 +211,7 @@ function createHMRAdapter(): HMRAdapter | null {
           // Parcel: no-op or force reload
           window.location.reload()
         },
-        data: {} // Must manage manually
+        data: {}, // Must manage manually
       }
 
     case 'none':
@@ -247,21 +252,27 @@ export { createWebpackHMR as createHMR } from './adapters/webpack'
 ```typescript
 // User installs bundler-specific plugin
 // packages/vite-plugin/src/index.ts
-export function fleshCageHMR() { /* Vite-specific */ }
+export function fleshCageHMR() {
+  /* Vite-specific */
+}
 
 // packages/webpack-plugin/src/index.ts
-export function FleshCageHMRPlugin() { /* Webpack-specific */ }
+export function FleshCageHMRPlugin() {
+  /* Webpack-specific */
+}
 
 // Plugin injects runtime code specific to that bundler
 ```
 
 **Pros:**
+
 - Clean separation of concerns
 - Optimal code for each bundler
 - User explicitly chooses their bundler
 - No runtime detection overhead
 
 **Cons:**
+
 - More packages to maintain
 - User must install correct plugin
 - More complex setup
@@ -287,7 +298,7 @@ export function setupHMR(skinName: string, updateCallback: (css: string) => void
   if (typeof module !== 'undefined' && module.hot) {
     module.hot.accept(() => {
       // Re-import and update
-      import(/* @vite-ignore */ skinPath).then(mod => {
+      import(/* @vite-ignore */ skinPath).then((mod) => {
         updateCallback(mod.default)
       })
     })
@@ -311,9 +322,11 @@ export default css
 if (import.meta.hot) {
   import.meta.hot.accept((newModule) => {
     // Vite automatically provides newModule
-    window.dispatchEvent(new CustomEvent('flesh-cage:update', {
-      detail: { skinName: 'material', css: newModule.default }
-    }))
+    window.dispatchEvent(
+      new CustomEvent('flesh-cage:update', {
+        detail: { skinName: 'material', css: newModule.default },
+      })
+    )
   })
 }
 ```
@@ -360,6 +373,7 @@ if (module.hot) {
 ### Strategy A: Vite-First with Optional Webpack Support
 
 **Recommended if:**
+
 - Your primary users use Vite (most modern projects)
 - You want to ship quickly
 - Webpack users can accept basic support
@@ -371,6 +385,7 @@ if (module.hot) {
 ```
 
 **Implementation:**
+
 1. Build-in Vite HMR support directly in skin loaders
 2. Create optional Webpack plugin package
 3. Document Parcel limitations
@@ -378,6 +393,7 @@ if (module.hot) {
 ### Strategy B: Universal Adapter
 
 **Recommended if:**
+
 - You want broad compatibility
 - Can accept slightly worse DX on some bundlers
 - Want a single implementation
@@ -389,6 +405,7 @@ if (module.hot) {
 ```
 
 **Implementation:**
+
 1. Create runtime adapter (as shown above)
 2. Test on all major bundlers
 3. Fallback to page reload if HMR fails
@@ -396,6 +413,7 @@ if (module.hot) {
 ### Strategy C: Plugin-Per-Bundler
 
 **Recommended if:**
+
 - You want optimal experience everywhere
 - Have resources to maintain multiple plugins
 - Users are technical enough to install correct plugin
@@ -407,6 +425,7 @@ if (module.hot) {
 ```
 
 **Implementation:**
+
 1. Shared core HMR logic in main package
 2. Bundler-specific plugins inject runtime code
 3. Plugins provide optimal integration for each bundler
@@ -416,31 +435,37 @@ if (module.hot) {
 ### Vite: Easiest
 
 **Challenges:**
+
 - None significant
 - Module graph is clean and predictable
 
 **Solution:**
+
 - Use `import.meta.hot.accept()` directly
 - Inject HMR code via plugin transform
 
 ### Webpack: Medium Difficulty
 
 **Challenges:**
+
 - No direct access to new module in accept callback
 - Must re-import or use workarounds
 - Status lifecycle is complex
 
 **Solutions:**
+
 1. **Re-import pattern:**
+
    ```typescript
    module.hot.accept('./skin.ts', () => {
-     import('./skin.ts').then(newModule => {
+     import('./skin.ts').then((newModule) => {
        updateSheet(newModule.default)
      })
    })
    ```
 
 2. **Webpack-specific plugin:**
+
    ```typescript
    // Inject loader that adds re-import logic
    ```
@@ -450,11 +475,13 @@ if (module.hot) {
 ### Parcel: Limited Control
 
 **Challenges:**
+
 - Very automatic (black box)
 - Limited API for custom HMR logic
 - May force component remount
 
 **Solutions:**
+
 - Accept limitations
 - Fallback to React Fast Refresh integration
 - Document that Parcel may lose state
@@ -497,7 +524,7 @@ export function createHMRContext(skinPath: string): HMRContext | null {
     const callbacks = new Set<(css: string) => void>()
 
     import.meta.hot.accept((newModule) => {
-      callbacks.forEach(cb => cb(newModule.default))
+      callbacks.forEach((cb) => cb(newModule.default))
     })
 
     return {
@@ -508,7 +535,7 @@ export function createHMRContext(skinPath: string): HMRContext | null {
       dispose: (cleanup) => {
         import.meta.hot!.dispose(() => cleanup())
       },
-      invalidate: () => import.meta.hot!.invalidate()
+      invalidate: () => import.meta.hot!.invalidate(),
     }
   }
 
@@ -519,7 +546,7 @@ export function createHMRContext(skinPath: string): HMRContext | null {
     module.hot.accept(skinPath, async () => {
       // Re-import to get new module
       const newModule = await import(/* webpackIgnore: true */ skinPath)
-      callbacks.forEach(cb => cb(newModule.default))
+      callbacks.forEach((cb) => cb(newModule.default))
     })
 
     return {
@@ -538,7 +565,7 @@ export function createHMRContext(skinPath: string): HMRContext | null {
           // Parcel fallback
           window.location.reload()
         }
-      }
+      },
     }
   }
 
@@ -557,26 +584,25 @@ export class Sheets<Names extends string = string> {
   #hmrContexts = new Map<Names, () => void>()
 
   load(skin: Names): Promise<CSSStyleSheet> {
-    const promise = this.#skins[skin]()
-      .then(({ default: style }) => {
-        const sheet = new CSSStyleSheet().replace(style)
+    const promise = this.#skins[skin]().then(({ default: style }) => {
+      const sheet = new CSSStyleSheet().replace(style)
 
-        // Setup HMR if available
-        const hmr = createHMRContext(`./skins/${skin}`)
-        if (hmr) {
-          const unsubscribe = hmr.onUpdate(async (newCSS) => {
-            // Update existing sheet
-            await sheet.replace(newCSS)
+      // Setup HMR if available
+      const hmr = createHMRContext(`./skins/${skin}`)
+      if (hmr) {
+        const unsubscribe = hmr.onUpdate(async (newCSS) => {
+          // Update existing sheet
+          await sheet.replace(newCSS)
 
-            // Notify all custom elements using this skin
-            this.#notifyElements(skin, sheet)
-          })
+          // Notify all custom elements using this skin
+          this.#notifyElements(skin, sheet)
+        })
 
-          this.#hmrContexts.set(skin, unsubscribe)
-        }
+        this.#hmrContexts.set(skin, unsubscribe)
+      }
 
-        return sheet
-      })
+      return sheet
+    })
 
     // ...rest of implementation
   }
@@ -635,28 +661,31 @@ describe('HMR Adapter', () => {
 
 ## Decision Matrix
 
-| Strategy | Vite | Webpack | Parcel | Complexity | Maintenance | Recommended? |
-|----------|------|---------|--------|------------|-------------|--------------|
-| Vite-First | ⭐⭐⭐ | ⭐ | ⭐ | Low | Low | **Yes (MVP)** |
-| Universal Adapter | ⭐⭐ | ⭐⭐ | ⭐⭐ | Medium | Medium | **Yes (v1.0)** |
-| Plugin-Per-Bundler | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | High | High | Future |
-| No HMR (reload) | ⭐ | ⭐ | ⭐ | Very Low | Very Low | Fallback |
+| Strategy           | Vite   | Webpack | Parcel | Complexity | Maintenance | Recommended?   |
+| ------------------ | ------ | ------- | ------ | ---------- | ----------- | -------------- |
+| Vite-First         | ⭐⭐⭐ | ⭐      | ⭐     | Low        | Low         | **Yes (MVP)**  |
+| Universal Adapter  | ⭐⭐   | ⭐⭐    | ⭐⭐   | Medium     | Medium      | **Yes (v1.0)** |
+| Plugin-Per-Bundler | ⭐⭐⭐ | ⭐⭐⭐  | ⭐⭐⭐ | High       | High        | Future         |
+| No HMR (reload)    | ⭐     | ⭐      | ⭐     | Very Low   | Very Low    | Fallback       |
 
 ## Recommendations
 
 ### For Initial Release (MVP)
+
 1. **Support Vite natively** with built-in HMR
 2. **Detect and warn** on other bundlers
 3. **Provide fallback** (page reload or no HMR)
 4. **Document**: "HMR works best with Vite, other bundlers coming soon"
 
 ### For v1.0 (Production Ready)
+
 1. **Implement universal adapter** (Strategy B)
 2. **Test on Vite, Webpack, Parcel**
 3. **Provide escape hatch** for manual HMR setup
 4. **Document limitations** per bundler
 
 ### For Future (Complete)
+
 1. **Create bundler-specific plugins** for optimal DX
 2. **Support framework integrations** (Next.js, SvelteKit, etc.)
 3. **Add HMR DevTools** panel
@@ -665,21 +694,25 @@ describe('HMR Adapter', () => {
 ## Real-World Examples
 
 ### Styled-Components
+
 - Uses Babel plugin for component tracking
 - Injects HMR code at build time
 - Works across bundlers (plugin adapts to each)
 
 ### Emotion
+
 - Runtime-based approach
 - No bundler-specific code
 - Relies on module reloading, not custom HMR
 
 ### CSS Modules
+
 - Bundler-native support
 - Each bundler handles it differently
 - You'd follow similar pattern
 
 ### Vanilla Extract
+
 - Build-time CSS generation
 - Uses Vite/Webpack plugins
 - Optimal HMR via bundler integration
@@ -694,11 +727,13 @@ describe('HMR Adapter', () => {
 4. **Later add plugins** if needed for optimal experience
 
 **You do NOT need vendor-specific solutions** if you:
+
 - Use the universal adapter pattern (Option 1 or 4)
 - Accept minor DX differences across bundlers
 - Provide good fallback behavior
 
 **You SHOULD go vendor-specific** if you:
+
 - Want absolute best experience on each bundler
 - Have resources to maintain multiple plugins
 - Target advanced users who will configure correctly

@@ -5,16 +5,19 @@
 ### Tier 1: Must Support (90%+ of users)
 
 #### 1. Vite
+
 - **Market Share:** ~60-70% of new projects
 - **HMR API:** `import.meta.hot` (native)
 - **Support Priority:** ⭐⭐⭐ **CRITICAL**
 
 #### 2. Webpack
+
 - **Market Share:** ~20-25% (legacy projects, enterprise)
 - **HMR API:** `module.hot`
 - **Support Priority:** ⭐⭐⭐ **HIGH**
 
 #### 3. Turbopack (Next.js 13+)
+
 - **Market Share:** Growing rapidly (~5-10% and rising)
 - **HMR API:** Webpack-compatible `module.hot`
 - **Support Priority:** ⭐⭐⭐ **HIGH**
@@ -36,6 +39,7 @@ if (module.hot) {
 ### Tier 2: Should Support (5-10% of users)
 
 #### 4. Rspack
+
 - **Market Share:** ~2-5% and growing
 - **HMR API:** Webpack-compatible `module.hot`
 - **Support Priority:** ⭐⭐ **MEDIUM**
@@ -54,11 +58,13 @@ if (module.hot) {
 ```
 
 #### 5. Parcel
+
 - **Market Share:** ~3-5%
 - **HMR API:** `module.hot` (Webpack subset)
 - **Support Priority:** ⭐⭐ **MEDIUM**
 
 #### 6. Rollup (with plugins)
+
 - **Market Share:** ~5-10% (mostly for libraries)
 - **HMR API:** Plugin-dependent, often `import.meta.hot`
 - **Support Priority:** ⭐⭐ **MEDIUM (for library dev)**
@@ -79,6 +85,7 @@ if (import.meta.hot) {
 ### Tier 3: Nice to Have (1-5% of users)
 
 #### 7. esbuild
+
 - **Market Share:** ~3-5% (often behind other tools)
 - **HMR API:** ⚠️ **NO NATIVE HMR**
 - **Support Priority:** ⭐ **LOW**
@@ -91,6 +98,7 @@ if (import.meta.hot) {
 **Recommendation:** Don't explicitly support - let them use live reload
 
 #### 8. Bun (bundler mode)
+
 - **Market Share:** ~1-2%
 - **HMR API:** `Bun.hot` (custom API)
 - **Support Priority:** ⭐ **EXPERIMENTAL**
@@ -109,6 +117,7 @@ if (typeof Bun !== 'undefined' && Bun.hot) {
 ```
 
 #### 9. Farm
+
 - **Market Share:** <1%
 - **HMR API:** `import.meta.hot` (Vite-compatible)
 - **Support Priority:** ⭐ **LOW**
@@ -119,6 +128,7 @@ if (typeof Bun !== 'undefined' && Bun.hot) {
   - Will work if you support Vite
 
 #### 10. WMR (Preact)
+
 - **Market Share:** <1%
 - **HMR API:** `import.meta.hot`
 - **Support Priority:** ⭐ **LOW**
@@ -131,14 +141,17 @@ if (typeof Bun !== 'undefined' && Bun.hot) {
 ### Tier 4: Legacy/Deprecated
 
 #### 11. Snowpack
+
 - **Status:** ⚠️ Deprecated (merged into Vite)
 - **Support Priority:** ❌ **NONE**
 
 #### 12. FuseBox
+
 - **Status:** Mostly inactive
 - **Support Priority:** ❌ **NONE**
 
 #### 13. Rome/Biome
+
 - **Status:** Toolchain (linter/formatter), not a bundler yet
 - **Support Priority:** ❌ **NONE** (watch for future)
 
@@ -147,6 +160,7 @@ if (typeof Bun !== 'undefined' && Bun.hot) {
 After analyzing all bundlers, there are really only **3 API patterns:**
 
 ### Family A: `import.meta.hot` (Modern ESM)
+
 - ✅ Vite
 - ✅ Farm
 - ✅ WMR
@@ -154,12 +168,14 @@ After analyzing all bundlers, there are really only **3 API patterns:**
 - ✅ Bun (as `Bun.hot` variant)
 
 ### Family B: `module.hot` (Webpack-style)
+
 - ✅ Webpack
 - ✅ Turbopack
 - ✅ Rspack
 - ✅ Parcel
 
 ### Family C: No HMR / Custom
+
 - ❌ esbuild (none)
 - ⚠️ Bun (custom but similar to A)
 
@@ -219,8 +235,7 @@ export function detectBundler(): BundlerType {
     }
 
     // Rspack (checks for specific global)
-    if (typeof __webpack_require__ !== 'undefined' &&
-        typeof __rspack_version__ !== 'undefined') {
+    if (typeof __webpack_require__ !== 'undefined' && typeof __rspack_version__ !== 'undefined') {
       return 'rspack'
     }
 
@@ -284,7 +299,7 @@ export function createHMRAdapter(): HMRAdapter | null {
         accept: (cb) => import.meta.hot!.accept(cb),
         dispose: (cb) => import.meta.hot!.dispose(cb),
         invalidate: () => import.meta.hot!.invalidate(),
-        data: import.meta.hot!.data || {}
+        data: import.meta.hot!.data || {},
       }
 
     case 'commonjs':
@@ -313,7 +328,7 @@ export function createHMRAdapter(): HMRAdapter | null {
             window.location.reload()
           }
         },
-        data
+        data,
       }
 
     case 'custom':
@@ -322,7 +337,7 @@ export function createHMRAdapter(): HMRAdapter | null {
         accept: (cb) => Bun.hot!.accept(cb),
         dispose: (cb) => Bun.hot!.dispose?.(cb) || (() => {}),
         invalidate: () => Bun.hot!.invalidate?.() || window.location.reload(),
-        data: Bun.hot!.data || {}
+        data: Bun.hot!.data || {},
       }
 
     case 'none':
@@ -399,6 +414,7 @@ declare const process: Process | undefined
 ## Real-World Framework Integration
 
 ### Next.js (Turbopack/Webpack)
+
 ```typescript
 // Next.js uses Webpack or Turbopack
 // Both use module.hot API
@@ -411,6 +427,7 @@ if (module.hot) {
 ```
 
 ### Remix (esbuild)
+
 ```typescript
 // Remix uses esbuild - NO HMR for CSS-in-JS
 // Use live reload or manual refresh
@@ -418,6 +435,7 @@ if (module.hot) {
 ```
 
 ### Astro (Vite)
+
 ```typescript
 // Astro uses Vite internally
 if (import.meta.hot) {
@@ -427,6 +445,7 @@ if (import.meta.hot) {
 ```
 
 ### SvelteKit (Vite)
+
 ```typescript
 // SvelteKit uses Vite
 if (import.meta.hot) {
@@ -436,12 +455,14 @@ if (import.meta.hot) {
 ```
 
 ### Nuxt (Vite/Webpack)
+
 ```typescript
 // Nuxt 3 uses Vite by default, Webpack optionally
 // Support both APIs
 ```
 
 ### Qwik (Vite)
+
 ```typescript
 // Qwik uses Vite
 if (import.meta.hot) {
@@ -466,20 +487,24 @@ Other:               ▌                                        <1%
 ## Prioritized Support Strategy
 
 ### Phase 1: Core (Covers 90%)
+
 1. ✅ Vite (`import.meta.hot`)
 2. ✅ Webpack (`module.hot` with re-import)
 3. ✅ Turbopack (same as Webpack)
 
 ### Phase 2: Extended (Covers 98%)
+
 4. ✅ Rspack (same as Webpack)
 5. ✅ Parcel (same as Webpack, simpler)
 6. ✅ Rollup (same as Vite)
 
 ### Phase 3: Future (Covers 99%+)
+
 7. ⚠️ Bun (monitor for stability)
 8. ⚠️ Farm (auto-works if Vite compatible)
 
 ### Explicitly Not Supporting
+
 - ❌ esbuild (no HMR capability)
 - ❌ Snowpack (deprecated)
 - ❌ FuseBox (inactive)
@@ -506,6 +531,7 @@ Other:               ▌                                        <1%
 Flesh Cage supports Hot Module Replacement (HMR) across all major bundlers:
 
 ## Fully Supported ✅
+
 - **Vite** - Native support, zero configuration
 - **Webpack** - Full support via adapter
 - **Turbopack** (Next.js) - Full support via adapter
@@ -514,25 +540,30 @@ Flesh Cage supports Hot Module Replacement (HMR) across all major bundlers:
 - **Rollup** - Via plugins (rollup-plugin-hot)
 
 ## Experimental ⚠️
+
 - **Bun** - Basic support (API still evolving)
 
 ## Not Supported ❌
+
 - **esbuild** - No HMR capability (use live reload)
 
 ## Setup
 
 ### Vite (Zero Config)
+
 ```typescript
 // Works automatically! No setup needed.
 ```
 
 ### Webpack/Turbopack/Rspack
+
 ```typescript
 // Works automatically via universal adapter
 // Optional: Install @flesh-cage/webpack-plugin for advanced features
 ```
 
 ### Other Bundlers
+
 Check our [bundler compatibility guide](./docs/bundlers.md)
 ````
 
@@ -541,6 +572,7 @@ Check our [bundler compatibility guide](./docs/bundlers.md)
 Since you specifically asked about Rollup:
 
 ### When Rollup is Used
+
 1. **Library development** (your use case!)
 2. **Via Vite** (Vite uses Rollup for production builds)
 3. **With dev servers** (WMR, custom setups)
@@ -548,6 +580,7 @@ Since you specifically asked about Rollup:
 ### Rollup HMR Plugins
 
 #### Option 1: rollup-plugin-hot
+
 ```bash
 npm install -D rollup-plugin-hot
 ```
@@ -560,15 +593,16 @@ export default {
   plugins: [
     hot({
       public: 'dist',
-      inMemory: true
-    })
-  ]
+      inMemory: true,
+    }),
+  ],
 }
 ```
 
 Provides: `import.meta.hot` (Vite-compatible)
 
 #### Option 2: @rollup/plugin-hot
+
 ```bash
 npm install -D @rollup/plugin-hot
 ```
@@ -578,6 +612,7 @@ Similar API to rollup-plugin-hot
 ### Rollup Reality Check
 
 **Important:** Most Rollup users don't use HMR because:
+
 - Rollup is primarily for **building libraries**, not running dev servers
 - App developers using Rollup typically use it through Vite
 - Direct Rollup HMR setups are rare (<1% of Rollup users)
@@ -586,17 +621,17 @@ Similar API to rollup-plugin-hot
 
 ## Final Recommendation Matrix
 
-| Bundler | Support Level | Implementation | Priority |
-|---------|--------------|----------------|----------|
-| Vite | ✅ Full | Native `import.meta.hot` | **P0** |
-| Webpack | ✅ Full | Universal adapter | **P0** |
-| Turbopack | ✅ Full | Universal adapter (Webpack API) | **P0** |
-| Rspack | ✅ Full | Universal adapter (Webpack API) | **P1** |
-| Parcel | ⚠️ Basic | Universal adapter (Webpack API) | **P1** |
-| Rollup | ✅ Auto | Works if Vite API supported | **P2** |
-| Farm | ✅ Auto | Works if Vite API supported | **P2** |
-| Bun | ⚠️ Experimental | Custom adapter | **P3** |
-| esbuild | ❌ None | Document "not supported" | **N/A** |
+| Bundler   | Support Level   | Implementation                  | Priority |
+| --------- | --------------- | ------------------------------- | -------- |
+| Vite      | ✅ Full         | Native `import.meta.hot`        | **P0**   |
+| Webpack   | ✅ Full         | Universal adapter               | **P0**   |
+| Turbopack | ✅ Full         | Universal adapter (Webpack API) | **P0**   |
+| Rspack    | ✅ Full         | Universal adapter (Webpack API) | **P1**   |
+| Parcel    | ⚠️ Basic        | Universal adapter (Webpack API) | **P1**   |
+| Rollup    | ✅ Auto         | Works if Vite API supported     | **P2**   |
+| Farm      | ✅ Auto         | Works if Vite API supported     | **P2**   |
+| Bun       | ⚠️ Experimental | Custom adapter                  | **P3**   |
+| esbuild   | ❌ None         | Document "not supported"        | **N/A**  |
 
 ## Action Items
 

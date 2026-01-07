@@ -3,6 +3,7 @@
 ## Problem Statement
 
 **Scenario**: User rapidly switches skins:
+
 ```
 0ms   → skin="material"     (starts loading)
 100ms → skin="glassmorphic" (starts loading)
@@ -10,12 +11,14 @@
 ```
 
 **Without abort control**:
+
 - All 3 skins continue loading
 - Waste bandwidth downloading unused CSS
 - Race condition: whichever finishes last wins (unpredictable UI)
 - Memory leak: cached unused stylesheets
 
 **With abort control**:
+
 - Only "brutalist" finishes loading
 - "material" and "glassmorphic" abort (cancel network requests)
 - Predictable: UI always shows latest requested skin
@@ -116,9 +119,13 @@ export class Sheets<T extends string = string> extends Map<
 
     // Link external signal to internal controller
     if (signal) {
-      signal.addEventListener('abort', () => {
-        controller.abort(signal.reason)
-      }, { once: true })
+      signal.addEventListener(
+        'abort',
+        () => {
+          controller.abort(signal.reason)
+        },
+        { once: true }
+      )
     }
 
     const loader = this.#skins[skin]
@@ -133,7 +140,7 @@ export class Sheets<T extends string = string> extends Map<
       switch (loaderType) {
         case 'array':
           stream = createSkinStream(loader as SkinChunkArray, {
-            signal: controller.signal
+            signal: controller.signal,
           })
           break
 
@@ -204,9 +211,7 @@ export class Sheets<T extends string = string> extends Map<
   /**
    * Detect loader type
    */
-  private detectLoaderType(
-    loader: any
-  ): 'array' | 'generator' | 'legacy' {
+  private detectLoaderType(loader: any): 'array' | 'generator' | 'legacy' {
     if (Array.isArray(loader)) {
       return 'array'
     }
@@ -229,7 +234,7 @@ export class Sheets<T extends string = string> extends Map<
   /**
    * Convert legacy loader to stream
    */
-  private async* legacyToStream(
+  private async *legacyToStream(
     loader: () => Promise<{ default: string }>,
     signal: AbortSignal
   ): AsyncGenerator<SkinChunk> {
@@ -248,7 +253,7 @@ export class Sheets<T extends string = string> extends Map<
     yield {
       name: 'legacy',
       priority: 'critical',
-      css
+      css,
     }
   }
 
@@ -290,9 +295,11 @@ export class Sheets<T extends string = string> extends Map<
     if (signal.aborted) return // Don't dispatch if aborted
 
     if (typeof window !== 'undefined') {
-      window.dispatchEvent(new CustomEvent('skin-chunk-loaded', {
-        detail: { sheets }
-      }))
+      window.dispatchEvent(
+        new CustomEvent('skin-chunk-loaded', {
+          detail: { sheets },
+        })
+      )
     }
   }
 }
@@ -549,10 +556,7 @@ export type SkinStreamLoader = (signal?: AbortSignal) => AsyncGenerator<SkinChun
 export type SkinArrayLoader = SkinChunkArray
 
 // Unified type
-export type UnifiedSkinLoader =
-  | SkinLoader
-  | SkinStreamLoader
-  | SkinArrayLoader
+export type UnifiedSkinLoader = SkinLoader | SkinStreamLoader | SkinArrayLoader
 
 export type Skins<T extends string = string> = Record<T, UnifiedSkinLoader>
 ```
@@ -574,11 +578,12 @@ export const material = [
 
 export const Button = styled(ButtonBase, {
   skins: { material },
-  name: 'styled-button'
+  name: 'styled-button',
 })
 ```
 
 **Behavior**:
+
 ```jsx
 // User rapidly changes skins
 <Button skin="material" />      // Starts loading
@@ -606,7 +611,7 @@ export async function* streamMaterialSkin(signal?: AbortSignal) {
   yield {
     name: 'critical',
     priority: 'critical',
-    css: criticalCSS
+    css: criticalCSS,
   }
 
   // Check abort between chunks
@@ -621,12 +626,13 @@ export async function* streamMaterialSkin(signal?: AbortSignal) {
   yield {
     name: 'animations',
     priority: 'high',
-    css: animationsCSS
+    css: animationsCSS,
   }
 }
 ```
 
 **Benefits**:
+
 - `fetch()` automatically cancels network requests when signal aborts
 - Checks between chunks prevent unnecessary work
 - Clean, predictable cleanup
@@ -657,9 +663,9 @@ export const Button = styled(ButtonBase, {
       // This signal aborts when component unmounts
       yield { css: await loadCritical(signal) }
       yield { css: await loadAnimations(signal) }
-    }
+    },
   },
-  name: 'styled-button'
+  name: 'styled-button',
 })
 ```
 
@@ -670,6 +676,7 @@ export const Button = styled(ButtonBase, {
 ### Scenario 1: Rapid Skin Switching
 
 **Timeline**:
+
 ```
 0ms   → User selects "material"
         ├─ AbortController created (controller1)
@@ -700,12 +707,14 @@ export const Button = styled(ButtonBase, {
 ### Scenario 2: Multiple Components, Same Skin
 
 **Setup**:
+
 ```jsx
 <Button skin="material" />  {/* Button 1 */}
 <Button skin="material" />  {/* Button 2 */}
 ```
 
 **Timeline**:
+
 ```
 0ms   → Button 1 mounts
         ├─ Sheets.load('material') called
@@ -753,6 +762,7 @@ override get(skin: T): CSSStyleSheet[] | Promise<CSSStyleSheet[]> {
 ### Scenario 3: Component Unmounts During Load
 
 **Timeline**:
+
 ```
 0ms   → Button mounts, starts loading "material"
         └─ Status: Loading...
@@ -774,6 +784,7 @@ override get(skin: T): CSSStyleSheet[] | Promise<CSSStyleSheet[]> {
 ### With Abort Control
 
 **Network**:
+
 ```
 0ms ────────────────────────────────────────────────────────── 500ms
      |                                                         |
@@ -791,6 +802,7 @@ Total downloaded: 3 KB (only brutalist)
 ### Without Abort Control
 
 **Network**:
+
 ```
 0ms ────────────────────────────────────────────────────────── 500ms
      |                                                         |
@@ -814,11 +826,11 @@ Race condition: whichever finishes last wins
 
 ## Browser Compatibility
 
-| Feature | Chrome | Firefox | Safari | Edge |
-|---------|--------|---------|--------|------|
-| **AbortController** | 66+ | 57+ | 12.1+ | 79+ |
-| **AbortSignal** | 66+ | 57+ | 12.1+ | 79+ |
-| **fetch() + signal** | 66+ | 57+ | 12.1+ | 79+ |
+| Feature              | Chrome | Firefox | Safari | Edge |
+| -------------------- | ------ | ------- | ------ | ---- |
+| **AbortController**  | 66+    | 57+     | 12.1+  | 79+  |
+| **AbortSignal**      | 66+    | 57+     | 12.1+  | 79+  |
+| **fetch() + signal** | 66+    | 57+     | 12.1+  | 79+  |
 
 **Coverage**: ~96% of global browser usage
 
@@ -890,16 +902,19 @@ test('can manually abort loads', async () => {
 ### ✅ DO
 
 1. **Always check signal.aborted** before expensive operations:
+
    ```typescript
    if (signal?.aborted) throw new DOMException('Aborted', 'AbortError')
    ```
 
 2. **Pass signal to fetch()**:
+
    ```typescript
    await fetch('/api/skin', { signal })
    ```
 
 3. **Check after async operations**:
+
    ```typescript
    const data = await fetch(url, { signal })
    if (signal?.aborted) throw new DOMException('Aborted', 'AbortError')
@@ -920,6 +935,7 @@ test('can manually abort loads', async () => {
 ### ❌ DON'T
 
 1. **Don't ignore AbortError**:
+
    ```typescript
    // ❌ Bad
    try {
@@ -938,6 +954,7 @@ test('can manually abort loads', async () => {
    ```
 
 2. **Don't forget to clean up controllers**:
+
    ```typescript
    // ❌ Bad
    const controller = new AbortController()
@@ -955,13 +972,11 @@ test('can manually abort loads', async () => {
    ```
 
 3. **Don't abort shared resources**:
+
    ```typescript
    // ❌ Bad: Sharing controller between multiple operations
    const controller = new AbortController()
-   Promise.all([
-     loadCritical(controller.signal),
-     loadAnimations(controller.signal)
-   ])
+   Promise.all([loadCritical(controller.signal), loadAnimations(controller.signal)])
    controller.abort() // Aborts both!
 
    // ✅ Good: Separate controllers or linked signals
