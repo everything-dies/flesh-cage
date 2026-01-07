@@ -52,34 +52,27 @@ function App() {
 }
 ```
 
-## Package Exports
+## API
 
-This package provides multiple entry points for different use cases:
-
-### Main Export (Component API)
+### Main Export
 
 ```typescript
-import { styled, Provider, useContext, useCore } from '@everything-dies/flesh-cage'
+import { styled, Provider, useContext } from '@everything-dies/flesh-cage'
+import type { SkinLoader, Skins, StyledConfig } from '@everything-dies/flesh-cage'
 ```
 
-React-compatible component API. Includes:
+**Component API:**
 
-- `styled()` - Create shadow components with skins
+- `styled(Component, config)` - Create shadow components with skins
 - `Provider` - Context-based skin management
 - `useContext()` - Access current skin from context
-- `useCore()` - Low-level hook for custom elements
 
-### Core Utilities
+**Type Definitions:**
 
-```typescript
-import { Sheets } from '@everything-dies/flesh-cage/core'
-import type { SkinLoader, Skins } from '@everything-dies/flesh-cage/core'
-```
-
-For advanced use cases:
-
-- `Sheets` - Manages CSSStyleSheet loading and caching
-- Type definitions for custom integrations
+- `SkinLoader` - Function type for lazy-loading skin CSS
+- `Skins<T>` - Record mapping skin names to loaders
+- `StyledConfig<Names>` - Configuration object for `styled()`
+- `ProviderProps` - Props for Provider component
 
 ## Features
 
@@ -107,8 +100,37 @@ export const Button = styled(ButtonBase, {
   name: 'styled-button',
   skins: { material: () => import('./material') },
   exportparts: 'label, surface',
+  suspendable: false, // Optional: integrate with React Suspense
 })
 ```
+
+**Configuration Options:**
+
+- `name` - Custom element tag name (required, must contain hyphen)
+- `skins` - Map of skin names to lazy loader functions
+- `suspendable` - Enable React Suspense integration (default: `false`)
+- Any HTML attributes (e.g., `exportparts`, `class`, `data-*`)
+
+**Suspendable Components:**
+
+When `suspendable: true`, the component integrates with React Suspense:
+
+```tsx
+export const Button = styled(ButtonBase, {
+  name: 'styled-button',
+  skins: { material: () => import('./material') },
+  suspendable: true,
+})
+
+// Use with Suspense boundary
+<Suspense fallback={<div>Loading skin...</div>}>
+  <Button>Click Me</Button>
+</Suspense>
+```
+
+**Automatic Abort on Skin Switch:**
+
+Flesh Cage automatically aborts stale skin loads when switching skins rapidly. Uses `AbortController` internally to prevent race conditions where a slow-loading skin overwrites a fast-loading one.
 
 **`Provider`** - Context-based skin management
 
@@ -124,7 +146,7 @@ export const Button = styled(ButtonBase, {
 import { useContext } from '@everything-dies/flesh-cage'
 
 function MyComponent() {
-  const { skin } = useContext()
+  const skin = useContext()
   return <div>Current skin: {skin}</div>
 }
 ```

@@ -2,7 +2,7 @@ import { use, useLayoutEffect, useRef, useState } from 'react'
 
 import { useContext } from './use-context'
 
-export const useCore = () => {
+export const useCore = ({ suspendable }: { suspendable: boolean }) => {
   const skin = useContext()
   const ref = useRef<HTMLElement>(null)
   const [suspension, persist] = useState<Promise<unknown> | undefined>()
@@ -10,14 +10,17 @@ export const useCore = () => {
     document.createDocumentFragment()
   )
 
-  useLayoutEffect(() => attach(ref.current?.shadowRoot as ShadowRoot), [])
+  useLayoutEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    attach(ref.current?.shadowRoot as ShadowRoot)
+  }, [])
 
   useLayoutEffect(() => {
     const element = ref.current as HTMLElement
     const suspend = (event: Event) => {
       const { detail } = event as CustomEvent<Promise<unknown>>
 
-      return persist(detail)
+      persist(detail)
     }
 
     element.addEventListener('suspend', suspend)
@@ -31,7 +34,7 @@ export const useCore = () => {
     element.dispatchEvent(new CustomEvent('change', { detail: { skin } }))
   }, [skin])
 
-  if (suspension) {
+  if (suspendable && suspension) {
     use(suspension)
   }
 

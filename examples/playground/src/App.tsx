@@ -22,25 +22,25 @@ export function App() {
         <h1>Flesh Cage Playground</h1>
 
         <div>
-          <Suspense fallback="Loading style...">
-            <h2>Select Skin:</h2>
+          <h2>Select Skin:</h2>
 
-            <Button onClick={toggle} value="material">
-              Material
-            </Button>
+          <Button onClick={toggle} value="material">
+            Material
+          </Button>
 
-            <Button onClick={toggle} value="brutalist">
-              Brutalist
-            </Button>
+          <Button onClick={toggle} value="brutalist">
+            Brutalist
+          </Button>
 
-            <Button onClick={toggle} value="glassmorphic">
-              Glassmorphic
-            </Button>
+          <Button onClick={toggle} value="glassmorphic">
+            Glassmorphic
+          </Button>
 
-            <p>
-              Current: <strong>{skin}</strong>
-            </p>
-          </Suspense>
+          <p>
+            Current: <strong>{skin}</strong>
+          </p>
+
+          <Suspense fallback="Loading style..."></Suspense>
         </div>
 
         <Suspense fallback="Loading style...">

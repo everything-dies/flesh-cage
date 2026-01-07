@@ -28,6 +28,7 @@ export const Button = styled(ButtonBase, {
     brutalist: () => import('./skins/brutalist'),
   },
   exportparts: 'label, surface',
+  suspendable: false, // Optional: integrate with React Suspense
 })
 ```
 
@@ -55,21 +56,8 @@ function App() {
 import { useContext } from '@everything-dies/flesh-cage'
 
 function MyComponent() {
-  const { skin } = useContext()
+  const skin = useContext()
   return <div>Current skin: {skin}</div>
-}
-```
-
-**`useCore()`** - Low-level hook for custom elements
-
-```tsx
-import { useCore } from '@everything-dies/flesh-cage'
-
-function MyComponent() {
-  const { container, ref, skin } = useCore()
-  // container: React Portal target
-  // ref: Shadow root reference
-  // skin: Current skin name
 }
 ```
 
@@ -89,7 +77,7 @@ export default `
 
 // Usage
 skins: {
-  material: () => import('./skins/material')  // Lazy-loaded
+  material: () => import('./skins/material') // Lazy-loaded
 }
 ```
 
@@ -99,7 +87,34 @@ skins: {
 - ✅ Constructable Stylesheets adoption
 - ✅ CSS encapsulation
 - ✅ `exportparts` attribute support
-- ✅ Suspense integration
+- ✅ React Suspense integration (via `suspendable` option)
+- ✅ Automatic abort of stale skin loads (via `AbortController`)
+
+### Configuration Options
+
+**`styled()` accepts:**
+
+- `name` - Custom element tag name (required, must contain hyphen)
+- `skins` - Map of skin names to lazy loader functions
+- `suspendable` - Enable React Suspense integration (default: `false`)
+- Any HTML attributes (e.g., `exportparts`, `class`, `data-*`)
+
+**Suspendable components** integrate with React Suspense boundaries:
+
+```tsx
+export const Button = styled(ButtonBase, {
+  name: 'styled-button',
+  skins: { material: () => import('./material') },
+  suspendable: true, // Enable Suspense
+})
+
+// Use with Suspense boundary
+<Suspense fallback={<div>Loading...</div>}>
+  <Button>Click Me</Button>
+</Suspense>
+```
+
+**Automatic abort on skin switch** prevents race conditions when rapidly switching skins. Uses `AbortController` internally - if you switch from skin A to skin B before A finishes loading, A's load is automatically aborted.
 
 ### Type System
 
@@ -108,6 +123,7 @@ import type { SkinLoader, Skins, StyledConfig } from '@everything-dies/flesh-cag
 
 // SkinLoader = () => Promise<{ default: string }>
 // Skins<T> = Record<T, SkinLoader>
+// StyledConfig<Names> = { name: string, skins: Skins<Names>, suspendable?: boolean, ... }
 ```
 
 ---
@@ -119,19 +135,21 @@ See [docs/proposals/](./proposals/) for detailed design documents.
 ### Advanced Loading Strategies
 
 #### Array-Based Skin API
+
 **Status**: Proposal only
 **Proposal**: [SIMPLIFIED_ARRAY_API.md](./proposals/SIMPLIFIED_ARRAY_API.md)
 
 ```tsx
 // NOT IMPLEMENTED YET
 export const material = [
-  () => import('./material/critical'),    // Load first
-  () => import('./material/animations'),  // Load second
-  () => import('./material/variants'),    // Load last
+  () => import('./material/critical'), // Load first
+  () => import('./material/animations'), // Load second
+  () => import('./material/variants'), // Load last
 ]
 ```
 
 #### Progressive Chunk Loading
+
 **Status**: Proposal only
 **Proposal**: [ASYNC_SKIN_LOADING_PLAN.md](./proposals/ASYNC_SKIN_LOADING_PLAN.md)
 
@@ -143,18 +161,10 @@ export async function* streamMaterial() {
 }
 ```
 
-#### AbortController Integration
-**Status**: Proposal only
-**Proposal**: [ABORT_STALE_SKIN_LOADS.md](./proposals/ABORT_STALE_SKIN_LOADS.md)
-
-```tsx
-// NOT IMPLEMENTED YET
-// Automatically abort stale skin loads when switching skins
-```
-
 ### Alternative APIs
 
 #### `createShadowComponent()` Factory
+
 **Status**: Not implemented
 
 ```tsx
@@ -169,6 +179,7 @@ const Button = createShadowComponent({
 **Note**: Current equivalent is `styled(ComponentBase, config)`
 
 #### `withShadowStyles()` HOC
+
 **Status**: Not implemented
 
 ```tsx
@@ -182,6 +193,7 @@ const Button = withShadowStyles(ButtonBase, {
 **Note**: Current equivalent is `styled(ComponentBase, config)`
 
 #### `<ShadowRoot>` Component
+
 **Status**: Not implemented
 
 ```tsx
@@ -198,23 +210,17 @@ export const Button = ({ children }) => (
 ### Developer Experience
 
 #### Hot Module Replacement (HMR)
+
 **Status**: Proposal only
 **Proposals**:
+
 - [HMR_INTEGRATION_GUIDE.md](./proposals/HMR_INTEGRATION_GUIDE.md)
 - [HMR_BUNDLER_COMPARISON.md](./proposals/HMR_BUNDLER_COMPARISON.md)
 - [HMR_EXTENDED_BUNDLERS.md](./proposals/HMR_EXTENDED_BUNDLERS.md)
 
 #### Vite Plugin
-**Status**: Placeholder only
 
-```tsx
-// NOT IMPLEMENTED YET
-import { shadowComponents } from '@everything-dies/flesh-cage/vite'
-
-export default defineConfig({
-  plugins: [shadowComponents()]
-})
-```
+**Status**: Removed (will be redesigned in future)
 
 ---
 
@@ -292,16 +298,16 @@ When documenting features:
 
 ## Quick Reference
 
-| Feature | Status | Import |
-|---------|--------|--------|
-| `styled()` | ✅ Implemented | `@everything-dies/flesh-cage` |
-| `Provider` | ✅ Implemented | `@everything-dies/flesh-cage` |
-| `useContext()` | ✅ Implemented | `@everything-dies/flesh-cage` |
-| `useCore()` | ✅ Implemented | `@everything-dies/flesh-cage` |
-| `createShadowComponent()` | ❌ Not implemented | - |
-| `withShadowStyles()` | ❌ Not implemented | - |
-| `<ShadowRoot>` | ❌ Not implemented | - |
-| Array-based skins | ❌ Not implemented | - |
-| Streaming skins | ❌ Not implemented | - |
-| AbortController | ❌ Not implemented | - |
-| Vite plugin | ❌ Placeholder only | - |
+| Feature                   | Status             | Import                        |
+| ------------------------- | ------------------ | ----------------------------- |
+| `styled()`                | ✅ Implemented     | `@everything-dies/flesh-cage` |
+| `Provider`                | ✅ Implemented     | `@everything-dies/flesh-cage` |
+| `useContext()`            | ✅ Implemented     | `@everything-dies/flesh-cage` |
+| `suspendable` option      | ✅ Implemented     | Part of `styled()` config     |
+| AbortController           | ✅ Implemented     | Automatic (internal)          |
+| `createShadowComponent()` | ❌ Not implemented | -                             |
+| `withShadowStyles()`      | ❌ Not implemented | -                             |
+| `<ShadowRoot>`            | ❌ Not implemented | -                             |
+| Array-based skins         | ❌ Not implemented | -                             |
+| Streaming skins           | ❌ Not implemented | -                             |
+| Vite plugin               | ❌ Removed         | -                             |

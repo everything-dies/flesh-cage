@@ -1,59 +1,61 @@
 import { createPortal } from 'react-dom'
-import { type ComponentType, type HTMLAttributes, createElement } from 'react'
+import { type ComponentType, createElement } from 'react'
 
-import type { Skins } from './types'
+import type { StyledConfig } from './types'
 import { Sheets } from './sheets'
 import { useCore } from './use-core'
 
-export interface StyledConfig<Names extends string = string> extends Partial<
-  HTMLAttributes<HTMLElement>
-> {
-  name: string
-  skins: Skins<Names>
-}
+export const verify = (error: Error) =>
+  error.name === 'AbortError' ? void error : Promise.reject(error)
 
-export const styled = <Props extends {}, Names extends string = string>(
+export const styled = <Props extends Record<string, unknown>, Names extends string = string>(
   Component: ComponentType<Props>,
-  { name, skins, ...attributes }: StyledConfig<Names>
+  { suspendable = false, name, skins, ...attributes }: StyledConfig<Names>
 ): ComponentType<Props> => {
   const sheets = new Sheets({ skins })
 
   class CustomElement extends HTMLElement {
     static observedAttributes = ['skin'] as const
 
-    constructor() {
-      super()
-    }
+    controller = new AbortController()
 
     shadow = this.attachShadow({ mode: 'open' })
 
     adorn = (skin: string) => {
-      const adopt = (sheet: CSSStyleSheet) =>
-        Object.assign(this.shadow, { adoptedStyleSheets: [sheet] })
+      const { controller: previous } = this
+      const next = (this.controller = new AbortController())
+      const invalid = !sheets.validate(skin)
+      const adopt = (sheet: CSSStyleSheet) => {
+        next.signal.throwIfAborted()
+
+        return Object.assign(this.shadow, { adoptedStyleSheets: [sheet] })
+      }
+
+      previous.abort()
 
       return new Promise<CSSStyleSheet>((resolve, reject) => {
-        return !sheets.validate(skin)
-          ? reject(new Error('Invalid skin'))
-          : resolve(sheets.get(skin))
-      }).then(adopt)
+        if (invalid) {
+          reject(new Error('Invalid skin'))
+        } else {
+          resolve(sheets.get(skin))
+        }
+      })
+        .then(adopt)
+        .catch(verify)
     }
 
-    attributeChangedCallback<Attribute extends (typeof CustomElement.observedAttributes)[number]>(
-      name: Attribute,
-      _: string,
-      skin: string
-    ) {
+    attributeChangedCallback(name: string, _: string, skin: string) {
       switch (true) {
         case name.trim().toLowerCase() === 'skin':
-          return this.suspend(this.adorn(skin))
+          this.suspend(this.adorn(skin))
       }
     }
 
     change = (event: Event) => {
       const { detail } = event as CustomEvent<{ skin: string }>
-      const skin = (this.getAttribute('skin') ?? detail.skin ?? '').trim().toLowerCase()
+      const skin = (this.getAttribute('skin') ?? detail.skin).trim().toLowerCase()
 
-      return this.suspend(this.adorn(skin))
+      this.suspend(this.adorn(skin))
     }
 
     connectedCallback() {
@@ -66,19 +68,18 @@ export const styled = <Props extends {}, Names extends string = string>(
       this.removeEventListener('change', this.change)
     }
 
+    resume = () => this.dispatchEvent(new CustomEvent('suspend'))
+
     suspend = (promise: Promise<unknown>) => {
-      const receive = () => this.dispatchEvent(new CustomEvent('suspend'))
-      const detail = promise.finally(receive)
+      const detail = promise.finally(this.resume)
       const retrieve = () => this.dispatchEvent(new CustomEvent('suspend', { detail }))
 
-      return queueMicrotask(retrieve)
+      queueMicrotask(retrieve)
     }
   }
 
-  customElements.define(name, CustomElement)
-
   const Styled = (props: Props) => {
-    const { container, ...core } = useCore()
+    const { container, ...core } = useCore({ suspendable })
 
     return createElement(
       name,
@@ -86,6 +87,8 @@ export const styled = <Props extends {}, Names extends string = string>(
       createPortal(<Component {...props} />, container)
     )
   }
+
+  customElements.define(name, CustomElement)
 
   return Styled
 }

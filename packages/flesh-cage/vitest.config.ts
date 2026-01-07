@@ -4,7 +4,6 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
-    setupFiles: ['./src/macros/test/setup.ts'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html', 'lcov'],
@@ -17,7 +16,6 @@ export default defineConfig({
         '**/*.spec.ts',
         '**/*.spec.tsx',
         '**/types.ts',
-        'src/macros/test/**',
         '**/.size-limit.cjs',
       ],
       thresholds: {

@@ -54,14 +54,11 @@ function App() {
 
 ## Package Structure
 
-This is a **single-package library** with multiple entry points:
+This is a **single-package library** focused on the core component API:
 
 ```typescript
-// Main export (Component API) - Most common
+// Main export - Component API
 import { styled, Provider, useContext } from '@everything-dies/flesh-cage'
-
-// Core utilities (advanced use)
-import { Sheets } from '@everything-dies/flesh-cage/core'
 
 // Type definitions
 import type { SkinLoader, Skins, StyledConfig } from '@everything-dies/flesh-cage'
@@ -70,8 +67,10 @@ import type { SkinLoader, Skins, StyledConfig } from '@everything-dies/flesh-cag
 **One install, everything included:**
 
 - ✅ Component API (`styled()`, `Provider`, hooks)
-- ✅ Core runtime (`Sheets`, custom elements, Shadow DOM)
-- ✅ TypeScript types (full type safety)
+- ✅ Shadow DOM integration with Constructable Stylesheets
+- ✅ Automatic skin loading with caching
+- ✅ React Suspense support
+- ✅ Full TypeScript types
 
 ## Features
 
@@ -99,8 +98,37 @@ export const Button = styled(ButtonBase, {
   name: 'styled-button',
   skins: { material: () => import('./material') },
   exportparts: 'label, surface',
+  suspendable: false, // Optional: integrate with React Suspense
 })
 ```
+
+**Configuration Options:**
+
+- `name` - Custom element tag name (required, must contain hyphen)
+- `skins` - Map of skin names to lazy loader functions
+- `suspendable` - Enable React Suspense integration for loading states (default: `false`)
+- Any HTML attributes (e.g., `exportparts`, `class`, `data-*`)
+
+**Suspendable Components:**
+
+When `suspendable: true`, the component integrates with React Suspense boundaries, allowing you to show fallback UI while skins load:
+
+```tsx
+export const Button = styled(ButtonBase, {
+  name: 'styled-button',
+  skins: { material: () => import('./material') },
+  suspendable: true, // Enable Suspense integration
+})
+
+// Use with Suspense boundary
+<Suspense fallback={<div>Loading skin...</div>}>
+  <Button>Click Me</Button>
+</Suspense>
+```
+
+**Automatic Abort on Skin Switch:**
+
+Flesh Cage automatically aborts stale skin loads when rapidly switching between skins. If you click a button to load skin A, then immediately click another button to load skin B, the incomplete load for skin A will be aborted, preventing stale updates. This uses the standard `AbortController` API internally.
 
 **`Provider`** - Context-based skin management
 
@@ -116,7 +144,7 @@ export const Button = styled(ButtonBase, {
 import { useContext } from '@everything-dies/flesh-cage'
 
 function MyComponent() {
-  const { skin } = useContext()
+  const skin = useContext()
   return <div>Current skin: {skin}</div>
 }
 ```

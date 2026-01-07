@@ -39,14 +39,20 @@ flesh-cage/
 ├── packages/
 │   └── flesh-cage/          # Single publishable package
 │       ├── src/
-│       │   ├── core/        # Core runtime
-│       │   ├── macros/      # Component macros (main export)
-│       │   └── vite/        # Vite plugin
+│       │   └── core/        # Core implementation
+│       │       ├── styled.tsx      # styled() factory
+│       │       ├── provider.tsx    # Provider component
+│       │       ├── sheets.ts       # Stylesheet loading
+│       │       └── index.ts        # Main export
 │       └── package.json     # @everything-dies/flesh-cage
 ├── examples/
 │   └── playground/          # Local development environment
 ├── .github/
 │   └── workflows/           # CI/CD pipelines
+├── docs/
+│   ├── CURRENT_VS_PLANNED.md
+│   ├── EVERYTHING_PUBLIC_PHILOSOPHY.md
+│   └── proposals/           # Future features
 └── .idea/
     └── design-docs/         # Design documentation
 ```

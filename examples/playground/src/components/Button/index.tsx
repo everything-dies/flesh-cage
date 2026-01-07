@@ -12,9 +12,13 @@ export const ButtonBase = ({ children, ...props }: Props) => (
 export const Button = styled(ButtonBase, {
   skins: {
     brutalist: () => import('./skins/brutalist'),
-    glassmorphic: () => import('./skins/glassmorphic'),
+    glassmorphic: () =>
+      import('./skins/glassmorphic').then(
+        (module) => new Promise((resolve) => window.setTimeout(resolve, 2_500, module))
+      ),
     material: () => import('./skins/material'),
   },
   exportparts: 'label, surface',
   name: 'styled-button',
+  suspendable: false,
 })

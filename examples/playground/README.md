@@ -49,7 +49,7 @@ This means:
 
 ## Testing Your Changes
 
-1. Make changes to the package (e.g., `packages/flesh-cage/src/macros/context.tsx`)
+1. Make changes to the package (e.g., `packages/flesh-cage/src/core/styled.tsx`)
 2. Save the file
 3. Vite hot reloads instantly
 4. See changes in the browser
@@ -79,7 +79,7 @@ playground/
 │   │       └── index.tsx          # Counter component example
 │   ├── App.tsx                    # Main app with Provider
 │   ├── main.tsx                   # Entry point
-│   └── vite.config.ts             # Vite config with aliases
+│   └── vite.config.ts             # Vite configuration
 ├── index.html
 └── package.json                   # Workspace dependencies
 ```

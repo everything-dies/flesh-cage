@@ -1,5 +1,7 @@
 # Package Exports Configuration Guide
 
+> **⚠️ Note:** This document is outdated and references removed packages (macros, vite). The current package structure is simpler with a single main export from `src/core/`. See [GETTING_STARTED.md](./GETTING_STARTED.md) for current information.
+
 This guide documents all configuration points that need updating when adding, removing, or changing package exports in `@everything-dies/flesh-cage`.
 
 ## Overview: The Export Chain
@@ -43,6 +45,7 @@ flowchart TD
 **When to update:** Adding/removing/renaming entry points
 
 **Example - Single Entry (Current):**
+
 ```typescript
 export default defineConfig({
   entry: {
@@ -60,12 +63,13 @@ export default defineConfig({
 ```
 
 **Example - Multiple Entries (Future):**
+
 ```typescript
 export default defineConfig({
   entry: {
-    index: 'src/core/index.ts',      // Main export
-    macros: 'src/macros/index.ts',   // React macros
-    vite: 'src/vite/index.ts',       // Vite plugin
+    index: 'src/core/index.ts', // Main export
+    macros: 'src/macros/index.ts', // React macros
+    vite: 'src/vite/index.ts', // Vite plugin
   },
   format: ['esm', 'cjs'],
   // ... rest of config
@@ -84,6 +88,7 @@ export default defineConfig({
 **When to update:** Adding/removing/renaming export paths
 
 **Example - Single Entry (Current):**
+
 ```json
 {
   "main": "./dist/index.js",
@@ -106,6 +111,7 @@ export default defineConfig({
 ```
 
 **Example - Multiple Subpath Exports (Future):**
+
 ```json
 {
   "main": "./dist/index.js",
@@ -148,6 +154,7 @@ export default defineConfig({
 ```
 
 **Consumer imports:**
+
 ```typescript
 // Main entry
 import { styled, Provider } from '@everything-dies/flesh-cage'
@@ -168,6 +175,7 @@ import fleshCagePlugin from '@everything-dies/flesh-cage/vite'
 **Location:** `/tsconfig.json` (root of monorepo)
 
 **Example - Single Entry (Current):**
+
 ```json
 {
   "compilerOptions": {
@@ -180,6 +188,7 @@ import fleshCagePlugin from '@everything-dies/flesh-cage/vite'
 ```
 
 **Example - Multiple Entries (Future):**
+
 ```json
 {
   "compilerOptions": {
@@ -206,6 +215,7 @@ import fleshCagePlugin from '@everything-dies/flesh-cage/vite'
 **Location:** `/examples/playground/tsconfig.json`
 
 **Example - Single Entry (Current):**
+
 ```json
 {
   "extends": "../../tsconfig.json",
@@ -219,6 +229,7 @@ import fleshCagePlugin from '@everything-dies/flesh-cage/vite'
 ```
 
 **Example - Multiple Entries (Future):**
+
 ```json
 {
   "extends": "../../tsconfig.json",
@@ -246,32 +257,28 @@ import fleshCagePlugin from '@everything-dies/flesh-cage/vite'
 **Location:** `/examples/playground/vite.config.ts`
 
 **Example - Single Entry (Current):**
+
 ```typescript
 import path from 'path'
 
 export default defineConfig({
   resolve: {
     alias: {
-      '@everything-dies/flesh-cage': path.resolve(
-        __dirname,
-        '../../packages/flesh-cage/src/core'
-      ),
+      '@everything-dies/flesh-cage': path.resolve(__dirname, '../../packages/flesh-cage/src/core'),
     },
   },
 })
 ```
 
 **Example - Multiple Entries (Future):**
+
 ```typescript
 import path from 'path'
 
 export default defineConfig({
   resolve: {
     alias: {
-      '@everything-dies/flesh-cage': path.resolve(
-        __dirname,
-        '../../packages/flesh-cage/src/core'
-      ),
+      '@everything-dies/flesh-cage': path.resolve(__dirname, '../../packages/flesh-cage/src/core'),
       '@everything-dies/flesh-cage/macros': path.resolve(
         __dirname,
         '../../packages/flesh-cage/src/macros'
@@ -294,6 +301,7 @@ export default defineConfig({
 Let's say you want to add a `macros` subpath export:
 
 ### Step 1: Create the source entry point
+
 ```bash
 # Create the new entry file
 touch packages/flesh-cage/src/macros/index.ts
@@ -307,6 +315,7 @@ export type { CreateShadowComponentConfig } from './types'
 ```
 
 ### Step 2: Update build configuration
+
 ```typescript
 // packages/flesh-cage/tsup.config.ts
 export default defineConfig({
@@ -319,12 +328,16 @@ export default defineConfig({
 ```
 
 ### Step 3: Add package.json export
+
 ```json
 // packages/flesh-cage/package.json
 {
   "exports": {
-    ".": { /* ... */ },
-    "./macros": {  // ← ADD THIS BLOCK
+    ".": {
+      /* ... */
+    },
+    "./macros": {
+      // ← ADD THIS BLOCK
       "import": {
         "types": "./dist/macros.d.ts",
         "default": "./dist/macros.js"
@@ -339,6 +352,7 @@ export default defineConfig({
 ```
 
 ### Step 4: Add TypeScript path mapping (root)
+
 ```json
 // tsconfig.json
 {
@@ -350,6 +364,7 @@ export default defineConfig({
 ```
 
 ### Step 5: Add TypeScript path mapping (playground)
+
 ```json
 // examples/playground/tsconfig.json
 {
@@ -361,19 +376,24 @@ export default defineConfig({
 ```
 
 ### Step 6: Add Vite alias (playground)
+
 ```typescript
 // examples/playground/vite.config.ts
 export default defineConfig({
   resolve: {
     alias: {
       '@everything-dies/flesh-cage': path.resolve(__dirname, '../../packages/flesh-cage/src/core'),
-      '@everything-dies/flesh-cage/macros': path.resolve(__dirname, '../../packages/flesh-cage/src/macros'), // ← ADD THIS
+      '@everything-dies/flesh-cage/macros': path.resolve(
+        __dirname,
+        '../../packages/flesh-cage/src/macros'
+      ), // ← ADD THIS
     },
   },
 })
 ```
 
 ### Step 7: Build and test
+
 ```bash
 # Build the package
 yarn build
@@ -386,6 +406,7 @@ yarn dev
 ```
 
 ### Step 8: Verify
+
 ```typescript
 // examples/playground/src/App.tsx
 import { createShadowComponent } from '@everything-dies/flesh-cage/macros' // ✅ Should work
@@ -398,6 +419,7 @@ import { createShadowComponent } from '@everything-dies/flesh-cage/macros' // �
 Let's say you want to remove the `macros` subpath export:
 
 ### Step 1: Remove from tsup config
+
 ```typescript
 // packages/flesh-cage/tsup.config.ts
 export default defineConfig({
@@ -409,39 +431,45 @@ export default defineConfig({
 ```
 
 ### Step 2: Remove from package.json exports
+
 ```json
 // packages/flesh-cage/package.json
 {
   "exports": {
-    ".": { /* ... */ },
+    ".": {
+      /* ... */
+    }
     // "./macros": { ... } // ← REMOVE THIS BLOCK
   }
 }
 ```
 
 ### Step 3: Remove TypeScript path mapping (root)
+
 ```json
 // tsconfig.json
 {
   "paths": {
-    "@everything-dies/flesh-cage": ["./packages/flesh-cage/src/core"],
+    "@everything-dies/flesh-cage": ["./packages/flesh-cage/src/core"]
     // "@everything-dies/flesh-cage/macros": [...] // ← REMOVE THIS
   }
 }
 ```
 
 ### Step 4: Remove TypeScript path mapping (playground)
+
 ```json
 // examples/playground/tsconfig.json
 {
   "paths": {
-    "@everything-dies/flesh-cage": ["../../packages/flesh-cage/src/core"],
+    "@everything-dies/flesh-cage": ["../../packages/flesh-cage/src/core"]
     // "@everything-dies/flesh-cage/macros": [...] // ← REMOVE THIS
   }
 }
 ```
 
 ### Step 5: Remove Vite alias (playground)
+
 ```typescript
 // examples/playground/vite.config.ts
 export default defineConfig({
@@ -455,6 +483,7 @@ export default defineConfig({
 ```
 
 ### Step 6: Update imports in playground
+
 ```typescript
 // If you had:
 import { createShadowComponent } from '@everything-dies/flesh-cage/macros'
@@ -465,6 +494,7 @@ import { createShadowComponent } from '@everything-dies/flesh-cage'
 ```
 
 ### Step 7: Clean and rebuild
+
 ```bash
 yarn clean
 yarn build
@@ -490,9 +520,11 @@ Follow the **"Adding"** checklist for the new name, then the **"Removing"** chec
 ## Common Pitfalls
 
 ### ❌ Forgetting to clear caches
+
 **Problem:** Vite or TypeScript still resolves to old paths
 
 **Solution:**
+
 ```bash
 rm -rf examples/playground/node_modules/.vite
 rm -rf packages/flesh-cage/dist
@@ -500,25 +532,31 @@ yarn build
 ```
 
 ### ❌ Mismatched paths between configs
+
 **Problem:** TypeScript path points to `src/core` but Vite points to `src/macros`
 
 **Solution:** Always keep all 3 path configs in sync:
+
 - `tsconfig.json` (root)
 - `examples/playground/tsconfig.json`
 - `examples/playground/vite.config.ts`
 
 ### ❌ Forgetting external dependencies
+
 **Problem:** Build fails or includes React/Vite in bundle
 
 **Solution:** Add to `tsup.config.ts`:
+
 ```typescript
 external: ['react', 'react-dom', 'vite'],
 ```
 
 ### ❌ Export path doesn't match build output
+
 **Problem:** `package.json` exports `"./macros"` but tsup builds `macros-plugin.js`
 
 **Solution:** Entry name in tsup must match export path:
+
 ```typescript
 // tsup.config.ts
 entry: {
@@ -533,19 +571,20 @@ entry: {
 
 ## Quick Reference Matrix
 
-| Config File | Purpose | Update When | Path Format |
-|------------|---------|-------------|-------------|
-| `tsup.config.ts` | Build source → dist | Add/remove entry | `src/[name]/index.ts` |
-| `package.json` | Define public API | Add/remove entry | `./dist/[name].js` |
-| `tsconfig.json` (root) | TS resolution (dev) | Add/remove entry | `./packages/flesh-cage/src/[name]` |
-| `playground/tsconfig.json` | TS resolution (playground) | Add/remove entry | `../../packages/flesh-cage/src/[name]` |
-| `playground/vite.config.ts` | Vite resolution (dev) | Add/remove entry | `path.resolve(...)` |
+| Config File                 | Purpose                    | Update When      | Path Format                            |
+| --------------------------- | -------------------------- | ---------------- | -------------------------------------- |
+| `tsup.config.ts`            | Build source → dist        | Add/remove entry | `src/[name]/index.ts`                  |
+| `package.json`              | Define public API          | Add/remove entry | `./dist/[name].js`                     |
+| `tsconfig.json` (root)      | TS resolution (dev)        | Add/remove entry | `./packages/flesh-cage/src/[name]`     |
+| `playground/tsconfig.json`  | TS resolution (playground) | Add/remove entry | `../../packages/flesh-cage/src/[name]` |
+| `playground/vite.config.ts` | Vite resolution (dev)      | Add/remove entry | `path.resolve(...)`                    |
 
 ---
 
 ## Testing Your Changes
 
 ### 1. TypeScript Resolution
+
 ```bash
 # From root
 yarn typecheck
@@ -554,6 +593,7 @@ yarn typecheck
 ```
 
 ### 2. Build Output
+
 ```bash
 yarn build
 
@@ -563,6 +603,7 @@ ls packages/flesh-cage/dist/
 ```
 
 ### 3. Runtime (Dev Server)
+
 ```bash
 yarn dev
 
@@ -570,6 +611,7 @@ yarn dev
 ```
 
 ### 4. Runtime (Built Package)
+
 ```bash
 # In a test project
 npm install /path/to/flesh-cage/packages/flesh-cage

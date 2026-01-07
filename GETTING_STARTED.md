@@ -22,50 +22,51 @@ flesh-cage/
 ├── packages/
 │   └── flesh-cage/                 # @everything-dies/flesh-cage
 │       ├── src/
-│       │   ├── core/               # Core runtime (entry: @everything-dies/flesh-cage/core)
-│       │   │   ├── sheets-cache.ts      # Ref-counted stylesheet cache
-│       │   │   ├── custom-element.ts    # Custom element utilities
-│       │   │   └── types.ts
-│       │   ├── macros/             # Component macros (main entry)
-│       │   │   ├── context.tsx              # Provider + useContext
-│       │   │   ├── create-shadow-component.tsx  # Factory API
-│       │   │   ├── with-shadow-styles.tsx   # HOC API
-│       │   │   ├── use-shadow-styles.ts     # Hook API
-│       │   │   ├── shadow-root.tsx          # Component API
-│       │   │   └── types.ts
-│       │   └── vite/               # Vite plugin (entry: @everything-dies/flesh-cage/vite)
-│       │       ├── index.ts        # Plugin implementation
-│       │       └── types.ts
-│       ├── tsup.config.ts          # Multi-entry build config
-│       └── package.json            # Single package with 3 exports
+│       │   └── core/               # Core implementation
+│       │       ├── styled.tsx      # styled() factory function
+│       │       ├── provider.tsx    # Provider component
+│       │       ├── context.ts      # React context
+│       │       ├── use-context.ts  # useContext() hook
+│       │       ├── use-core.ts     # useCore() hook (internal)
+│       │       ├── sheets.ts       # Stylesheet cache & loading
+│       │       ├── types.ts        # TypeScript definitions
+│       │       └── index.ts        # Main export
+│       ├── tsup.config.ts          # Build configuration
+│       └── package.json            # Package manifest
 │
 ├── examples/
 │   └── playground/                 # Local development app
 │       ├── src/
 │       │   ├── components/
-│       │   │   └── Button/         # Example component with 3 skins
+│       │   │   ├── Button/         # Example with 3 skins
+│       │   │   └── Counter/        # Example component
 │       │   ├── App.tsx
 │       │   └── main.tsx
-│       └── vite.config.ts          # Aliases to packages/flesh-cage/src/*
+│       └── vite.config.ts          # Vite configuration
 │
 ├── .github/
 │   └── workflows/
-│       ├── ci.yml                  # Tests, lint, type check, build
-│       └── release.yml             # Automated publishing via changesets
+│       ├── ci.yml                  # CI pipeline
+│       └── release.yml             # Automated publishing
+│
+├── docs/
+│   ├── CURRENT_VS_PLANNED.md       # Feature status
+│   ├── EVERYTHING_PUBLIC_PHILOSOPHY.md
+│   └── proposals/                  # Future features
 │
 └── .idea/
-    └── design-docs/                # All design documentation
+    └── design-docs/                # Design documentation
 ```
 
 ## Development Workflow
 
 ### 1. Make Changes to Package
 
-Edit files in `packages/flesh-cage/src/`. Changes hot reload instantly in the playground.
+Edit files in `packages/flesh-cage/src/core/`. Changes hot reload instantly in the playground.
 
 ```bash
 # Edit a file
-vim packages/flesh-cage/src/macros/context.tsx
+vim packages/flesh-cage/src/core/styled.tsx
 
 # Save - Vite automatically reloads
 # No build step needed!
@@ -186,18 +187,19 @@ touch examples/playground/src/components/Card/index.tsx
 mkdir examples/playground/src/components/Card/skins
 ```
 
-2. Implement using any API flavor:
+2. Implement using the `styled()` API:
 
 ```tsx
 // index.tsx
-import { createShadowComponent } from '@everything-dies/flesh-cage'
+import { styled } from '@everything-dies/flesh-cage'
 
-export const Card = createShadowComponent({
-  name: 'card',
+const CardBase = ({ children }) => <article part="surface">{children}</article>
+
+export const Card = styled(CardBase, {
+  name: 'styled-card',
   skins: {
     material: () => import('./skins/material'),
   },
-  render: ({ children }) => <article part="surface">{children}</article>,
 })
 ```
 
