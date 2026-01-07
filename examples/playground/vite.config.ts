@@ -11,6 +11,7 @@ export default defineConfig({
       lintDirtyOnly: true, // Only lint changed files
       emitWarning: true, // Show warnings in terminal
       emitError: true, // Show errors in terminal
+      failOnError: false, // Don't block builds on lint errors (allow HMR to work)
       include: [
         'src/**/*.{ts,tsx}', // Playground files
         '../../packages/flesh-cage/src/**/*.{ts,tsx}', // Package files
