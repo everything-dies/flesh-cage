@@ -9,6 +9,8 @@ export default defineConfig({
     eslint({
       lintOnStart: false,
       lintDirtyOnly: true,
+      emitWarning: true,
+      emitErrorAsWarning: true, // Show errors as warnings (allows HMR to continue)
       include: [
         'src/**/*.{ts,tsx}',
         '../../packages/flesh-cage/src/**/*.{ts,tsx}',
