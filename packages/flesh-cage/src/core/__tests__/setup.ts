@@ -1,33 +1,59 @@
-import { expect, afterEach, vi } from 'vitest'
+import { expect, afterEach } from 'vitest'
 import { cleanup } from '@testing-library/react'
 import '@testing-library/jest-dom/vitest'
 
 // Cleanup after each test
 afterEach(() => {
   cleanup()
-  // Clear any custom elements
+  // Clear custom element registry is not possible, but clear DOM
   document.body.innerHTML = ''
 })
 
-// Mock console methods to track warnings/errors
-global.console = {
-  ...console,
-  error: vi.fn(console.error),
-  warn: vi.fn(console.warn),
+// Polyfill for constructable stylesheets in jsdom
+// Check if CSSStyleSheet.prototype has replace method
+const needsPolyfill =
+  typeof CSSStyleSheet !== 'undefined' &&
+  !('replace' in CSSStyleSheet.prototype)
+
+if (needsPolyfill) {
+  class PolyfillCSSStyleSheet {
+    cssRules: CSSRule[] = []
+
+    replaceSync(css: string) {
+      // Parse CSS and create rules (simplified)
+      this.cssRules = css
+        .split('}')
+        .filter(Boolean)
+        .map((rule) => ({
+          cssText: rule.trim() + '}',
+        })) as CSSRule[]
+    }
+
+    replace(css: string): Promise<this> {
+      return Promise.resolve().then(() => {
+        this.replaceSync(css)
+        return this
+      })
+    }
+  }
+
+  // @ts-expect-error - Polyfill for jsdom
+  globalThis.CSSStyleSheet = PolyfillCSSStyleSheet
 }
 
-// Polyfill for constructable stylesheets if needed
-if (!('adoptedStyleSheets' in Document.prototype)) {
-  Object.defineProperty(Document.prototype, 'adoptedStyleSheets', {
-    value: [],
-    writable: true,
-  })
-}
+// Ensure adoptedStyleSheets is writable on ShadowRoot prototype
+// Use a WeakMap to avoid polluting the ShadowRoot objects
+const adoptedStyleSheetsMap = new WeakMap<ShadowRoot, CSSStyleSheet[]>()
 
 if (!('adoptedStyleSheets' in ShadowRoot.prototype)) {
   Object.defineProperty(ShadowRoot.prototype, 'adoptedStyleSheets', {
-    value: [],
-    writable: true,
+    get(this: ShadowRoot) {
+      return adoptedStyleSheetsMap.get(this) || []
+    },
+    set(this: ShadowRoot, sheets: CSSStyleSheet[]) {
+      adoptedStyleSheetsMap.set(this, sheets)
+    },
+    configurable: true,
   })
 }
 

@@ -61,8 +61,8 @@ export const styled = <
     }
 
     change = (event: Event) => {
-      const { detail } = event as CustomEvent<{ skin: string }>
-      const skin = (this.getAttribute('skin') ?? detail.skin)
+      const { detail } = event as CustomEvent<{ skin?: string }>
+      const skin = (this.getAttribute('skin') ?? detail.skin ?? '')
         .trim()
         .toLowerCase()
 
