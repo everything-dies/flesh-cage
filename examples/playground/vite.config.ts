@@ -1,21 +1,18 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react-swc'
-import checker from 'vite-plugin-checker'
+import eslint from 'vite-plugin-eslint2'
 import path from 'path'
 
 export default defineConfig({
   plugins: [
     react(),
-    checker({
-      eslint: {
-        lintCommand: 'eslint . --ext .ts,.tsx', // Lint command
-        dev: {
-          logLevel: ['error', 'warning'], // Show errors and warnings in overlay
-        },
-      },
-      overlay: {
-        initialIsOpen: false, // Don't auto-open overlay on start
-      },
+    eslint({
+      lintOnStart: false,
+      lintDirtyOnly: true,
+      include: [
+        'src/**/*.{ts,tsx}',
+        '../../packages/flesh-cage/src/**/*.{ts,tsx}',
+      ],
     }),
   ],
 
