@@ -9,6 +9,8 @@ export default defineConfig({
     eslint({
       lintOnStart: false, // Don't lint all files on server start
       lintDirtyOnly: true, // Only lint changed files
+      emitWarning: true, // Show warnings in terminal
+      emitError: true, // Show errors in terminal
       include: [
         'src/**/*.{ts,tsx}', // Playground files
         '../../packages/flesh-cage/src/**/*.{ts,tsx}', // Package files
