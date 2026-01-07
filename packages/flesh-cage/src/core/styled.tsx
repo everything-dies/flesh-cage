@@ -1,14 +1,14 @@
 import { createPortal } from 'react-dom'
-import { type ComponentType, createElement } from 'react'
+import { type ComponentType, type PropsWithChildren, createElement } from 'react'
 
 import type { StyledConfig } from './types'
 import { Sheets } from './sheets'
 import { useCore } from './use-core'
 
 export const verify = (error: Error) =>
-  error.name === 'AbortError' ? void error : Promise.reject(error)
+  error.name === 'AbortError' ? Promise.resolve(error) : Promise.reject(error)
 
-export const styled = <Props extends {}, Names extends string = string>(
+export const styled = <Props extends PropsWithChildren, Names extends string = string>(
   Component: ComponentType<Props>,
   { suspendable = false, name, skins, ...attributes }: StyledConfig<Names>
 ): ComponentType<Props> => {
@@ -16,10 +16,6 @@ export const styled = <Props extends {}, Names extends string = string>(
 
   class CustomElement extends HTMLElement {
     static observedAttributes = ['skin'] as const
-
-    constructor() {
-      super()
-    }
 
     controller = new AbortController()
 

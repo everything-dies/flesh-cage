@@ -24,6 +24,6 @@
     "@vitejs/plugin-react-swc": "^3.7.2",
     "typescript": "^5.7.2",
     "vite": "^6.0.5",
-    "vite-plugin-eslint2": "^5.0.4"
+    "vite-plugin-checker": "^0.12.0"
   }
 }

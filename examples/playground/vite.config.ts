@@ -1,20 +1,21 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react-swc'
-import eslint from 'vite-plugin-eslint2'
+import checker from 'vite-plugin-checker'
 import path from 'path'
 
 export default defineConfig({
   plugins: [
     react(),
-    eslint({
-      lintOnStart: false, // Don't lint all files on server start
-      lintDirtyOnly: true, // Only lint changed files
-      emitWarning: true, // Show warnings in terminal
-      emitErrorAsWarning: true, // Treat errors as warnings (allows HMR)
-      include: [
-        'src/**/*.{ts,tsx}', // Playground files
-        '../../packages/flesh-cage/src/**/*.{ts,tsx}', // Package files
-      ],
+    checker({
+      eslint: {
+        lintCommand: 'eslint . --ext .ts,.tsx', // Lint command
+        dev: {
+          logLevel: ['error', 'warning'], // Show errors and warnings in overlay
+        },
+      },
+      overlay: {
+        initialIsOpen: false, // Don't auto-open overlay on start
+      },
     }),
   ],
 
