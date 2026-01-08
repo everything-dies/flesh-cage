@@ -13,6 +13,7 @@ type BenchmarkProps = {
   name: string
   onComplete?: (result: BenchmarkResult) => void
   sampleCount?: number
+  testId?: string
   type: 'mount' | 'update'
 }
 
@@ -26,6 +27,7 @@ export function Benchmark({
   name,
   onComplete,
   sampleCount = 50,
+  testId,
   type,
 }: BenchmarkProps) {
   const [isRunning, setIsRunning] = useState(false)
@@ -152,6 +154,7 @@ export function Benchmark({
       <button
         onClick={() => void runBenchmark()}
         disabled={isRunning}
+        data-benchmark={testId}
         style={{
           padding: '8px 16px',
           fontSize: '14px',

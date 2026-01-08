@@ -2,12 +2,17 @@
   "name": "@everything-dies/flesh-cage-benchmarks",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "description": "Performance benchmarks for flesh-cage",
   "scripts": {
     "build": "vite build",
     "dev": "vite",
     "preview": "vite preview",
-    "benchmark": "node run.js"
+    "benchmark": "node run.js",
+    "profile": "chmod +x profiling/run.sh && ./profiling/run.sh",
+    "profile:capture": "node profiling/capture.js",
+    "profile:analyze": "node profiling/analyze.js",
+    "profile:instrument": "node profiling/instrument.js"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

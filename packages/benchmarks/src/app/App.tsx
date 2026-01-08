@@ -43,7 +43,25 @@ export function App() {
         }}
       >
         <h3 style={{ marginTop: 0 }}>Select Implementation</h3>
-        <div style={{ display: 'flex', gap: '10px' }}>
+        <select
+          id="implementation-select"
+          value={selectedImpl}
+          onChange={(e) => setSelectedImpl(e.target.value)}
+          style={{
+            padding: '10px',
+            fontSize: '14px',
+            marginBottom: '10px',
+            borderRadius: '4px',
+            border: '2px solid #007bff',
+          }}
+        >
+          {implementations.map((implementation) => (
+            <option key={implementation.name} value={implementation.name}>
+              {implementation.name} ({implementation.version})
+            </option>
+          ))}
+        </select>
+        <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
           {implementations.map((implementation) => (
             <button
               key={implementation.name}
@@ -78,6 +96,7 @@ export function App() {
         name={`${impl.name} - Mount deep tree (depth: 7, breadth: 2)`}
         sampleCount={50}
         type="mount"
+        testId="mount-deep"
       />
 
       <Benchmark
@@ -86,6 +105,7 @@ export function App() {
         name={`${impl.name} - Mount wide tree (depth: 3, breadth: 6)`}
         sampleCount={50}
         type="mount"
+        testId="mount-wide"
       />
 
       <hr />
@@ -99,6 +119,7 @@ export function App() {
         name={`${impl.name} - Update dynamic styles (Sierpinski Triangle)`}
         sampleCount={100}
         type="update"
+        testId="update-triangle"
       />
 
       <hr />

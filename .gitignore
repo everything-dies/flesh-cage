@@ -20,6 +20,10 @@ coverage
 playwright-report
 test-results
 *.log
+*.eslintcache
+
+# Profiling data (large trace files)
+packages/benchmarks/profiling/data/
 
 # Environment
 .env
