@@ -1,6 +1,6 @@
 # Flesh Cage - Full System Verification
 
-> **⚠️ Note:** This document is outdated and needs updating. Some references to removed packages (macros, vite) are still present. For current documentation, see [README.md](./README.md) and [GETTING_STARTED.md](./GETTING_STARTED.md).
+> **⚠️ Note:** This document is outdated and needs updating. Some references to removed packages (macros, vite) are still present. For current documentation, see [README.md](../README.md) and [GETTING_STARTED.md](./GETTING_STARTED.md).
 
 **Date:** 2025-12-28
 **Status:** Outdated

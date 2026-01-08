@@ -167,7 +167,7 @@ function MyComponent() {
 ### Essential
 
 - **[Current vs Planned Features](https://github.com/everything-dies/flesh-cage/blob/main/docs/CURRENT_VS_PLANNED.md)** - What's implemented vs planned
-- [Getting Started](https://github.com/everything-dies/flesh-cage/blob/main/GETTING_STARTED.md)
+- [Getting Started](https://github.com/everything-dies/flesh-cage/blob/main/docs/GETTING_STARTED.md)
 
 ### Design Philosophy
 
@@ -183,7 +183,7 @@ function MyComponent() {
 
 ## Contributing
 
-See [CONTRIBUTING.md](https://github.com/everything-dies/flesh-cage/blob/main/CONTRIBUTING.md) for development guidelines.
+See [CONTRIBUTING.md](https://github.com/everything-dies/flesh-cage/blob/main/docs/CONTRIBUTING.md) for development guidelines.
 
 ## License
 

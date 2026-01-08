@@ -195,8 +195,8 @@ Changes to packages hot-reload instantly - no build step needed!
 ### Current Features
 
 - **[Current vs Planned Features](./docs/CURRENT_VS_PLANNED.md)** - Clear distinction between implemented and planned features
-- [Getting Started](./GETTING_STARTED.md) - Quick start guide
-- [Verification Checklist](./VERIFICATION.md) - System verification
+- [Getting Started](./docs/GETTING_STARTED.md) - Quick start guide
+- [Verification Checklist](./docs/VERIFICATION.md) - System verification
 
 ### Design Philosophy
 
@@ -212,7 +212,7 @@ See [docs/proposals/](./docs/proposals/) for planned features (not yet implement
 
 ## Contributing
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for development guidelines.
+See [CONTRIBUTING.md](./docs/CONTRIBUTING.md) for development guidelines.
 
 ## License
 
