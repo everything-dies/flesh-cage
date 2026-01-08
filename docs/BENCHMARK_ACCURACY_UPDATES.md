@@ -52,3 +52,7 @@ This makes results easier to interpret and compare across runs.
 ### 4) Stable Props and Style References
 
 To reduce re-render noise from new object identities, benchmark props and theme objects are now hoisted and reused across renders. For flesh-cage, common box styles and the skin switch box style are reused as static objects. The dot geometry styles are cached per position/size and the color is updated in-place to avoid new object allocations on every update frame.
+
+### 5) Custom Element Registration Note
+
+Guarding `customElements.define` is primarily about **HMR and multi-bundle safety**, not steady-state performance. In normal usage, each custom element is defined once per component and does not meaningfully impact benchmark timings. The guard avoids duplicate-definition errors during reloads or repeated evaluation.
