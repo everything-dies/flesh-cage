@@ -20,7 +20,7 @@ export function App() {
   const impl =
     implementations.find((i) => i.name === selectedImpl) ||
     FleshCageImplementation
-  const { Tree, SierpinskiTriangle, SkinSwitch } = impl
+  const { Tree, SierpinskiTriangle, SkinSwitch, TreeSingle } = impl
   const warmupCount = 10
   const discardCount = 5
 
@@ -112,6 +112,33 @@ export function App() {
         discardCount={discardCount}
         type="mount"
         testId="mount-wide"
+      />
+
+      <hr />
+
+      <h2>Mount Benchmarks (single provider)</h2>
+      <p>Measure mount time with a single root-level provider.</p>
+
+      <Benchmark
+        component={TreeSingle}
+        componentProps={{ breadth: 2, depth: 7, id: 0, wrap: 1 }}
+        name={`${impl.name} - Mount deep tree (single provider)`}
+        sampleCount={50}
+        warmupCount={warmupCount}
+        discardCount={discardCount}
+        type="mount"
+        testId="mount-deep-single"
+      />
+
+      <Benchmark
+        component={TreeSingle}
+        componentProps={{ breadth: 6, depth: 3, id: 0, wrap: 1 }}
+        name={`${impl.name} - Mount wide tree (single provider)`}
+        sampleCount={50}
+        warmupCount={warmupCount}
+        discardCount={discardCount}
+        type="mount"
+        testId="mount-wide-single"
       />
 
       <hr />

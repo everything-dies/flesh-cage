@@ -98,6 +98,21 @@ const SkinBox = styled('div', {
   },
 })
 
+const BoxAttribute = styled('div', {
+  name: 'bench-box-attr',
+  skins: {
+    base: () =>
+      Promise.resolve({
+        default: `
+        div[data-color="black"] { background-color: black; color: white; }
+        div[data-color="red"] { background-color: #f44336; }
+        div[data-color="blue"] { background-color: #2196f3; }
+        div[data-color="transparent"] { background-color: transparent; }
+      `,
+      }),
+  },
+})
+
 // Dot wrapper with dynamic color
 function DotWithColor({
   color,
@@ -130,6 +145,32 @@ function DotWithColor({
   )
 }
 
+function BoxWithAttributes({
+  color,
+  layout,
+  outer,
+  children,
+}: {
+  color: string
+  layout: 'column' | 'row'
+  outer: boolean
+  children?: React.ReactNode
+}) {
+  return (
+    <BoxAttribute
+      data-color={color}
+      style={{
+        display: 'flex',
+        flexDirection: layout === 'column' ? 'column' : 'row',
+        padding: outer ? '10px' : '0',
+        margin: outer ? '5px' : '0',
+      }}
+    >
+      {children}
+    </BoxAttribute>
+  )
+}
+
 function SkinSwitch({ renderCount }: { renderCount: number }) {
   const skin = renderCount % 2 === 0 ? 'red' : 'blue'
 
@@ -156,6 +197,15 @@ SkinSwitch.benchmarkType = BenchmarkType.UPDATE
 // Create the benchmark components
 const Tree = createTree(BoxWithSkin)
 const SierpinskiTriangle = createSierpinskiTriangle(DotWithColor)
+const TreeAttribute = createTree(BoxWithAttributes)
+
+function TreeSingleProvider(props: Parameters<typeof TreeAttribute>[0]) {
+  return (
+    <Provider skin="base">
+      <TreeAttribute {...props} />
+    </Provider>
+  )
+}
 
 export const FleshCageImplementation = {
   name: 'flesh-cage',
@@ -166,4 +216,5 @@ export const FleshCageImplementation = {
   Tree,
   SierpinskiTriangle,
   SkinSwitch,
+  TreeSingle: TreeSingleProvider,
 }

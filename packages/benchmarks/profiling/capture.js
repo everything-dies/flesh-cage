@@ -196,6 +196,8 @@ async function main() {
   const tests = [
     { name: 'mount-deep', selector: 'mount-deep' },
     { name: 'mount-wide', selector: 'mount-wide' },
+    { name: 'mount-deep-single', selector: 'mount-deep-single' },
+    { name: 'mount-wide-single', selector: 'mount-wide-single' },
     { name: 'update-triangle', selector: 'update-triangle' },
     { name: 'update-skin-switch', selector: 'update-skin-switch' },
   ]

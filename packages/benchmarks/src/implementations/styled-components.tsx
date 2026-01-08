@@ -119,4 +119,5 @@ export const StyledComponentsImplementation = {
   Tree,
   SierpinskiTriangle,
   SkinSwitch,
+  TreeSingle: Tree,
 }

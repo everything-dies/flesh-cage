@@ -120,4 +120,5 @@ export const EmotionImplementation = {
   Tree,
   SierpinskiTriangle,
   SkinSwitch,
+  TreeSingle: Tree,
 }
