@@ -14,6 +14,7 @@ export default tseslint.config(
       '**/playwright-report',
       'artifacts/**',
       'perf/**',
+      '.idea/design-docs/prototypes/**',
     ],
   },
   {
