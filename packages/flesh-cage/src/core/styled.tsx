@@ -18,7 +18,7 @@ export const styled = <
   Props extends PropsWithChildren,
   Names extends string = string,
 >(
-  Component: ComponentType<Props>,
+  component: string | ComponentType<Props>,
   { suspendable = false, name, skins, ...attributes }: StyledConfig<Names>
 ): ComponentType<Props> => {
   const sheets = new Sheets({ skins })
@@ -96,7 +96,7 @@ export const styled = <
     return createElement(
       name,
       { ...attributes, ...core },
-      createPortal(<Component {...props} />, container)
+      createPortal(createElement(component, props), container)
     )
   }
 

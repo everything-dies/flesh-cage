@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { render, act } from '@testing-library/react'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { styled } from '../styled'
 import { Provider } from '../provider'
 import {

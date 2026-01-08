@@ -10,6 +10,8 @@ export interface StyledConfig<Names extends string = string> extends Partial<
   name: string
   skins: Skins<Names>
   suspendable?: boolean
+  // Allow arbitrary attributes (data-*, aria-*, etc.)
+  [key: string]: unknown
 }
 
 /**
