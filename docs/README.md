@@ -17,19 +17,6 @@ Contributing and development guides:
 - **[VERIFICATION.md](./VERIFICATION.md)** ⚠️ - System verification checklist (outdated)
 - **[PACKAGE_EXPORTS_GUIDE.md](./PACKAGE_EXPORTS_GUIDE.md)** ⚠️ - Package export configuration (outdated)
 
-## Performance & Optimization
-
-Performance analysis and optimization research:
-
-- **[BENCHMARK_RESULTS.md](./BENCHMARK_RESULTS.md)** - Comprehensive benchmark results vs competitors
-- **[BENCHMARK_RUN_RESULTS_2026-01-08.md](./BENCHMARK_RUN_RESULTS_2026-01-08.md)** - Specific benchmark run data
-- **[BENCHMARK_ACCURACY_UPDATES.md](./BENCHMARK_ACCURACY_UPDATES.md)** - Benchmark methodology improvements
-- **[BENCHMARK_PROVIDER_SCOPE.md](./BENCHMARK_PROVIDER_SCOPE.md)** - Provider pattern performance analysis
-- **[PROFILING_SUMMARY.md](./PROFILING_SUMMARY.md)** - Chrome DevTools profiling analysis
-- **[PERFORMANCE_OPTIMIZATION.md](./PERFORMANCE_OPTIMIZATION.md)** - Optimization strategies and results
-- **[QUICK_WINS.md](./QUICK_WINS.md)** - Low-risk performance optimizations
-- **[STRESS_TEST_RESULTS.md](./STRESS_TEST_RESULTS.md)** - Stress testing documentation (placeholder)
-
 ## Testing
 
 Testing strategy and research:
@@ -70,11 +57,10 @@ Future feature proposals (not yet implemented):
 
 1. **Getting Started** - User-facing guides for using Flesh Cage
 2. **Development** - Internal guides for contributors
-3. **Performance** - Benchmarks, profiling, and optimization research
-4. **Testing** - Testing strategies and research
-5. **Philosophy** - Design decisions and architectural principles
-6. **Technical** - Deep dives into implementation details
-7. **Proposals** - Future features and experimental ideas
+3. **Testing** - Testing strategies and research
+4. **Philosophy** - Design decisions and architectural principles
+5. **Technical** - Deep dives into implementation details
+6. **Proposals** - Future features and experimental ideas
 
 ## Contributing to Documentation
 
@@ -91,6 +77,4 @@ When adding new documentation:
 External documentation in other directories:
 
 - [../.idea/design-docs/](../.idea/design-docs/) - Historical design documents and architecture decisions
-- [../packages/benchmarks/README.md](../packages/benchmarks/README.md) - Benchmark suite documentation
-- [../packages/benchmarks/profiling/README.md](../packages/benchmarks/profiling/README.md) - Profiling tools documentation
 - [../examples/playground/README.md](../examples/playground/README.md) - Playground example documentation

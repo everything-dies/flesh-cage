@@ -155,10 +155,10 @@ function MyComponent() {
 
 ### 📊 Performance
 
-- **99% memory savings** - Shared CSSStyleSheet objects (not duplicated strings)
+- **Efficient memory usage** - Shared CSSStyleSheet objects (not duplicated strings)
 - **Lazy loading** - Dynamic imports for code-splitting
-- **Fast theme switching** - 8× faster than traditional CSS-in-JS
-- **Small bundle** - ~10 KB total (gzipped), tree-shakeable
+- **Fast theme switching** - Direct stylesheet replacement via adoptedStyleSheets
+- **Small bundle** - Minimal runtime overhead, tree-shakeable
 
 ## Development
 
@@ -204,7 +204,6 @@ Changes to packages hot-reload instantly - no build step needed!
 - [Skins vs Themes Philosophy](./.idea/design-docs/SKINS_VS_THEMES_PHILOSOPHY.md)
 - [Attribute-Driven Styling](./.idea/design-docs/ATTRIBUTE_DRIVEN_STYLING.md)
 - [Provider Pattern](./.idea/design-docs/PROVIDER_PATTERN.md)
-- [Benchmark Results](./.idea/design-docs/BENCHMARK_CORRECTION_SUMMARY.md)
 
 ### Future Proposals
 
