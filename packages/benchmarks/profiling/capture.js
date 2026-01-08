@@ -197,6 +197,7 @@ async function main() {
     { name: 'mount-deep', selector: 'mount-deep' },
     { name: 'mount-wide', selector: 'mount-wide' },
     { name: 'update-triangle', selector: 'update-triangle' },
+    { name: 'update-skin-switch', selector: 'update-skin-switch' },
   ]
 
   const profiles = []

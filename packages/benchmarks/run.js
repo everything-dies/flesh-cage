@@ -2,15 +2,27 @@
  * Automated benchmark runner using Puppeteer
  * Runs all three implementations and compares results
  */
-const puppeteer = require('puppeteer')
-const { spawn } = require('child_process')
-
-const PORT = 4173
-const URL = `http://localhost:${PORT}`
+import puppeteer from 'puppeteer'
+import { spawn } from 'child_process'
 
 const implementations = ['flesh-cage', 'styled-components', 'emotion']
 
+const runCommand = (command, args, options = {}) =>
+  new Promise((resolve, reject) => {
+    const child = spawn(command, args, { stdio: 'inherit', shell: true, ...options })
+    child.on('exit', (code) => {
+      if (code === 0) {
+        resolve()
+      } else {
+        reject(new Error(`${command} ${args.join(' ')} exited with ${code}`))
+      }
+    })
+  })
+
 async function runBenchmarks() {
+  console.log('Building benchmarks...')
+  await runCommand('npm', ['run', 'build'])
+
   console.log('Starting HTTP server...')
 
   // Start the preview server
@@ -31,7 +43,7 @@ async function runBenchmarks() {
   const page = await browser.newPage()
 
   console.log('Navigating to benchmarks page...')
-  await page.goto(URL, { waitUntil: 'networkidle2' })
+  await page.goto('http://localhost:4173', { waitUntil: 'networkidle2' })
 
   const allResults = {}
 

@@ -1,6 +1,12 @@
+import { ThemeProvider } from '@emotion/react'
 import styled from '@emotion/styled'
-import { createTree } from '../cases/Tree'
+import { BenchmarkType, createTree } from '../cases/Tree'
 import { createSierpinskiTriangle } from '../cases/SierpinskiTriangle'
+
+type Theme = {
+  color: string
+  text: string
+}
 
 // Box component for Tree benchmark
 const Box = styled.div<{
@@ -55,6 +61,17 @@ const Dot = styled.div<{
   border-radius: 50%;
 `
 
+const ThemeBox = styled.div`
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  background-color: ${(props: { theme: Theme }) => props.theme.color};
+  color: ${(props: { theme: Theme }) => props.theme.text};
+`
+
 // Dot wrapper
 function DotWrapper({
   color,
@@ -76,6 +93,21 @@ function DotWrapper({
   )
 }
 
+function SkinSwitch({ renderCount }: { renderCount: number }) {
+  const theme =
+    renderCount % 2 === 0
+      ? { color: '#f44336', text: 'white' }
+      : { color: '#2196f3', text: 'white' }
+
+  return (
+    <ThemeProvider theme={theme}>
+      <ThemeBox>{theme.color === '#f44336' ? 'red' : 'blue'}</ThemeBox>
+    </ThemeProvider>
+  )
+}
+
+SkinSwitch.benchmarkType = BenchmarkType.UPDATE
+
 // Create the benchmark components
 const Tree = createTree(BoxWrapper)
 const SierpinskiTriangle = createSierpinskiTriangle(DotWrapper)
@@ -87,4 +119,5 @@ export const EmotionImplementation = {
   Dot: DotWrapper,
   Tree,
   SierpinskiTriangle,
+  SkinSwitch,
 }

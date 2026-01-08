@@ -20,7 +20,9 @@ export function App() {
   const impl =
     implementations.find((i) => i.name === selectedImpl) ||
     FleshCageImplementation
-  const { Tree, SierpinskiTriangle } = impl
+  const { Tree, SierpinskiTriangle, SkinSwitch } = impl
+  const warmupCount = 10
+  const discardCount = 5
 
   return (
     <div
@@ -95,6 +97,8 @@ export function App() {
         componentProps={{ breadth: 2, depth: 7, id: 0, wrap: 1 }}
         name={`${impl.name} - Mount deep tree (depth: 7, breadth: 2)`}
         sampleCount={50}
+        warmupCount={warmupCount}
+        discardCount={discardCount}
         type="mount"
         testId="mount-deep"
       />
@@ -104,6 +108,8 @@ export function App() {
         componentProps={{ breadth: 6, depth: 3, id: 0, wrap: 1 }}
         name={`${impl.name} - Mount wide tree (depth: 3, breadth: 6)`}
         sampleCount={50}
+        warmupCount={warmupCount}
+        discardCount={discardCount}
         type="mount"
         testId="mount-wide"
       />
@@ -118,8 +124,21 @@ export function App() {
         componentProps={{}}
         name={`${impl.name} - Update dynamic styles (Sierpinski Triangle)`}
         sampleCount={100}
+        warmupCount={warmupCount}
+        discardCount={discardCount}
         type="update"
         testId="update-triangle"
+      />
+
+      <Benchmark
+        component={SkinSwitch}
+        componentProps={{}}
+        name={`${impl.name} - Update skin/theme switching`}
+        sampleCount={100}
+        warmupCount={warmupCount}
+        discardCount={discardCount}
+        type="update"
+        testId="update-skin-switch"
       />
 
       <hr />

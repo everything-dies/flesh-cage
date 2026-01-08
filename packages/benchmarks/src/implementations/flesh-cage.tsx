@@ -1,5 +1,5 @@
 import { styled, Provider } from '@everything-dies/flesh-cage'
-import { createTree } from '../cases/Tree'
+import { BenchmarkType, createTree } from '../cases/Tree'
 import { createSierpinskiTriangle } from '../cases/SierpinskiTriangle'
 
 // Box component for Tree benchmark
@@ -80,6 +80,24 @@ const Dot = styled('div', {
   },
 })
 
+const SkinBox = styled('div', {
+  name: 'bench-skin-box',
+  skins: {
+    red: () =>
+      Promise.resolve({
+        default: `
+        div { background-color: #f44336; color: white; }
+      `,
+      }),
+    blue: () =>
+      Promise.resolve({
+        default: `
+        div { background-color: #2196f3; color: white; }
+      `,
+      }),
+  },
+})
+
 // Dot wrapper with dynamic color
 function DotWithColor({
   color,
@@ -112,6 +130,29 @@ function DotWithColor({
   )
 }
 
+function SkinSwitch({ renderCount }: { renderCount: number }) {
+  const skin = renderCount % 2 === 0 ? 'red' : 'blue'
+
+  return (
+    <Provider skin={skin}>
+      <SkinBox
+        style={{
+          width: '40px',
+          height: '40px',
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: '12px',
+        }}
+      >
+        {skin}
+      </SkinBox>
+    </Provider>
+  )
+}
+
+SkinSwitch.benchmarkType = BenchmarkType.UPDATE
+
 // Create the benchmark components
 const Tree = createTree(BoxWithSkin)
 const SierpinskiTriangle = createSierpinskiTriangle(DotWithColor)
@@ -124,4 +165,5 @@ export const FleshCageImplementation = {
   Dot: DotWithColor,
   Tree,
   SierpinskiTriangle,
+  SkinSwitch,
 }

@@ -5,6 +5,8 @@ export type BenchmarkResult = {
   mean: number
   stdDev: number
   samples: number[]
+  discarded: number
+  warmup: number
 }
 
 type BenchmarkProps = {
@@ -13,6 +15,8 @@ type BenchmarkProps = {
   name: string
   onComplete?: (result: BenchmarkResult) => void
   sampleCount?: number
+  warmupCount?: number
+  discardCount?: number
   testId?: string
   type: 'mount' | 'update'
 }
@@ -27,6 +31,8 @@ export function Benchmark({
   name,
   onComplete,
   sampleCount = 50,
+  warmupCount = 10,
+  discardCount = 5,
   testId,
   type,
 }: BenchmarkProps) {
@@ -50,7 +56,7 @@ export function Benchmark({
     const container = containerRef.current
     if (!container) return
 
-    for (let i = 0; i < sampleCount; i++) {
+    const runSample = async (record: boolean) => {
       // Clear previous mount
       container.innerHTML = ''
       const root = document.createElement('div')
@@ -68,7 +74,9 @@ export function Benchmark({
         // Wait for render to complete
         requestAnimationFrame(() => {
           const end = performance.now()
-          samples.push(end - start)
+          if (record) {
+            samples.push(end - start)
+          }
 
           // Cleanup
           reactRoot.unmount()
@@ -78,6 +86,14 @@ export function Benchmark({
 
       // Brief pause between samples
       await new Promise((resolve) => setTimeout(resolve, 10))
+    }
+
+    for (let i = 0; i < warmupCount; i++) {
+      await runSample(false)
+    }
+
+    for (let i = 0; i < sampleCount; i++) {
+      await runSample(true)
     }
 
     finalizeBenchmark(samples)
@@ -101,12 +117,24 @@ export function Benchmark({
     })
 
     // Measure updates
+    for (let i = 1; i <= warmupCount; i++) {
+      await new Promise<void>((resolve) => {
+        reactRoot.render(<Component renderCount={i} {...componentProps} />)
+
+        requestAnimationFrame(() => resolve())
+      })
+
+      await new Promise((resolve) => setTimeout(resolve, 5))
+    }
+
     for (let i = 1; i <= sampleCount; i++) {
       await new Promise<void>((resolve) => {
         const start = performance.now()
 
         // Trigger re-render with new props
-        reactRoot.render(<Component renderCount={i} {...componentProps} />)
+        reactRoot.render(
+          <Component renderCount={i + warmupCount} {...componentProps} />
+        )
 
         requestAnimationFrame(() => {
           const end = performance.now()
@@ -126,13 +154,23 @@ export function Benchmark({
   }
 
   const finalizeBenchmark = (samples: number[]) => {
-    const mean = samples.reduce((a, b) => a + b, 0) / samples.length
+    const trimmedSamples = samples.slice(Math.min(discardCount, samples.length))
+    const mean =
+      trimmedSamples.reduce((a, b) => a + b, 0) / trimmedSamples.length
     const variance =
-      samples.reduce((sum, value) => sum + Math.pow(value - mean, 2), 0) /
-      samples.length
+      trimmedSamples.reduce(
+        (sum, value) => sum + Math.pow(value - mean, 2),
+        0
+      ) / trimmedSamples.length
     const stdDev = Math.sqrt(variance)
 
-    const result = { mean, stdDev, samples }
+    const result = {
+      mean,
+      stdDev,
+      samples: trimmedSamples,
+      discarded: samples.length - trimmedSamples.length,
+      warmup: warmupCount,
+    }
     setResult(result)
     setIsRunning(false)
 
@@ -186,6 +224,12 @@ export function Benchmark({
           </p>
           <p style={{ margin: '5px 0' }}>
             <strong>Samples:</strong> {result.samples.length}
+          </p>
+          <p style={{ margin: '5px 0' }}>
+            <strong>Warmup:</strong> {result.warmup}
+          </p>
+          <p style={{ margin: '5px 0' }}>
+            <strong>Discarded:</strong> {result.discarded}
           </p>
           <details style={{ marginTop: '10px' }}>
             <summary style={{ cursor: 'pointer' }}>View all samples</summary>
