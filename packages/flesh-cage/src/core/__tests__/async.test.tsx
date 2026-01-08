@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest'
-import { render, act } from '@testing-library/react'
+import { describe, it, expect, vi } from 'vitest'
+import { render, act, waitFor } from '@testing-library/react'
 import React, { Suspense } from 'react'
 import { styled } from '../styled'
 import { Provider } from '../provider'
@@ -219,7 +219,173 @@ describe('styled - async loading', () => {
     expect(element?.shadowRoot?.adoptedStyleSheets.length).toBeGreaterThan(0)
   })
 
-  it('non-suspendable mode does not block rendering', () => {
+  it('does not apply aborted skins after a newer skin resolves', async () => {
+    const Button = styled('button', {
+      name: 'test-abort-stale',
+      skins: {
+        slow: () =>
+          new Promise((resolve) =>
+            setTimeout(() => resolve({ default: 'color: tomato;' }), 200)
+          ),
+        fast: () =>
+          new Promise((resolve) =>
+            setTimeout(() => resolve({ default: 'color: steelblue;' }), 50)
+          ),
+      },
+    })
+
+    function TestComponent({ skin }: { skin: 'slow' | 'fast' }) {
+      return (
+        <Provider skin={skin}>
+          <Button>Abort</Button>
+        </Provider>
+      )
+    }
+
+    const { container, rerender } = render(<TestComponent skin="slow" />)
+
+    const element = findCustomElement(container, 'test-abort-stale')
+
+    await act(async () => {
+      rerender(<TestComponent skin="fast" />)
+      await new Promise((resolve) => setTimeout(resolve, 300))
+    })
+
+    await waitFor(() => {
+      const css = normalizeCSS(getShadowCSS(element?.shadowRoot))
+      expect(css).toContain('steelblue')
+      expect(css).not.toContain('tomato')
+    })
+  })
+
+  it('applies the last requested skin when switching rapidly', async () => {
+    const Button = styled('button', {
+      name: 'test-abort-deterministic',
+      skins: {
+        first: () =>
+          new Promise((resolve) =>
+            setTimeout(() => resolve({ default: 'color: lime;' }), 50)
+          ),
+        second: () =>
+          new Promise((resolve) =>
+            setTimeout(() => resolve({ default: 'color: coral;' }), 100)
+          ),
+        third: () =>
+          new Promise((resolve) =>
+            setTimeout(() => resolve({ default: 'color: gold;' }), 150)
+          ),
+      },
+    })
+
+    function TestComponent({ skin }: { skin: 'first' | 'second' | 'third' }) {
+      return (
+        <Provider skin={skin}>
+          <Button>Deterministic</Button>
+        </Provider>
+      )
+    }
+
+    const { container, rerender } = render(<TestComponent skin="first" />)
+
+    const element = findCustomElement(container, 'test-abort-deterministic')
+
+    await act(async () => {
+      rerender(<TestComponent skin="second" />)
+      rerender(<TestComponent skin="third" />)
+      await new Promise((resolve) => setTimeout(resolve, 300))
+    })
+
+    await waitFor(() => {
+      const css = normalizeCSS(getShadowCSS(element?.shadowRoot))
+      expect(css).toContain('gold')
+      expect(css).not.toContain('lime')
+      expect(css).not.toContain('coral')
+    })
+  })
+
+  it('applies the last requested skin with fake timers', async () => {
+    vi.useFakeTimers()
+
+    const Button = styled('button', {
+      name: 'test-abort-fake-timers',
+      skins: {
+        first: () =>
+          new Promise((resolve) =>
+            setTimeout(() => resolve({ default: 'color: lime;' }), 50)
+          ),
+        second: () =>
+          new Promise((resolve) =>
+            setTimeout(() => resolve({ default: 'color: coral;' }), 100)
+          ),
+        third: () =>
+          new Promise((resolve) =>
+            setTimeout(() => resolve({ default: 'color: gold;' }), 150)
+          ),
+      },
+    })
+
+    const { container } = render(
+      <Provider skin="first">
+        <Button>Deterministic</Button>
+      </Provider>
+    )
+
+    const element = findCustomElement(container, 'test-abort-fake-timers')
+
+    await act(async () => {
+      element?.dispatchEvent(
+        new CustomEvent('change', { detail: { skin: 'first' } })
+      )
+      element?.dispatchEvent(
+        new CustomEvent('change', { detail: { skin: 'second' } })
+      )
+      element?.dispatchEvent(
+        new CustomEvent('change', { detail: { skin: 'third' } })
+      )
+      await vi.runAllTimersAsync()
+    })
+
+    vi.useRealTimers()
+
+    await waitFor(() => {
+      const css = normalizeCSS(getShadowCSS(element?.shadowRoot))
+      expect(css).toContain('gold')
+      expect(css).not.toContain('lime')
+      expect(css).not.toContain('coral')
+    })
+  })
+
+  it('reuses cached skins across multiple component instances', async () => {
+    let loadCount = 0
+
+    const Button = styled('button', {
+      name: 'test-cache-multi',
+      skins: {
+        cached: () => {
+          loadCount++
+          return Promise.resolve({ default: 'color: rebeccapurple;' })
+        },
+      },
+    })
+
+    const { container } = render(
+      <Provider skin="cached">
+        <Button>First</Button>
+        <Button>Second</Button>
+      </Provider>
+    )
+
+    const elements = container.querySelectorAll('test-cache-multi')
+
+    await act(async () => {
+      await waitForStyles(elements[0])
+      await waitForStyles(elements[1])
+    })
+
+    expect(loadCount).toBe(1)
+  })
+
+  it('non-suspendable mode does not block rendering', async () => {
     const Button = styled('button', {
       name: 'test-non-suspend',
       suspendable: false, // explicit non-suspendable
@@ -239,12 +405,24 @@ describe('styled - async loading', () => {
 
     const element = findCustomElement(container, 'test-non-suspend')
 
-    // Element should render immediately even though skin is loading
-    expect(element).toBeInTheDocument()
-    expect(element?.shadowRoot).toBeTruthy()
+    await waitFor(() => {
+      // Element should render immediately even though skin is loading
+      expect(element).toBeInTheDocument()
+      expect(element?.shadowRoot).toBeTruthy()
+    })
   })
 
   it('handles async skin load errors gracefully', async () => {
+    let unexpectedRejection: unknown
+    const handleUnhandledRejection = (reason: unknown) => {
+      if (reason instanceof Error && reason.message === 'Load failed') {
+        return
+      }
+      unexpectedRejection = reason
+    }
+
+    process.on('unhandledRejection', handleUnhandledRejection)
+
     const Button = styled('button', {
       name: 'test-error',
       skins: {
@@ -256,34 +434,48 @@ describe('styled - async loading', () => {
       },
     })
 
-    // Start with failing skin
-    const { container, rerender } = render(
-      <Provider skin="failing">
-        <Button>Error</Button>
-      </Provider>
-    )
+    try {
+      // Start with failing skin
+      const { container, rerender } = render(
+        <Provider skin="failing">
+          <Button>Error</Button>
+        </Provider>
+      )
 
-    const element = findCustomElement(container, 'test-error')
+      const element = findCustomElement(container, 'test-error')
 
-    await act(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 100))
-    })
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 100))
+      })
 
-    // Should not crash - element should still exist
-    expect(element).toBeInTheDocument()
+      // Should not crash - element should still exist
+      expect(element).toBeInTheDocument()
 
-    // Switch to working skin
-    rerender(
-      <Provider skin="fallback">
-        <Button>Recovered</Button>
-      </Provider>
-    )
+      // Switch to working skin
+      rerender(
+        <Provider skin="fallback">
+          <Button>Recovered</Button>
+        </Provider>
+      )
 
-    await act(async () => {
-      await waitForStyles(element, 1000)
-    })
+      await act(async () => {
+        await waitForStyles(element, 1000)
+      })
 
-    const css = normalizeCSS(getShadowCSS(element?.shadowRoot))
-    expect(css).toContain('gray')
+      const css = normalizeCSS(getShadowCSS(element?.shadowRoot))
+      expect(css).toContain('gray')
+    } finally {
+      process.off('unhandledRejection', handleUnhandledRejection)
+    }
+
+    if (unexpectedRejection instanceof Error) {
+      throw unexpectedRejection
+    }
+    if (unexpectedRejection !== undefined) {
+      if (typeof unexpectedRejection === 'string') {
+        throw new Error(unexpectedRejection)
+      }
+      throw new Error('Unexpected rejection')
+    }
   })
 })
