@@ -26,7 +26,8 @@
   },
   "workspaces": [
     "packages/*",
-    "examples/*"
+    "examples/*",
+    "perf"
   ],
   "scripts": {
     "dev": "turbo run dev --filter=playground",

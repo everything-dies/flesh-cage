@@ -1,0 +1,58 @@
+name: Performance Profiling
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  performance-test:
+    name: Performance Regression Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js and Yarn
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'yarn'
+
+      - name: Install Dependencies
+        run: yarn install --immutable
+
+      - name: Install Playwright Browsers
+        run: yarn playwright install --with-deps chromium
+        working-directory: ./perf
+
+      - name: Run Performance Scenario
+        id: perf-run
+        run: yarn perf start run simple-usage --output ./artifacts/pr
+        # For a push to main, you might use a different output dir
+        # if: github.ref == 'refs/heads/main'
+        # run: yarn perf start run simple-usage --output ./artifacts/main
+
+      # In a more advanced setup, you would download a baseline artifact from a previous 'main' run.
+      # - name: Download baseline artifact
+      #   uses: actions/download-artifact@v3
+      #   with:
+      #     name: performance-artifacts-main
+      #     path: ./artifacts/main
+      #
+      # - name: Compare performance
+      #   run: |
+      #     yarn perf start compare \
+      #       --baseline ./artifacts/main/summary.json \
+      #       --current ./artifacts/pr/summary.json
+
+      - name: Upload Artifacts
+        if: always() # Always upload artifacts, even if the run fails
+        uses: actions/upload-artifact@v4
+        with:
+          name: performance-artifacts
+          path: ./artifacts/

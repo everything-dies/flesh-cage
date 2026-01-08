@@ -12,6 +12,8 @@ export default tseslint.config(
       '**/node_modules',
       '**/.turbo',
       '**/playwright-report',
+      'artifacts/**',
+      'perf/**',
     ],
   },
   {

@@ -1,0 +1,41 @@
+# Performance Report: {{scenarioName}}
+
+**Run at:** {{timestamp}}
+
+## Summary
+
+| Metric                  | Average | p95     | StdDev  |
+| ----------------------- | ------- | ------- | ------- |
+| **GC Time (ms)**        | {{summary.totalGCTimeMs.average}} | {{summary.totalGCTimeMs.p95}} | {{summary.totalGCTimeMs.stddev}} |
+| **GC Pause (ms)**       | {{summary.meanGcPauseMs.average}} | {{summary.meanGcPauseMs.p95}} | {{summary.meanGcPauseMs.stddev}} |
+| **GC Count**            | {{summary.gcCount.average}} | {{summary.gcCount.p95}} | {{summary.gcCount.stddev}} |
+| **Major GC Count**      | {{summary.majorGcCount.average}} | {{summary.majorGcCount.p95}} | {{summary.majorGcCount.stddev}} |
+| **CPU Time (ms)**       | {{summary.cpuTimeMs.average}} | {{summary.cpuTimeMs.p95}} | {{summary.cpuTimeMs.stddev}} |
+| **Heap Used Before (MB)** | {{summaryHeapUsedBeforeMB.average}} | {{summaryHeapUsedBeforeMB.p95}} | {{summaryHeapUsedBeforeMB.stddev}} |
+| **Heap Used After (MB)**  | {{summaryHeapUsedAfterMB.average}} | {{summaryHeapUsedAfterMB.p95}} | {{summaryHeapUsedAfterMB.stddev}} |
+| **Heap Used Delta (MB)**  | {{summaryHeapUsedDeltaMB.average}} | {{summaryHeapUsedDeltaMB.p95}} | {{summaryHeapUsedDeltaMB.stddev}} |
+| **UA Memory (MB)**        | {{summaryUaMemoryMB.average}} | {{summaryUaMemoryMB.p95}} | {{summaryUaMemoryMB.stddev}} |
+
+{{^uaMemoryAvailable}}
+_UA memory is unavailable in this environment; values are omitted._
+{{/uaMemoryAvailable}}
+
+---
+
+## Raw Data (per run)
+
+| Run | GC Time (ms) | GC Pause (ms) | GC Count | Major GC Count | CPU Time (ms) | Heap Used Before (MB) | Heap Used After (MB) | Heap Used Delta (MB) | UA Memory (MB) |
+| --- | ------------ | ------------- | -------- | -------------- | ------------- | --------------------- | -------------------- | -------------------- | ------------- |
+{{#runs}}
+| {{run}} | {{metrics.totalGCTimeMs}} | {{metrics.meanGcPauseMs}} | {{metrics.gcCount}} | {{metrics.majorGcCount}} | {{metrics.cpuTimeMs}} | {{metrics.heapUsedBeforeMB}} | {{metrics.heapUsedAfterMB}} | {{metrics.heapUsedDeltaMB}} | {{metrics.uaMemoryMB}} |
+{{/runs}}
+
+---
+
+## How to view artifacts
+
+To dive deeper, open the raw artifact files in Chrome DevTools:
+
+1.  **CPU Profile**: Open DevTools, go to the "Performance" panel, and click the "Load profile" icon (up arrow). Select a `cpu.cpuprofile` file from the artifacts directory.
+2.  **Performance Trace**: In the same "Performance" panel, load a `trace.json` file.
+3.  **Heap Snapshot**: Go to the "Memory" panel, and click "Load" to open a `.heapsnapshot` file. You can load two snapshots and compare them to find leaks.
