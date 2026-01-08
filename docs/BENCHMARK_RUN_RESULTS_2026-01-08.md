@@ -40,3 +40,34 @@ These results were captured after adding warmup/discard handling and the new ski
 - The runner reported port 4173 in use and served the preview on 4174.
 - The automated runner still navigates to the preview page and completed all benchmarks.
 - If a stale preview server is suspected, free port 4173 or update the runner to a fixed strict port.
+
+## Run 2 (re-run after commit)
+
+### Mount deep tree (depth: 7, breadth: 2)
+
+- flesh-cage: 12.70ms ± 3.93ms
+- styled-components: 4.65ms ± 0.78ms
+- emotion: 4.69ms ± 0.61ms
+
+### Mount wide tree (depth: 3, breadth: 6)
+
+- flesh-cage: 12.96ms ± 4.13ms
+- styled-components: 4.80ms ± 0.51ms
+- emotion: 4.66ms ± 0.62ms
+
+### Update dynamic styles (Sierpinski Triangle)
+
+- flesh-cage: 10.57ms ± 0.62ms
+- styled-components: 10.60ms ± 0.64ms
+- emotion: 10.72ms ± 0.71ms
+
+### Update skin/theme switching
+
+- flesh-cage: 10.38ms ± 0.63ms
+- styled-components: 10.37ms ± 0.56ms
+- emotion: 10.38ms ± 0.59ms
+
+## Notes
+
+- The runner reported port 4173 in use and served the preview on 4174.
+- `vite preview` exits with code 143 when the runner stops it; the benchmark run completed successfully.
