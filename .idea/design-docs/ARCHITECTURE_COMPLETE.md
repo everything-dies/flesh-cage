@@ -26,9 +26,9 @@ Your library combines **four interconnected innovations** that together create s
 - Type-safe tokens and helpers
 
 ### 4. **Constructable Stylesheets + Shadow DOM**
-- 99% memory savings through sheet sharing
 - True encapsulation (no cascade pollution)
 - Lazy loading with code splitting
+- Efficient style management
 
 ---
 
@@ -260,7 +260,6 @@ class ButtonElement extends HTMLElement {
 - ✅ Lazy loading (only load active skin)
 - ✅ Sheet sharing (100 instances = 1 CSSStyleSheet)
 - ✅ Ref counting (memory lifecycle-bound)
-- ✅ 99% memory savings vs duplicating CSS
 
 ---
 
@@ -440,18 +439,6 @@ const skin = searchParams.get('skin') || 'material'
 
 ## Performance Characteristics
 
-### Memory
-
-```
-Traditional (style tags in shadow roots):
-  100 components × 60 KB skin = 6 MB
-
-Your architecture (Constructable Stylesheets):
-  1 shared sheet × 60 KB = 60 KB
-
-Savings: 5.94 MB (99% reduction!)
-```
-
 ### Initial Load
 
 ```
@@ -540,7 +527,6 @@ export default `
 - ✅ **Type errors** for invalid values (caught at compile-time)
 - ✅ **Zero runtime cost** (everything compiles to CSS strings)
 - ✅ **Fast theme switching** (8× faster than alternatives)
-- ✅ **Memory efficiency** (99% savings with sheet sharing)
 - ✅ **Code splitting** (each skin is a separate chunk)
 
 ---
@@ -766,7 +752,7 @@ This is not just "another CSS library." This is a **paradigm shift** that:
 | **Skins** | Complete visual languages | CSS as expressive medium |
 | **Attributes** | Semantic styling hooks | Accessibility enforced |
 | **CSS-in-TS** | Ecosystem access | Type safety + code sharing |
-| **Constructable Sheets** | Performance primitives | 99% memory savings |
+| **Constructable Sheets** | Performance primitives | Efficient style management |
 
 **Together, these create something unprecedented in the web platform ecosystem.**
 

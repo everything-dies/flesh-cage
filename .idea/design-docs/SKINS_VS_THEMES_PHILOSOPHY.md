@@ -746,23 +746,9 @@ export const skins = {
 "Skins are complete visual languages - like different CSS Zen Garden designs"
 
 **What this means:**
-- ✅ Memory savings are even MORE important (complete CSS per skin, not just variables)
 - ✅ Lazy loading is CRITICAL (skins can be large, complex stylesheets)
 - ✅ Caching is essential (you don't want to re-parse large stylesheets)
 - ✅ Code splitting wins are HUGE (each skin is a separate chunk)
-
-**Revised memory projections:**
-
-```
-Traditional themes (variables):
-  All themes loaded: ~50 KB (variables + base CSS)
-
-Your skins (complete stylesheets):
-  All skins loaded: ~300 KB (50 KB × 6 skins)
-  Lazy-loaded skins: ~50 KB (only active skin)
-
-Savings with lazy loading: 250 KB (83% reduction!) 🎉
-```
 
 ---
 

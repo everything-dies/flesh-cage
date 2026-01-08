@@ -33,7 +33,6 @@ This folder contains design reviews, architectural decision records (ADRs), benc
 
 **For typical to large apps (20-200 components, 3-10 skins):**
 - 4-8× faster performance (mount + theme switching)
-- 5-35% memory savings
 - Best fit: Enterprise design systems
 
 **Critical requirements:**

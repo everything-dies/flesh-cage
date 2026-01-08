@@ -12,7 +12,7 @@ Flesh Cage is a **paradigm shift** in component styling that combines four power
 1. **🎨 Skins (Not Themes)** - Complete visual languages, not variable swaps (CSS Zen Garden at scale)
 2. **🌐 Attribute-Driven Styling** - Semantic attributes (ARIA, data-\*) for styling, not prop interpolation
 3. **📝 CSS-in-TypeScript** - Full ecosystem access at build-time, zero runtime cost
-4. **⚡ Constructable Stylesheets + Shadow DOM** - 99% memory savings, true encapsulation
+4. **⚡ Constructable Stylesheets + Shadow DOM** - True encapsulation and efficient style management
 
 ## Quick Start
 
@@ -155,7 +155,6 @@ function MyComponent() {
 
 ### 📊 Performance
 
-- **Efficient memory usage** - Shared CSSStyleSheet objects (not duplicated strings)
 - **Lazy loading** - Dynamic imports for code-splitting
 - **Fast theme switching** - Direct stylesheet replacement via adoptedStyleSheets
 - **Small bundle** - Minimal runtime overhead, tree-shakeable
