@@ -114,3 +114,46 @@ These results were captured after adding warmup/discard handling and the new ski
 
 - The runner reported port 4173 in use and served the preview on 4174.
 - `vite preview` exits with code 143 when the runner stops it; the benchmark run completed successfully.
+
+## Run 4 (stable props/objects)
+
+### Mount deep tree (depth: 7, breadth: 2)
+
+- flesh-cage: 13.41ms ± 3.20ms
+- styled-components: 4.78ms ± 0.84ms
+- emotion: 4.61ms ± 0.47ms
+
+### Mount wide tree (depth: 3, breadth: 6)
+
+- flesh-cage: 12.70ms ± 4.32ms
+- styled-components: 4.59ms ± 0.70ms
+- emotion: 5.03ms ± 1.90ms
+
+### Mount deep tree (single provider)
+
+- flesh-cage: 13.51ms ± 2.10ms
+- styled-components: 4.68ms ± 0.84ms
+- emotion: 4.60ms ± 0.56ms
+
+### Mount wide tree (single provider)
+
+- flesh-cage: 13.16ms ± 3.54ms
+- styled-components: 4.66ms ± 0.58ms
+- emotion: 4.74ms ± 0.56ms
+
+### Update dynamic styles (Sierpinski Triangle)
+
+- flesh-cage: 10.89ms ± 0.47ms
+- styled-components: 10.73ms ± 0.66ms
+- emotion: 10.63ms ± 0.61ms
+
+### Update skin/theme switching
+
+- flesh-cage: 10.58ms ± 0.47ms
+- styled-components: 10.32ms ± 0.55ms
+- emotion: 10.42ms ± 0.62ms
+
+## Notes
+
+- The runner reported port 4173 in use and served the preview on 4174.
+- `vite preview` exits with code 143 when the runner stops it; the benchmark run completed successfully.

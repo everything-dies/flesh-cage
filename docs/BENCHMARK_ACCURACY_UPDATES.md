@@ -48,3 +48,7 @@ This makes results easier to interpret and compare across runs.
 - Compare fresh results against prior data for deltas.
 - Decide whether to add a "style applied" marker for flesh-cage (adoptedStyleSheets) and for style-tag based libraries.
 - Add stress test results if you want to track limits and memory behavior.
+
+### 4) Stable Props and Style References
+
+To reduce re-render noise from new object identities, benchmark props and theme objects are now hoisted and reused across renders. For flesh-cage, common box styles and the skin switch box style are reused as static objects. The dot geometry styles are cached per position/size and the color is updated in-place to avoid new object allocations on every update frame.

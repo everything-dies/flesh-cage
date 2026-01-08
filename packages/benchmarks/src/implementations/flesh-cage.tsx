@@ -2,6 +2,65 @@ import { styled, Provider } from '@everything-dies/flesh-cage'
 import { BenchmarkType, createTree } from '../cases/Tree'
 import { createSierpinskiTriangle } from '../cases/SierpinskiTriangle'
 
+const BOX_STYLE_MAP: Record<string, React.CSSProperties> = {
+  'column-false': {
+    display: 'flex',
+    flexDirection: 'column',
+    padding: '0',
+    margin: '0',
+  },
+  'column-true': {
+    display: 'flex',
+    flexDirection: 'column',
+    padding: '10px',
+    margin: '5px',
+  },
+  'row-false': {
+    display: 'flex',
+    flexDirection: 'row',
+    padding: '0',
+    margin: '0',
+  },
+  'row-true': {
+    display: 'flex',
+    flexDirection: 'row',
+    padding: '10px',
+    margin: '5px',
+  },
+}
+
+const SKIN_BOX_STYLE: React.CSSProperties = {
+  width: '40px',
+  height: '40px',
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  fontSize: '12px',
+}
+
+const DOT_STYLE_CACHE = new Map<string, React.CSSProperties>()
+
+const getDotStyle = (size: number, x: number, y: number, color: string) => {
+  const key = `${String(size)}-${String(x)}-${String(y)}`
+  let style = DOT_STYLE_CACHE.get(key)
+
+  if (!style) {
+    style = {
+      width: `${String(size)}px`,
+      height: `${String(size)}px`,
+      left: `${String(x)}px`,
+      top: `${String(y)}px`,
+      borderRadius: '50%',
+      backgroundColor: color,
+    }
+    DOT_STYLE_CACHE.set(key, style)
+  } else {
+    style.backgroundColor = color
+  }
+
+  return style
+}
+
 // Box component for Tree benchmark
 const Box = styled('div', {
   name: 'bench-box',
@@ -47,16 +106,7 @@ function BoxWithSkin({
 }) {
   return (
     <Provider skin={color as 'black' | 'red' | 'blue' | 'transparent'}>
-      <Box
-        style={{
-          display: 'flex',
-          flexDirection: layout === 'column' ? 'column' : 'row',
-          padding: outer ? '10px' : '0',
-          margin: outer ? '5px' : '0',
-        }}
-      >
-        {children}
-      </Box>
+      <Box style={BOX_STYLE_MAP[`${layout}-${String(outer)}`]}>{children}</Box>
     </Provider>
   )
 }
@@ -129,18 +179,7 @@ function DotWithColor({
 }) {
   return (
     <Provider skin="dynamic">
-      <Dot
-        style={{
-          width: `${String(size)}px`,
-          height: `${String(size)}px`,
-          left: `${String(x)}px`,
-          top: `${String(y)}px`,
-          backgroundColor: color,
-          borderRadius: '50%',
-        }}
-      >
-        {children}
-      </Dot>
+      <Dot style={getDotStyle(size, x, y, color)}>{children}</Dot>
     </Provider>
   )
 }
@@ -159,12 +198,7 @@ function BoxWithAttributes({
   return (
     <BoxAttribute
       data-color={color}
-      style={{
-        display: 'flex',
-        flexDirection: layout === 'column' ? 'column' : 'row',
-        padding: outer ? '10px' : '0',
-        margin: outer ? '5px' : '0',
-      }}
+      style={BOX_STYLE_MAP[`${layout}-${String(outer)}`]}
     >
       {children}
     </BoxAttribute>
@@ -176,18 +210,7 @@ function SkinSwitch({ renderCount }: { renderCount: number }) {
 
   return (
     <Provider skin={skin}>
-      <SkinBox
-        style={{
-          width: '40px',
-          height: '40px',
-          display: 'inline-flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: '12px',
-        }}
-      >
-        {skin}
-      </SkinBox>
+      <SkinBox style={SKIN_BOX_STYLE}>{skin}</SkinBox>
     </Provider>
   )
 }

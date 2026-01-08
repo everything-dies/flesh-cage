@@ -8,6 +8,9 @@ type Theme = {
   text: string
 }
 
+const THEME_RED: Theme = { color: '#f44336', text: 'white' }
+const THEME_BLUE: Theme = { color: '#2196f3', text: 'white' }
+
 // Box component for Tree benchmark
 const Box = styled.div<{
   color: string
@@ -94,10 +97,7 @@ function DotWrapper({
 }
 
 function SkinSwitch({ renderCount }: { renderCount: number }) {
-  const theme =
-    renderCount % 2 === 0
-      ? { color: '#f44336', text: 'white' }
-      : { color: '#2196f3', text: 'white' }
+  const theme = renderCount % 2 === 0 ? THEME_RED : THEME_BLUE
 
   return (
     <ThemeProvider theme={theme}>

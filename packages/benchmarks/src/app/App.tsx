@@ -10,6 +10,22 @@ const implementations = [
   EmotionImplementation,
 ]
 
+const MOUNT_DEEP_PROPS = Object.freeze({
+  breadth: 2,
+  depth: 7,
+  id: 0,
+  wrap: 1,
+})
+
+const MOUNT_WIDE_PROPS = Object.freeze({
+  breadth: 6,
+  depth: 3,
+  id: 0,
+  wrap: 1,
+})
+
+const EMPTY_PROPS = Object.freeze({})
+
 /**
  * Main benchmark app
  * Compares flesh-cage with styled-components and emotion
@@ -94,7 +110,7 @@ export function App() {
 
       <Benchmark
         component={Tree}
-        componentProps={{ breadth: 2, depth: 7, id: 0, wrap: 1 }}
+        componentProps={MOUNT_DEEP_PROPS}
         name={`${impl.name} - Mount deep tree (depth: 7, breadth: 2)`}
         sampleCount={50}
         warmupCount={warmupCount}
@@ -105,7 +121,7 @@ export function App() {
 
       <Benchmark
         component={Tree}
-        componentProps={{ breadth: 6, depth: 3, id: 0, wrap: 1 }}
+        componentProps={MOUNT_WIDE_PROPS}
         name={`${impl.name} - Mount wide tree (depth: 3, breadth: 6)`}
         sampleCount={50}
         warmupCount={warmupCount}
@@ -121,7 +137,7 @@ export function App() {
 
       <Benchmark
         component={TreeSingle}
-        componentProps={{ breadth: 2, depth: 7, id: 0, wrap: 1 }}
+        componentProps={MOUNT_DEEP_PROPS}
         name={`${impl.name} - Mount deep tree (single provider)`}
         sampleCount={50}
         warmupCount={warmupCount}
@@ -132,7 +148,7 @@ export function App() {
 
       <Benchmark
         component={TreeSingle}
-        componentProps={{ breadth: 6, depth: 3, id: 0, wrap: 1 }}
+        componentProps={MOUNT_WIDE_PROPS}
         name={`${impl.name} - Mount wide tree (single provider)`}
         sampleCount={50}
         warmupCount={warmupCount}
@@ -148,7 +164,7 @@ export function App() {
 
       <Benchmark
         component={SierpinskiTriangle}
-        componentProps={{}}
+        componentProps={EMPTY_PROPS}
         name={`${impl.name} - Update dynamic styles (Sierpinski Triangle)`}
         sampleCount={100}
         warmupCount={warmupCount}
@@ -159,7 +175,7 @@ export function App() {
 
       <Benchmark
         component={SkinSwitch}
-        componentProps={{}}
+        componentProps={EMPTY_PROPS}
         name={`${impl.name} - Update skin/theme switching`}
         sampleCount={100}
         warmupCount={warmupCount}
