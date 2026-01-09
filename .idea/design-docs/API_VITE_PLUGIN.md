@@ -98,13 +98,13 @@ export default defineConfig({
       include: 'src/components/**/*.tsx',
 
       // Naming conventions
-      skinPattern: '*.skin.ts',      // Default skin
+      skinPattern: '*.skin.ts', // Default skin
       variantPattern: '*.{name}.ts', // Named variants (dark, light, etc.)
 
       // Optional: placeholder for Suspense fallback
       placeholderPattern: '*.placeholder.tsx',
-    })
-  ]
+    }),
+  ],
 })
 ```
 
@@ -173,6 +173,7 @@ export const Button = ({ variant, children }: ButtonProps) => (
 ```
 
 **Directive options:**
+
 - `@shadow-component` - Explicitly enable (auto-detected by default)
 - `@name` - Custom element name (defaults to lowercase component name)
 - `@skins` - Explicitly list skins (otherwise auto-discovered)
@@ -200,6 +201,7 @@ export default `
 ```
 
 **Skin directive options:**
+
 - `@skin-name` - Override skin name (defaults to filename)
 - `@extends` - Inherit from another skin
 - `@priority` - Load order priority
@@ -228,6 +230,7 @@ export const shadowConfig = {
 ```
 
 Plugin transforms to:
+
 ```typescript
 import { __shadowComponent } from '@my-lib/runtime'
 
@@ -253,12 +256,13 @@ export const Button = __shadowComponent(ButtonBase, {
 // vite.config.ts
 export default defineConfig({
   plugins: [
-    shadowComponents()  // Uses all defaults!
-  ]
+    shadowComponents(), // Uses all defaults!
+  ],
 })
 ```
 
 **Defaults:**
+
 - `include: 'src/components/**/*.{tsx,jsx}'`
 - `skinPattern: '*.skin.ts'`
 - `variantPattern: '*.{variant}.ts'`
@@ -275,27 +279,27 @@ export default defineConfig({
       exclude: ['**/*.test.tsx', '**/*.stories.tsx'],
 
       // File naming conventions
-      skinPattern: '*.skin.ts',           // Default skin
-      variantPattern: '*.{variant}.ts',   // Named variants
+      skinPattern: '*.skin.ts', // Default skin
+      variantPattern: '*.{variant}.ts', // Named variants
       placeholderPattern: '*.placeholder.tsx',
 
       // Skin configuration
       defaultSkin: 'default',
-      autoDetectSkins: true,              // Auto-discover skin files
+      autoDetectSkins: true, // Auto-discover skin files
 
       // Custom element naming
-      elementPrefix: 'my-',               // <my-button> instead of <button>
-      elementNaming: 'kebab-case',        // button-primary or buttonPrimary
+      elementPrefix: 'my-', // <my-button> instead of <button>
+      elementNaming: 'kebab-case', // button-primary or buttonPrimary
 
       // Shadow DOM configuration
-      shadowMode: 'open',                 // 'open' | 'closed'
+      shadowMode: 'open', // 'open' | 'closed'
 
       // Parts export
-      autoExportParts: true,              // Auto-detect [part="..."]
+      autoExportParts: true, // Auto-detect [part="..."]
 
       // Code generation
-      generateTypes: true,                // Generate TypeScript types
-      generateDocs: true,                 // Generate documentation
+      generateTypes: true, // Generate TypeScript types
+      generateDocs: true, // Generate documentation
 
       // Advanced
       transform: (component, config) => {
@@ -304,10 +308,10 @@ export default defineConfig({
       },
 
       // Debugging
-      debug: false,                       // Log plugin activity
-      dryRun: false,                      // Don't write files (test mode)
-    })
-  ]
+      debug: false, // Log plugin activity
+      dryRun: false, // Don't write files (test mode)
+    }),
+  ],
 })
 ```
 
@@ -338,11 +342,11 @@ export default defineConfig({
           skins: {
             light: './components/card/light.ts',
             dark: './components/card/dark.ts',
-          }
-        }
-      }
-    })
-  ]
+          },
+        },
+      },
+    }),
+  ],
 })
 ```
 
@@ -364,7 +368,7 @@ declare module '@my-lib/runtime' {
 declare module 'react' {
   namespace JSX {
     interface IntrinsicElements {
-      'button': React.DetailedHTMLProps<
+      button: React.DetailedHTMLProps<
         React.ButtonHTMLAttributes<HTMLButtonElement> & {
           part?: string
           exportparts?: string
@@ -403,9 +407,9 @@ declare module './components/button/Button' {
 export default defineConfig({
   plugins: [
     shadowComponents({
-      autoDetect: false,  // Don't transform anything yet
-    })
-  ]
+      autoDetect: false, // Don't transform anything yet
+    }),
+  ],
 })
 ```
 
@@ -429,10 +433,10 @@ Only components with directive are transformed.
 export default defineConfig({
   plugins: [
     shadowComponents({
-      autoDetect: true,     // Transform all components with skins
+      autoDetect: true, // Transform all components with skins
       include: 'src/components/**/*.tsx',
-    })
-  ]
+    }),
+  ],
 })
 ```
 
@@ -454,8 +458,9 @@ export const Button = ({ children }) => (
 ```
 
 **Feels like:**
+
 - Next.js file-based routing (convention)
-- CSS Modules (*.module.css convention)
+- CSS Modules (\*.module.css convention)
 - Remix (file-based loaders)
 
 **Developers think:** "I already know this pattern!"
@@ -485,6 +490,7 @@ export const Button = ({ children }) => <button>{children}</button>
 ### ✅ Low Ceremony: LOWEST POSSIBLE
 
 **No imports:**
+
 ```typescript
 // ❌ Other APIs
 import { createShadowComponent } from '@my-lib/react'
@@ -496,6 +502,7 @@ import { useShadowStyles } from '@my-lib/react'
 ```
 
 **No wrappers:**
+
 ```typescript
 // ❌ Other APIs
 export const Button = createShadowComponent({ ... })
@@ -556,7 +563,7 @@ Or disable shadow component:
 ```typescript
 // vite.config.ts
 shadowComponents({
-  debug: true  // Logs all transformations
+  debug: true, // Logs all transformations
 })
 
 // Console output:
@@ -736,6 +743,7 @@ function App() {
 ```
 
 **Plugin automatically:**
+
 - ✅ Wraps Button with shadow component
 - ✅ Loads skins lazily
 - ✅ Generates TypeScript types
@@ -777,13 +785,13 @@ shadowComponents({
 
 ### Friction Score (Lower is Better)
 
-| Metric | Plugin API | createShadowComponent | HOC | Hook |
-|--------|-----------|----------------------|-----|------|
-| **Lines of code** | 1 | 9 | 7 | 12 |
-| **Imports needed** | 0 | 1 | 1 | 2 |
-| **New concepts** | 1 | 2 | 1 | 3 |
-| **Setup complexity** | Medium | Low | Low | Low |
-| **Migration effort** | Zero | Low | Low | Medium |
+| Metric               | Plugin API | createShadowComponent | HOC | Hook   |
+| -------------------- | ---------- | --------------------- | --- | ------ |
+| **Lines of code**    | 1          | 9                     | 7   | 12     |
+| **Imports needed**   | 0          | 1                     | 1   | 2      |
+| **New concepts**     | 1          | 2                     | 1   | 3      |
+| **Setup complexity** | Medium     | Low                   | Low | Low    |
+| **Migration effort** | Zero       | Low                   | Low | Medium |
 
 **Plugin API wins on code/concepts, but loses on setup.**
 
@@ -846,6 +854,7 @@ import { shadowComponents } from '@my-lib/vite-plugin'
 3. **Optimize:** Migrate existing to conventions (if desired)
 
 **Messaging:**
+
 - "Use the API directly for full control"
 - "Use the plugin for zero-boilerplate experience"
 - "Mix and match as needed"
@@ -854,17 +863,18 @@ import { shadowComponents } from '@my-lib/vite-plugin'
 
 ## Final Comparison Matrix
 
-| Factor | Plugin | createShadowComponent | HOC | Hook | Macro |
-|--------|--------|----------------------|-----|------|-------|
-| **Code reduction** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐⭐ |
-| **Adoption** | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ |
-| **Resistance** | ⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ |
-| **TypeScript** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐ |
-| **Flexibility** | ⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐ |
-| **Setup** | ⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐ |
-| **Debugging** | ⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐ |
+| Factor             | Plugin     | createShadowComponent | HOC        | Hook       | Macro    |
+| ------------------ | ---------- | --------------------- | ---------- | ---------- | -------- |
+| **Code reduction** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐                | ⭐⭐⭐     | ⭐⭐       | ⭐⭐⭐⭐ |
+| **Adoption**       | ⭐⭐⭐⭐   | ⭐⭐⭐⭐              | ⭐⭐⭐⭐⭐ | ⭐⭐⭐     | ⭐⭐     |
+| **Resistance**     | ⭐⭐⭐     | ⭐⭐⭐⭐              | ⭐⭐⭐⭐⭐ | ⭐⭐⭐     | ⭐⭐     |
+| **TypeScript**     | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐            | ⭐⭐⭐⭐   | ⭐⭐⭐     | ⭐⭐⭐⭐ |
+| **Flexibility**    | ⭐⭐⭐     | ⭐⭐⭐⭐              | ⭐⭐⭐     | ⭐⭐⭐⭐⭐ | ⭐⭐     |
+| **Setup**          | ⭐⭐       | ⭐⭐⭐⭐⭐            | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐     |
+| **Debugging**      | ⭐⭐⭐     | ⭐⭐⭐⭐              | ⭐⭐⭐     | ⭐⭐⭐⭐   | ⭐⭐     |
 
 **Best for:**
+
 - **Plugin:** Large codebases, new projects, convention lovers
 - **createShadowComponent:** Default choice, good balance
 - **HOC:** Migrating existing codebases

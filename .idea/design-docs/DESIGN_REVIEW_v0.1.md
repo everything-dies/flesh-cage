@@ -21,27 +21,32 @@ This document analyzes the current PoC for a CSS-in-TS library using Web Compone
 ### Architecture Strengths
 
 ✅ **Performance-first approach**
+
 - Constructable StyleSheets = fast style adoption
 - Lazy-loaded skins via dynamic imports
 - Centralized cache to avoid duplication
 
 ✅ **React integration**
+
 - Portals + Suspense for async loading
 - ErrorBoundary for graceful degradation
 
 ✅ **Type-safe skin validation**
+
 - Runtime validation with TypeScript guards
 - Const assertions for skin registry
 
 ### Critical Issues Found
 
 🔴 **Correctness bugs:**
+
 1. `attributeChangedCallback` logic broken - skips initial render when `current === null`
 2. `CSSStyleSheet.replace()` returns Promise but not awaited
 3. Race conditions on rapid skin changes (no abort mechanism)
 4. Promise cache doesn't resolve to final CSSStyleSheet value
 
 🟡 **Design gaps:**
+
 1. No SSR story (will crash on server)
 2. No HMR integration (requires full reload)
 3. No CSP strategy (constructable sheets blocked in strict CSP)
@@ -49,6 +54,7 @@ This document analyzes the current PoC for a CSS-in-TS library using Web Compone
 5. Event model unclear (`suspend` events with Promise in detail)
 
 ⚠️ **DX concerns:**
+
 1. `useCore()` hook is opaque (not shown in snippet)
 2. Lazy component pattern is convoluted
 3. No documented testing approach
@@ -84,12 +90,14 @@ export default { plugins: [shadowOptimizer()] }
 ```
 
 **Why this wins:**
+
 - ✅ Lowest barrier to entry
 - ✅ Clear upgrade path (progressive enhancement)
 - ✅ Supports small apps (no plugin) and large apps (with plugin)
 - ✅ Easier to pivot if design changes
 
 **Risks:**
+
 - Maintaining two code paths (runtime vs. plugin-optimized)
 - DX confusion about when plugin is needed
 - Performance gap between modes may not justify plugin
@@ -118,12 +126,14 @@ export const Counter = ({ count }) => {
 ```
 
 **Why validate this:**
+
 - ✅ Simpler mental model (familiar React patterns)
 - ✅ Better SSR story (render without shadow on server)
 - ✅ Easier to test (shallow rendering works)
 - ✅ **Tests assumption that Web Components are necessary**
 
 **Risks:**
+
 - No custom element lifecycle hooks
 - Manual state management
 - Less encapsulation (no `attributeChangedCallback`)
@@ -138,6 +148,7 @@ These **must** be answered before committing to an API:
 
 **Impact:** Entire API surface
 **Trade-offs:**
+
 - **With WC:** Strong encapsulation, attribute-based API, lifecycle hooks
 - **Without WC:** Better SSR, easier testing, simpler debugging
 
@@ -148,10 +159,12 @@ These **must** be answered before committing to an API:
 ### 2. Browser Support Baseline
 
 **Current PoC requires:**
+
 - Constructable Stylesheets (Chrome 73+, Safari 16.4+, Firefox 101+)
 - Eliminates ~5-10% of users (older Safari especially)
 
 **Options:**
+
 - A) Accept baseline, document clearly
 - B) Build polyfill (complexity + perf cost)
 - C) Graceful degradation (fallback to `<style>` tags)
@@ -165,6 +178,7 @@ These **must** be answered before committing to an API:
 **Current state:** Client-only (crashes on server)
 
 **Options:**
+
 - A) Client-only forever (simplest)
 - B) Declarative Shadow DOM (limited browser support)
 - C) Static fallback + hydration (FOUC)
@@ -181,6 +195,7 @@ These **must** be answered before committing to an API:
 **Impact:** Enterprise customers often have strict CSP
 
 **Options:**
+
 - A) Require `unsafe-inline` (document clearly)
 - B) Fallback to `<link rel="stylesheet">` (complexity)
 - C) Pre-built stylesheets (no dynamic loading)
@@ -196,6 +211,7 @@ These **must** be answered before committing to an API:
 **Problem:** User wants global theme toggle (all components switch together)
 
 **Options:**
+
 - A) React Context provider for global theme
 - B) Attribute inheritance via DOM traversal
 - C) Hybrid: context with per-component overrides
@@ -211,6 +227,7 @@ These **must** be answered before committing to an API:
 **Problem:** With 50+ skins, unbounded memory growth
 
 **Options:**
+
 - A) No eviction (simple, predictable)
 - B) LRU cache with size limit
 - C) WeakMap + ref counting
@@ -227,6 +244,7 @@ These **must** be answered before committing to an API:
 **Question:** How to integrate with design systems (Figma tokens, JSON tokens)?
 
 **Options:**
+
 - A) Manual: users write CSS with variables
 - B) Codegen: plugin transforms tokens → CSS
 - C) Runtime: JavaScript token objects → CSS variables
@@ -242,6 +260,7 @@ These **must** be answered before committing to an API:
 **Question:** What's the official testing story?
 
 **Options:**
+
 - A) Document workarounds (`{container: shadowRoot}`)
 - B) Provide test utilities (`withinShadow()`)
 - C) Non-shadow test mode (disable shadow for tests)
@@ -267,6 +286,7 @@ These **must** be answered before committing to an API:
 **Question:** How do users migrate from styled-components/Emotion/CSS Modules?
 
 **Options:**
+
 - A) Codemods for automated migration
 - B) Incremental adoption (mix with existing styles)
 - C) Compatibility layer (styled-components API)
@@ -301,6 +321,7 @@ These **must** be answered before committing to an API:
 ```
 
 **Rationale:**
+
 - Core is framework-agnostic (future: Vue, Svelte, etc.)
 - React package is thin wrapper around core
 - Plugin is truly optional (progressive enhancement)
@@ -313,26 +334,31 @@ These **must** be answered before committing to an API:
 Before building production API, run these spikes:
 
 ### 1. Performance: Sheets Cache Strategies
+
 - Compare global singleton vs. per-component caches
 - Measure memory with 100 components × 5 skins
 - Test ref counting vs. WeakMap cleanup
 
 ### 2. SSR: Declarative Shadow DOM Spike
+
 - Test browser support (Safari, Firefox)
 - Measure FOUC duration on slow connections
 - Validate hydration behavior
 
 ### 3. HMR: Vite Integration PoC
+
 - Implement `import.meta.hot.accept()` wrapper
 - Test style updates without state loss
 - Measure update latency
 
 ### 4. DX: Developer Survey
+
 - Show both APIs to 5-10 developers
 - Time-to-hello-world benchmark
 - Collect feedback on clarity, magic, debuggability
 
 ### 5. Testing: RTL Workarounds
+
 - Prototype `withinShadow()` utility
 - Test with real components
 - Document patterns
@@ -342,16 +368,19 @@ Before building production API, run these spikes:
 ## 🔄 Next Steps
 
 ### Immediate (This Week)
+
 1. ✅ Review this document, provide feedback
 2. ⏳ Answer critical questions #1-5 (Web Components, browser support, SSR, CSP, theming)
 3. ⏳ Choose API direction (Progressive Enhancement vs. Hook-Based vs. both)
 
 ### Short-term (Next 2 Weeks)
+
 4. Build minimal PoC of chosen API(s)
 5. Run experiments #1, #3, #5 (performance, HMR, testing)
 6. Write "Hello World" documentation
 
 ### Medium-term (Next Month)
+
 7. Package structure + build setup
 8. HMR integration
 9. Test utilities
@@ -379,11 +408,13 @@ Please provide feedback on:
 This is a living document. Future versions will track decisions and rationale.
 
 **Version History:**
+
 - **v0.1** (2025-12-27): Initial analysis, API exploration, critical questions
 - **v0.2** (TBD): Incorporate feedback, finalize API direction
 - **v0.3** (TBD): Document PoC results, update recommendations
 
 **Change Process:**
+
 1. You provide feedback/concerns in conversation
 2. I update document with new version number
 3. We iterate until consensus on API direction
@@ -394,20 +425,24 @@ This is a living document. Future versions will track decisions and rationale.
 ## 📌 Key Takeaways
 
 **What's working:**
+
 - Core tech stack (Constructable Stylesheets, lazy loading, cache)
 - React integration approach (portals, Suspense)
 
 **What needs fixing:**
+
 - Correctness bugs (attributeChangedCallback, Promise handling, races)
 - Missing stories (SSR, HMR, testing)
 - DX unclear (too much magic, hard to debug)
 
 **What to decide:**
+
 - Web Components: yes or no?
 - API surface: Progressive Enhancement vs. simpler alternatives
 - Browser baseline and trade-offs
 
 **Recommended path forward:**
+
 - Prototype 2 APIs in parallel (Progressive Enhancement + Hook-Based)
 - Run focused experiments (performance, DX, testing)
 - Make data-driven decision on final API

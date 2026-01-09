@@ -13,11 +13,15 @@
 ```tsx
 // Having to specify skin on every component is horrible DX
 <div>
-  <Button skin="material" variant="primary">Save</Button>
+  <Button skin="material" variant="primary">
+    Save
+  </Button>
   <Card skin="material">
     <Input skin="material" />
     <Checkbox skin="material" />
-    <Button skin="material" variant="secondary">Cancel</Button>
+    <Button skin="material" variant="secondary">
+      Cancel
+    </Button>
   </Card>
   <Dropdown skin="material">
     <MenuItem skin="material">Option 1</MenuItem>
@@ -88,7 +92,7 @@ function ButtonElement() {
 }
 
 // Consumers don't see this - it just works!
-<Button>Click Me</Button>
+;<Button>Click Me</Button>
 ```
 
 ### 3. Optional Override Per Component
@@ -174,7 +178,7 @@ function App() {
   return (
     <SkinProvider skin={skin}>
       <header>
-        <select value={skin} onChange={e => setSkin(e.target.value)}>
+        <select value={skin} onChange={(e) => setSkin(e.target.value)}>
           <option value="material">Material</option>
           <option value="brutalist">Brutalist</option>
           <option value="dark">Dark</option>
@@ -195,7 +199,7 @@ function App() {
 import { useSelector } from 'react-redux'
 
 function App() {
-  const skin = useSelector(state => state.theme.currentSkin)
+  const skin = useSelector((state) => state.theme.currentSkin)
 
   return (
     <SkinProvider skin={skin}>
@@ -214,7 +218,7 @@ dispatch({ type: 'theme/setSkin', payload: 'dark' })
 import { useThemeStore } from './store'
 
 function App() {
-  const skin = useThemeStore(state => state.skin)
+  const skin = useThemeStore((state) => state.skin)
 
   return (
     <SkinProvider skin={skin}>
@@ -338,7 +342,7 @@ function App() {
           <input
             type="checkbox"
             checked={debugMode}
-            onChange={e => setDebugMode(e.target.checked)}
+            onChange={(e) => setDebugMode(e.target.checked)}
           />
           Debug Mode (Wireframe)
         </label>
@@ -402,13 +406,14 @@ interface SkinProviderProps {
   fallback?: React.ReactNode
 }
 
-function SkinProvider({ skin, children, preload, fallback }: SkinProviderProps) {
+function SkinProvider({
+  skin,
+  children,
+  preload,
+  fallback,
+}: SkinProviderProps) {
   // Implementation uses React Context
-  return (
-    <SkinContext.Provider value={skin}>
-      {children}
-    </SkinContext.Provider>
-  )
+  return <SkinContext.Provider value={skin}>{children}</SkinContext.Provider>
 }
 ```
 
@@ -497,7 +502,7 @@ export function SkinProvider({ skin, children }: SkinProviderProps) {
 // React components don't re-render!
 
 <SkinProvider skin={skin}>
-  <ExpensiveComponent />  {/* Doesn't re-render when skin changes */}
+  <ExpensiveComponent /> {/* Doesn't re-render when skin changes */}
 </SkinProvider>
 
 // This is because skin changes are applied at the shadow DOM level
@@ -553,11 +558,14 @@ function App() {
           <Route path="/settings" element={<Settings />} />
 
           {/* Admin section uses different skin */}
-          <Route path="/admin" element={
-            <SkinProvider skin="admin-dark">
-              <AdminPanel />
-            </SkinProvider>
-          } />
+          <Route
+            path="/admin"
+            element={
+              <SkinProvider skin="admin-dark">
+                <AdminPanel />
+              </SkinProvider>
+            }
+          />
         </Routes>
 
         <Footer />
@@ -588,7 +596,10 @@ function Settings() {
         </div>
       </SkinProvider>
 
-      <select value={selectedSkin} onChange={e => setSelectedSkin(e.target.value)}>
+      <select
+        value={selectedSkin}
+        onChange={(e) => setSelectedSkin(e.target.value)}
+      >
         <option value="material">Material</option>
         <option value="brutalist">Brutalist</option>
         <option value="dark">Dark</option>
@@ -608,15 +619,15 @@ function Settings() {
 
 ```tsx
 // This pollutes the component API!
-<SkinProvider skin="material">
-  <Button skin="brutalist">Click Me</Button>  {/* ❌ NO! */}
+;<SkinProvider skin="material">
+  <Button skin="brutalist">Click Me</Button> {/* ❌ NO! */}
 </SkinProvider>
 
 // Component interface should NOT include skin
 interface ButtonProps {
   variant?: 'primary' | 'secondary'
   children: React.ReactNode
-  skin?: string  // ❌ Don't do this!
+  skin?: string // ❌ Don't do this!
 }
 ```
 
@@ -624,7 +635,7 @@ interface ButtonProps {
 
 ```tsx
 // Override using nested providers only
-<SkinProvider skin="material">
+;<SkinProvider skin="material">
   <Button>Normal button</Button>
 
   {/* Use nested provider for different skin */}
@@ -646,11 +657,13 @@ interface ButtonProps {
 ### Implementation Detail
 
 **Internally, components:**
+
 1. Read skin from context: `const skin = useSkinContext()`
 2. Use skin value to load stylesheet: `const sheet = await cache.acquire(skin)`
 3. May set as attribute on custom element: `<button-element skin={skin}>`
 
 **But externally, consumers:**
+
 - Never see or use `skin` as a prop
 - Only interact with `<SkinProvider>` for skin selection
 - Components automatically inherit skin from context

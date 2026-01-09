@@ -11,6 +11,7 @@
 **CSS is defined in `.ts` files that export CSS strings, not in `.css` files.**
 
 This is **NOT** runtime CSS-in-JS (styled-components, emotion). This is **compile-time CSS-in-TS** that:
+
 - Outputs plain CSS strings
 - Has zero runtime overhead
 - Leverages the entire TypeScript/JavaScript ecosystem
@@ -58,7 +59,7 @@ export const SKINS = {
 // Load and create CSSStyleSheet
 const { default: cssString } = await import('./skins/material')
 const sheet = new CSSStyleSheet()
-await sheet.replace(cssString)  // Convert string → CSSOM
+await sheet.replace(cssString) // Convert string → CSSOM
 ```
 
 **Key insight:** The `.ts` file exports a **string**, which is then converted to a CSSStyleSheet at runtime via `replace()`.
@@ -112,6 +113,7 @@ export default `
 ```
 
 **Benefits:**
+
 - ✅ Single source of truth for design tokens
 - ✅ Type-safe (TypeScript validates token names)
 - ✅ Refactor-friendly (rename propagates everywhere)
@@ -134,7 +136,11 @@ export function darken(hex: string, percent: number): string {
   // ... implementation
 }
 
-export function createGradient(start: string, end: string, angle = 135): string {
+export function createGradient(
+  start: string,
+  end: string,
+  angle = 135
+): string {
   return `linear-gradient(${angle}deg, ${start}, ${end})`
 }
 
@@ -158,6 +164,7 @@ export default `
 ```
 
 **Benefits:**
+
 - ✅ Reusable CSS logic
 - ✅ Type-safe functions
 - ✅ Consistent transformations across skins
@@ -192,6 +199,7 @@ export default `
 ```
 
 **Popular libraries you can use:**
+
 - [polished](https://polished.js.org/) - Color manipulation, mixins
 - [color](https://github.com/Qix-/color) - Color conversions
 - [csstype](https://github.com/frenic/csstype) - TypeScript CSS types
@@ -265,6 +273,7 @@ export default `
 ```
 
 **Benefits:**
+
 - ✅ DRY (Don't Repeat Yourself)
 - ✅ Consistent base behavior across skins
 - ✅ Easy to update shared logic
@@ -330,7 +339,9 @@ export default `
 const IS_DEV = process.env.NODE_ENV === 'development'
 const SHOW_DEBUG = process.env.VITE_SHOW_DEBUG === 'true'
 
-const debugStyles = IS_DEV || SHOW_DEBUG ? `
+const debugStyles =
+  IS_DEV || SHOW_DEBUG
+    ? `
   [part="debug-info"] {
     display: block;
     position: fixed;
@@ -342,7 +353,8 @@ const debugStyles = IS_DEV || SHOW_DEBUG ? `
     font-family: monospace;
     font-size: 0.75rem;
   }
-` : `
+`
+    : `
   [part="debug-info"] {
     display: none;
   }
@@ -395,14 +407,14 @@ export default generateGrid(12, '1rem')
 
 ## Comparison: CSS-in-TS vs Alternatives
 
-| Approach | Runtime Cost | Ecosystem Access | Type Safety | Code Splitting | DX |
-|----------|-------------|------------------|-------------|----------------|-----|
-| **Plain CSS** | ✅ Zero | ❌ No | ❌ No | ⚠️ Manual | ⚠️ Separate files |
-| **CSS Modules** | ✅ Zero | ❌ No | ⚠️ Limited | ✅ Yes | ✅ Good |
-| **Sass/SCSS** | ✅ Zero (compiled) | ⚠️ Sass only | ❌ No | ⚠️ Manual | ✅ Good |
-| **styled-components** | ❌ Runtime | ✅ Full JS | ✅ Yes | ✅ Yes | ⚠️ Runtime cost |
-| **Emotion** | ❌ Runtime | ✅ Full JS | ✅ Yes | ✅ Yes | ⚠️ Runtime cost |
-| **CSS-in-TS (Your approach)** | ✅ Zero | ✅ Full TS/JS | ✅ Yes | ✅ Yes | ✅ Excellent |
+| Approach                      | Runtime Cost       | Ecosystem Access | Type Safety | Code Splitting | DX                |
+| ----------------------------- | ------------------ | ---------------- | ----------- | -------------- | ----------------- |
+| **Plain CSS**                 | ✅ Zero            | ❌ No            | ❌ No       | ⚠️ Manual      | ⚠️ Separate files |
+| **CSS Modules**               | ✅ Zero            | ❌ No            | ⚠️ Limited  | ✅ Yes         | ✅ Good           |
+| **Sass/SCSS**                 | ✅ Zero (compiled) | ⚠️ Sass only     | ❌ No       | ⚠️ Manual      | ✅ Good           |
+| **styled-components**         | ❌ Runtime         | ✅ Full JS       | ✅ Yes      | ✅ Yes         | ⚠️ Runtime cost   |
+| **Emotion**                   | ❌ Runtime         | ✅ Full JS       | ✅ Yes      | ✅ Yes         | ⚠️ Runtime cost   |
+| **CSS-in-TS (Your approach)** | ✅ Zero            | ✅ Full TS/JS    | ✅ Yes      | ✅ Yes         | ✅ Excellent      |
 
 ---
 
@@ -590,7 +602,7 @@ function createButtonSkin(color: ColorKey) {
   `
 }
 
-export default createButtonSkin('primary')  // ✅ Type-safe
+export default createButtonSkin('primary') // ✅ Type-safe
 // createButtonSkin('invalid')              // ❌ TypeScript error
 ```
 
@@ -629,6 +641,7 @@ export default `
 ### Static Analysis
 
 Because CSS is defined in TypeScript:
+
 - ✅ Linters can analyze CSS (stylelint via plugins)
 - ✅ Dead code elimination (unused exports removed)
 - ✅ Tree shaking (only imported skins bundled)
@@ -638,10 +651,10 @@ Because CSS is defined in TypeScript:
 
 ```typescript
 // Your library can analyze imports and optimize
-import { COLORS } from '../../../design-system/tokens'  // Only COLORS imported
+import { COLORS } from '../../../design-system/tokens' // Only COLORS imported
 
 // Not this:
-import * as Tokens from '../../../design-system/tokens'  // Everything imported
+import * as Tokens from '../../../design-system/tokens' // Everything imported
 
 // Bundler sees: only COLORS used → tree-shake the rest
 ```
@@ -750,7 +763,7 @@ export function shadowCSS() {
     buildStart() {
       // Scan all skin files
       // Generate types for skin names
-    }
+    },
   }
 }
 ```
@@ -890,6 +903,7 @@ export const SKINS = {
 - ✅ Excellent developer experience
 
 **Combined with:**
+
 - Skins (complete visual freedom)
 - Attribute-driven styling (accessibility baked in)
 - Constructable Stylesheets (performance)

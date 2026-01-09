@@ -14,10 +14,12 @@ This folder contains design reviews, architectural decision records (ADRs), benc
 ## Documents
 
 ### Core Analysis
+
 - **DESIGN_REVIEW_v0.1.md** - Initial PoC analysis, API exploration, critical questions
 - **TECHNICAL_DEEP_DIVE_v0.1.md** - Validates core assumptions (Constructable Stylesheets efficiency, scoping, Shadow Parts, memory management)
 
 ### Benchmarks
+
 - **BENCHMARK_SUMMARY.md** ⭐ - Quick reference for all benchmark findings
 - **BENCHMARK_METHODOLOGY_v0.1.md** - How benchmarks work and what they test
 - **BENCHMARK_RESULTS_v0.1.md** - Detailed analysis of all scenarios
@@ -32,10 +34,12 @@ This folder contains design reviews, architectural decision records (ADRs), benc
 ### ✅ Architecture Validated
 
 **For typical to large apps (20-200 components, 3-10 skins):**
+
 - 4-8× faster performance (mount + theme switching)
 - Best fit: Enterprise design systems
 
 **Critical requirements:**
+
 - Ref-counting cache (mandatory)
 - Limited skins (≤10) or LRU eviction
 - Base + skin pattern (recommended)
@@ -43,6 +47,7 @@ This folder contains design reviews, architectural decision records (ADRs), benc
 ### ⚠️ Caution Zones
 
 **Extreme scenarios (>500 components, >15 skins):**
+
 - Memory can regress (-20% to -37%)
 - Still faster, but memory penalty
 - Need eviction strategies
@@ -50,6 +55,7 @@ This folder contains design reviews, architectural decision records (ADRs), benc
 ## Purpose
 
 These documents are living artifacts that track:
+
 - Initial PoC analysis ✅
 - Technical assumption validation ✅
 - Performance benchmarks ✅

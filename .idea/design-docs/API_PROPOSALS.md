@@ -106,11 +106,13 @@ export const Card = createShadowComponent<CardProps>({
 ### Adoption Analysis
 
 **✅ Familiarity:**
+
 - Looks similar to styled-components `styled.div` or Emotion's `styled()`
 - Factory function pattern is well-known in React ecosystem
 - Clear input → output (config → component)
 
 **✅ Progressive Enhancement:**
+
 ```typescript
 // Start simple
 export const Button = createShadowComponent({
@@ -133,6 +135,7 @@ export const Button = createShadowComponent({
 ```
 
 **✅ Low Ceremony:**
+
 - Single function call
 - All config in one place
 - No need to define custom element separately
@@ -148,6 +151,7 @@ export const Button = createShadowComponent({
    - May feel "more complex" initially
 
 **Mitigation:**
+
 - Provide codemod from styled-components
 - Show side-by-side comparisons in docs
 - Emphasize: "Like styled-components, but..."
@@ -240,11 +244,13 @@ export const Card = withShadowStyles(CardBase, {
 ### Adoption Analysis
 
 **✅ Familiarity:**
+
 - HOC pattern is extremely well-known in React
 - Similar to `withRouter`, `connect`, `memo`, etc.
 - React developers already understand this pattern
 
 **✅ Progressive Enhancement:**
+
 ```typescript
 // Start with plain component
 const Button = ({ children }) => <button>{children}</button>
@@ -259,6 +265,7 @@ export default withShadowStyles(Button, {
 ```
 
 **✅ Separation of Concerns:**
+
 - Component logic is pure (no styling concerns)
 - Can test ButtonBase without shadow DOM complexity
 - Can use ButtonBase in different contexts
@@ -277,6 +284,7 @@ export default withShadowStyles(Button, {
    - Extra component in React DevTools
 
 **Mitigation:**
+
 - Emphasize: "HOC for styling, not logic"
 - Provide excellent TypeScript support
 - Show that it composes well with hooks
@@ -366,16 +374,19 @@ export const Button = ({ variant = 'primary', children }: ButtonProps) => {
 ### Adoption Analysis
 
 **✅ Familiarity:**
+
 - Hooks are the **preferred** React pattern (2025)
 - Feels natural to React developers
 - Similar to `useState`, `useRef`, etc.
 
 **✅ Flexibility:**
+
 - Can compose with other hooks easily
 - Full control over component structure
 - Easy to add conditional logic
 
 **✅ No Wrapping:**
+
 - Direct component definition
 - Clear component tree in DevTools
 - No HOC overhead
@@ -396,6 +407,7 @@ export const Button = ({ variant = 'primary', children }: ButtonProps) => {
    - Can't easily separate for testing
 
 **Mitigation:**
+
 - Provide ShadowRoot component (reduces boilerplate)
 - Show that flexibility is worth it
 - Provide helper components for common patterns
@@ -463,11 +475,13 @@ export class Button extends React.Component<ButtonProps> {
 ### Adoption Analysis
 
 **✅ Zero Runtime:**
+
 - Everything compiled away at build-time
 - Maximum performance
 - No library runtime overhead
 
 **✅ Clean Syntax:**
+
 - Looks like magic (in a good way)
 - Very little boilerplate
 - Decorator feels "official"
@@ -490,6 +504,7 @@ export class Button extends React.Component<ButtonProps> {
    - May break with tooling updates
 
 **Mitigation:**
+
 - Make macro optional (provide runtime alternative)
 - Excellent error messages from macro
 - Clear documentation on setup
@@ -513,8 +528,8 @@ export default defineConfig({
       include: 'src/components/**/*.tsx',
       skinPattern: '*.skin.ts',
       variantPattern: '*.{variant}.ts',
-    })
-  ]
+    }),
+  ],
 })
 ```
 
@@ -630,6 +645,7 @@ export const Card = ({ title, children }: CardProps) => (
 ```
 
 **Directive reference:**
+
 - `@shadow-component` - Force enable (even if no skins found yet)
 - `@name custom-name` - Override element name (default: lowercase component name)
 - `@default-skin skinName` - Set default skin
@@ -639,12 +655,14 @@ export const Card = ({ title, children }: CardProps) => (
 ### Adoption Analysis
 
 **✅ Familiarity:**
+
 - Looks like **pure React** (the component is just React!)
 - Convention-based like Next.js file routing
 - Similar to CSS Modules naming (`.module.css` → `.skin.ts`)
 - Developers already understand file-based conventions
 
 **✅ Zero Boilerplate:**
+
 ```typescript
 // Traditional (createShadowComponent)
 import { createShadowComponent } from '@my-lib/react'
@@ -667,6 +685,7 @@ export const Button = ({ children }: ButtonProps) => (
 ```
 
 **✅ Progressive Enhancement:**
+
 ```typescript
 // Phase 1: Start with normal component
 export const Button = ({ children }) => <button>{children}</button>
@@ -681,6 +700,7 @@ export const Button = ({ children }) => <button>{children}</button>
 ```
 
 **✅ Mental Model:**
+
 - "My component is just a component"
 - "Skins are separate files"
 - "Plugin wires them together"
@@ -711,6 +731,7 @@ export const Button = ({ children }) => <button>{children}</button>
 **Mitigation:**
 
 1. **Provide explicit fallback**
+
    ```typescript
    // If you don't like the plugin, just use the API directly!
    import { createShadowComponent } from '@my-lib/react'
@@ -719,6 +740,7 @@ export const Button = ({ children }) => <button>{children}</button>
    ```
 
 2. **Excellent error messages**
+
    ```
    ❌ No skins found for Button component
 
@@ -730,6 +752,7 @@ export const Button = ({ children }) => <button>{children}</button>
    ```
 
 3. **TypeScript integration**
+
    ```typescript
    // Auto-generate types for transformed components
    declare module '@/components/Button' {
@@ -745,6 +768,7 @@ export const Button = ({ children }) => <button>{children}</button>
 ### Comparison: Explicit vs Convention
 
 **Explicit API (createShadowComponent):**
+
 ```typescript
 // ✅ Clear: Everything visible in one place
 // ✅ Portable: Works without build plugin
@@ -766,6 +790,7 @@ export const Button = createShadowComponent<ButtonProps>({
 ```
 
 **Convention-based (Vite Plugin):**
+
 ```typescript
 // ✅ Concise: Just write the component
 // ✅ Separation: Skins are separate files
@@ -785,6 +810,7 @@ export const Button = ({ variant, children }: ButtonProps) => (
 ### File Structure Conventions
 
 **Recommended structure:**
+
 ```
 components/
 ├── Button/
@@ -804,12 +830,14 @@ components/
 ```
 
 **Plugin scans both:**
+
 1. `ComponentName.{variant}.ts` (sibling files)
 2. `skins/{variant}.ts` (skins folder)
 
 ### TypeScript Experience
 
 **Generated types:**
+
 ```typescript
 // Auto-generated by plugin
 import type { ShadowComponentProps } from '@my-lib/react'
@@ -828,6 +856,7 @@ export const Button: React.FC<
 ```
 
 **In your code:**
+
 ```typescript
 // Full autocomplete works!
 <Button
@@ -840,17 +869,20 @@ export const Button: React.FC<
 ### Performance Characteristics
 
 **Build-time:**
+
 - Plugin runs during Vite transform phase
 - One-time cost per component
 - Cached by Vite (fast rebuilds)
 
 **Runtime:**
+
 - Identical to explicit `createShadowComponent`
 - Same lazy loading behavior
 - Same memory characteristics
 - Zero additional overhead
 
 **Bundle size:**
+
 - Same as explicit API (plugin just generates it)
 - No extra plugin runtime
 - Tree-shakeable
@@ -1053,6 +1085,7 @@ export const Button: React.FC<ButtonProps> = ({ variant, children }) => {
 - Perfect for starting fresh
 
 **Alternative: createShadowComponent**
+
 - If you want explicit API
 - If you may switch bundlers later
 
@@ -1073,6 +1106,7 @@ export const Button: React.FC<ButtonProps> = ({ variant, children }) => {
 - Can migrate gradually (one component at a time)
 
 **If using Vite: Consider plugin**
+
 - Can mix plugin + explicit API in same project
 - Migrate components one by one
 
@@ -1085,6 +1119,7 @@ export const Button: React.FC<ButtonProps> = ({ variant, children }) => {
 - Progressive migration path
 
 **If using Vite: Consider plugin for new components**
+
 - Use HOC for migrated components
 - Use plugin for new components
 - Both can coexist
@@ -1106,10 +1141,10 @@ export const Button: React.FC<ButtonProps> = ({ variant, children }) => {
 ```typescript
 // @my-lib/react exports all patterns
 import {
-  createShadowComponent,    // Factory
-  withShadowStyles,         // HOC
-  useShadowStyles,          // Hook
-  ShadowRoot,               // Component
+  createShadowComponent, // Factory
+  withShadowStyles, // HOC
+  useShadowStyles, // Hook
+  ShadowRoot, // Component
 } from '@my-lib/react'
 
 // @my-lib/vite-plugin (separate package)
@@ -1161,6 +1196,7 @@ export { withShadowStyles } from './hoc'
 ```
 
 **Rationale:**
+
 - Two clear options
 - Cover 90% of use cases
 - Easy to understand
@@ -1174,6 +1210,7 @@ export { shadowComponents } from './plugin'
 ```
 
 **Rationale:**
+
 - Huge DX win for Vite users (89% less code)
 - Convention-based (familiar pattern)
 - Separate package (doesn't bloat core)
@@ -1187,6 +1224,7 @@ export { useShadowStyles, ShadowRoot } from './hooks'
 ```
 
 **Rationale:**
+
 - For power users
 - Composability
 - Advanced patterns
@@ -1199,6 +1237,7 @@ export { shadow } from '@my-lib/react.macro'
 ```
 
 **Rationale:**
+
 - For performance-critical apps (non-Vite)
 - Separate package (opt-in)
 - Advanced feature
@@ -1323,23 +1362,25 @@ const Button = createShadowComponent({
 
 ## Recommendation Matrix
 
-| Factor | Vite Plugin | createShadowComponent | HOC | Hook | Macro |
-|--------|------------|----------------------|-----|------|-------|
-| **Adoption** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ |
-| **Resistance** | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ |
-| **TypeScript** | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐ |
-| **Flexibility** | ⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐ |
-| **Simplicity** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
-| **Debugging** | ⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐ |
-| **Portability** | ⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ |
+| Factor          | Vite Plugin | createShadowComponent | HOC        | Hook       | Macro      |
+| --------------- | ----------- | --------------------- | ---------- | ---------- | ---------- |
+| **Adoption**    | ⭐⭐⭐⭐⭐  | ⭐⭐⭐⭐              | ⭐⭐⭐⭐⭐ | ⭐⭐⭐     | ⭐⭐       |
+| **Resistance**  | ⭐⭐⭐⭐    | ⭐⭐⭐⭐              | ⭐⭐⭐⭐⭐ | ⭐⭐⭐     | ⭐⭐       |
+| **TypeScript**  | ⭐⭐⭐⭐    | ⭐⭐⭐⭐⭐            | ⭐⭐⭐⭐   | ⭐⭐⭐     | ⭐⭐⭐⭐   |
+| **Flexibility** | ⭐⭐⭐      | ⭐⭐⭐⭐              | ⭐⭐⭐     | ⭐⭐⭐⭐⭐ | ⭐⭐       |
+| **Simplicity**  | ⭐⭐⭐⭐⭐  | ⭐⭐⭐⭐⭐            | ⭐⭐⭐⭐   | ⭐⭐⭐     | ⭐⭐⭐⭐⭐ |
+| **Debugging**   | ⭐⭐⭐      | ⭐⭐⭐⭐              | ⭐⭐⭐     | ⭐⭐⭐⭐   | ⭐⭐       |
+| **Portability** | ⭐⭐        | ⭐⭐⭐⭐⭐            | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐   |
 
 **Legend:**
+
 - ⭐⭐⭐⭐⭐ Excellent
 - ⭐⭐⭐⭐ Very Good
 - ⭐⭐⭐ Good
 - ⭐⭐ Fair
 
 **Notes:**
+
 - **Vite Plugin**: Best for greenfield Vite projects, but Vite-only (low portability)
 - **createShadowComponent**: Best all-around choice, works everywhere
 - **HOC**: Lowest resistance for teams familiar with React patterns
@@ -1355,6 +1396,7 @@ const Button = createShadowComponent({
 **Primary: Vite Plugin**
 
 **Why:**
+
 - Zero boilerplate (89% less code)
 - Components are just React (no new patterns)
 - Convention-based (familiar from Next.js, CSS Modules)
@@ -1362,6 +1404,7 @@ const Button = createShadowComponent({
 - Can opt-out to explicit API when needed
 
 **Fallback: `createShadowComponent`**
+
 - When you need explicit control
 - When you want to see the wiring
 - When debugging plugin transformations
@@ -1373,6 +1416,7 @@ const Button = createShadowComponent({
 **Primary: `createShadowComponent`**
 
 **Why:**
+
 - Best balance of simplicity and features
 - Clear mental model (factory pattern)
 - Excellent TypeScript support
@@ -1383,6 +1427,7 @@ const Button = createShadowComponent({
 **Secondary: `withShadowStyles` (HOC)**
 
 **Why:**
+
 - For migrating existing codebases
 - Minimal refactoring needed
 - Very low resistance (HOCs are known)
@@ -1391,6 +1436,7 @@ const Button = createShadowComponent({
 **Power User: Hooks + `ShadowRoot`**
 
 **Why:**
+
 - Maximum flexibility
 - Modern React patterns
 - For advanced use cases
@@ -1399,6 +1445,7 @@ const Button = createShadowComponent({
 **Optional: Macro**
 
 **Why:**
+
 - For performance enthusiasts
 - Separate package (opt-in)
 - Not required for 99% of users
@@ -1409,20 +1456,24 @@ const Button = createShadowComponent({
 ## Summary
 
 **For new Vite projects:** Start with Vite Plugin (convention-based)
+
 - Zero boilerplate
 - Best DX
 - Can drop down to explicit API when needed
 
 **For existing projects or non-Vite:** Start with `createShadowComponent`
+
 - Clear, explicit API
 - Works everywhere
 - Good balance
 
 **For migration scenarios:** Use `withShadowStyles` (HOC)
+
 - Minimal refactoring
 - Progressive adoption
 
 **Ship all three** in separate packages:
+
 - `@my-lib/react` - Core APIs (factory, HOC, hooks)
 - `@my-lib/vite-plugin` - Convention-based plugin (optional)
 - `@my-lib/react.macro` - Macro for non-Vite optimization (optional)

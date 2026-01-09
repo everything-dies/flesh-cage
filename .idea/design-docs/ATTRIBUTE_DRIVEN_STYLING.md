@@ -8,9 +8,10 @@
 
 ## The Principle
 
-**Your library endorses semantic attributes (ARIA, data-*, schema.org) as the primary mechanism for styling component state, not prop interpolation in JavaScript.**
+**Your library endorses semantic attributes (ARIA, data-\*, schema.org) as the primary mechanism for styling component state, not prop interpolation in JavaScript.**
 
 This aligns with:
+
 - Semantic HTML principles
 - Accessibility-first design
 - Progressive enhancement
@@ -48,12 +49,14 @@ From [styled-components FAQ](https://styled-components.com/docs/faqs):
 > When using prop interpolations, whenever these values change, styled-components will need to re-generate the class and re-inject it into the document's `<head>`, which can be a performance liability in certain cases (e.g., doing JS animations).
 
 **Impact:**
+
 - Every prop change = new class generation
 - New class injection into `<head>`
 - CSSOM rebuild
 - Layout recalculation
 
 From [emotion performance analysis](https://medium.com/@tkh44/emotion-ad1c45c6d28b):
+
 > In benchmarks that change dynamic values in style blocks very quickly, emotion showed over 25× faster performance when using CSS variables instead of prop interpolations.
 
 #### 2. **Runtime Overhead**
@@ -76,10 +79,14 @@ From [emotion performance analysis](https://medium.com/@tkh44/emotion-ad1c45c6d2
 
 ```css
 /* How do you style this externally? */
-.my-button { /* ❌ Doesn't work - props control styles */ }
+.my-button {
+  /* ❌ Doesn't work - props control styles */
+}
 
 /* Need to understand prop logic */
-.my-button[data-variant="primary"] { /* Maybe? */ }
+.my-button[data-variant='primary'] {
+  /* Maybe? */
+}
 ```
 
 #### 4. **Couples Logic to Styling**
@@ -87,11 +94,15 @@ From [emotion performance analysis](https://medium.com/@tkh44/emotion-ad1c45c6d2
 ```javascript
 // Logic mixed with styling
 const getBackground = (variant) => {
-  switch(variant) {
-    case 'primary': return '#2196f3'
-    case 'secondary': return '#757575'
-    case 'danger': return '#f44336'
-    default: return 'transparent'
+  switch (variant) {
+    case 'primary':
+      return '#2196f3'
+    case 'secondary':
+      return '#757575'
+    case 'danger':
+      return '#f44336'
+    default:
+      return 'transparent'
   }
 }
 
@@ -134,41 +145,41 @@ export const Button = ({ variant, size, pressed, ...props }) => (
 /* Skin styles based on attributes (NO JavaScript) */
 
 /* Variant styling */
-[part="surface"][variant="primary"] {
+[part='surface'][variant='primary'] {
   background: #2196f3;
   color: white;
 }
 
-[part="surface"][variant="secondary"] {
+[part='surface'][variant='secondary'] {
   background: #757575;
   color: white;
 }
 
 /* Size styling */
-[part="surface"][size="large"] {
+[part='surface'][size='large'] {
   padding: 1rem 2rem;
   font-size: 1.125rem;
 }
 
-[part="surface"][size="small"] {
+[part='surface'][size='small'] {
   padding: 0.5rem 1rem;
   font-size: 0.875rem;
 }
 
 /* State styling (using ARIA) */
-[part="surface"][aria-pressed="true"] {
+[part='surface'][aria-pressed='true'] {
   background: #1976d2;
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-[part="surface"][disabled],
-[part="surface"][aria-disabled="true"] {
+[part='surface'][disabled],
+[part='surface'][aria-disabled='true'] {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
 /* Combination selectors */
-[part="surface"][variant="primary"][size="large"] {
+[part='surface'][variant='primary'][size='large'] {
   /* Specific combination styling */
 }
 ```
@@ -183,6 +194,7 @@ export const Button = ({ variant, size, pressed, ...props }) => (
 - Pure CSS matching (browser-native, extremely fast)
 
 From [Josh W. Comeau on styled-components best practices](https://www.joshwcomeau.com/css/styled-components/):
+
 > The styled-components FAQ recommends using CSS variables passed through the style prop for frequently-changing values to avoid the runtime cost of class regeneration.
 
 With attributes, this is **automatic** - no runtime cost at all.
@@ -194,9 +206,10 @@ From [Ben Myers: Style with Stateful, Semantic Selectors](https://benmyers.dev/b
 > Using ARIA attributes as CSS selectors ensures that you can't accidentally omit necessary accessible semantics. If your visual styling is keyed to the ARIA property that conveys state programmatically, getting that ARIA property wrong will have two effects — a broken interface and a weird icon, so addressing the accessibility issue will fix the visual style.
 
 **Example:**
+
 ```css
 /* Button that requires aria-pressed */
-button[aria-pressed="true"] {
+button[aria-pressed='true'] {
   background: green;
 }
 
@@ -217,11 +230,12 @@ From [Use data attributes instead of HTML classes to represent state](https://ww
 > Data attributes for representing state in HTML are more flexible and scalable than using classes. This approach eliminates invalid states, allows static analysis for valid values via linting or type checking, and makes toggling variants more intuitive with simpler JavaScript.
 
 **Example:**
+
 ```javascript
 // Can't have conflicting states
-element.setAttribute('data-state', 'loading')  // ✅ One state
+element.setAttribute('data-state', 'loading') // ✅ One state
 // vs
-element.classList.add('loading')  // ❌ Could also have 'success' class
+element.classList.add('loading') // ❌ Could also have 'success' class
 element.classList.add('success') // ❌ Now two states? Which wins?
 ```
 
@@ -244,18 +258,18 @@ From [Using data attributes instead of CSS classes](https://medium.com/@matt.daw
 
 From [Semantic CSS Styles Using Data Attributes](https://infotrust.com/articles/semantic-css-styles-using-data-attributes/):
 
-> With data-* attributes, you get on/off ability plus the ability to select based on the value at the same specificity level. Attribute selectors have the same specificity as a class.
+> With data-\* attributes, you get on/off ability plus the ability to select based on the value at the same specificity level. Attribute selectors have the same specificity as a class.
 
 #### 5. **Externally Styleable via Shadow Parts**
 
 ```css
 /* Outside the component */
-my-button::part(surface)[variant="primary"] {
+my-button::part(surface)[variant='primary'] {
   /* ✅ Works! Can style based on attributes */
   background: var(--brand-primary);
 }
 
-my-button::part(surface)[aria-pressed="true"] {
+my-button::part(surface)[aria-pressed='true'] {
   /* ✅ Can target pressed state */
   transform: scale(0.98);
 }
@@ -274,11 +288,16 @@ From [ECSS Chapter 6: Dealing with State](https://ecss.benfrain.com/chapter6.htm
 > For styling hooks related to state, where possible, use ARIA attributes. Not only does this make it easy to style from a CSS perspective, it also means you are more likely to make an accessible web application.
 
 **ECSS State Hooks:**
+
 ```css
-[aria-selected="true"] { }
-[aria-expanded="true"] { }
-[aria-current="page"] { }
-[aria-busy="true"] { }
+[aria-selected='true'] {
+}
+[aria-expanded='true'] {
+}
+[aria-current='page'] {
+}
+[aria-busy='true'] {
+}
 ```
 
 ### Heydon Pickering's Inclusive Components
@@ -300,6 +319,7 @@ From [Using CSS to Enforce Accessibility](https://adrianroselli.com/2021/06/usin
 > CSS can be used to enforce accessibility by making incorrect implementations visually broken, forcing developers to fix the underlying semantic issues.
 
 **Example:**
+
 ```css
 /* Button without aria-label or text content */
 button:not([aria-label]):empty {
@@ -316,6 +336,7 @@ From [The wasted potential of CSS attribute selectors](https://elisehe.in/2022/1
 > CSS attribute selectors are more flexible and scalable than classes, forcing developers to be more explicit and more debuggable. This eliminates invalid states.
 
 **Attribute selectors enable:**
+
 - Exact matching: `[attr="value"]`
 - Contains: `[attr*="value"]`
 - Starts with: `[attr^="value"]`
@@ -329,6 +350,7 @@ From [The wasted potential of CSS attribute selectors](https://elisehe.in/2022/1
 ### Pattern 1: Toggle Button
 
 **Component:**
+
 ```typescript
 export const ToggleButton = ({ pressed, onToggle, children }) => (
   <button
@@ -343,18 +365,19 @@ export const ToggleButton = ({ pressed, onToggle, children }) => (
 ```
 
 **Skin:**
+
 ```css
 /* Normal state */
-[part="surface"][aria-pressed="false"] {
+[part='surface'][aria-pressed='false'] {
   background: #e0e0e0;
   color: #333;
 }
 
 /* Pressed state */
-[part="surface"][aria-pressed="true"] {
+[part='surface'][aria-pressed='true'] {
   background: #2196f3;
   color: white;
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 /* Accessibility = styling (single source of truth) */
@@ -363,6 +386,7 @@ export const ToggleButton = ({ pressed, onToggle, children }) => (
 ### Pattern 2: Form Input with Validation
 
 **Component:**
+
 ```typescript
 export const Input = ({ invalid, value, onChange }) => (
   <input
@@ -376,19 +400,20 @@ export const Input = ({ invalid, value, onChange }) => (
 ```
 
 **Skin:**
+
 ```css
 /* Valid state */
-[part="field"][aria-invalid="false"] {
+[part='field'][aria-invalid='false'] {
   border: 2px solid #4caf50;
 }
 
 /* Invalid state */
-[part="field"][aria-invalid="true"] {
+[part='field'][aria-invalid='true'] {
   border: 2px solid #f44336;
 }
 
 /* Focus states combined with validation */
-[part="field"][aria-invalid="true"]:focus {
+[part='field'][aria-invalid='true']:focus {
   outline: 2px solid #f44336;
   outline-offset: 2px;
 }
@@ -397,6 +422,7 @@ export const Input = ({ invalid, value, onChange }) => (
 ### Pattern 3: Loading Button
 
 **Component:**
+
 ```typescript
 export const AsyncButton = ({ loading, disabled, onClick, children }) => (
   <button
@@ -413,28 +439,29 @@ export const AsyncButton = ({ loading, disabled, onClick, children }) => (
 ```
 
 **Skin:**
+
 ```css
 /* Normal state */
-[part="surface"] {
+[part='surface'] {
   position: relative;
 }
 
 /* Busy state */
-[part="surface"][aria-busy="true"] {
+[part='surface'][aria-busy='true'] {
   cursor: wait;
 }
 
 /* Hide label during loading */
-[part="surface"][aria-busy="true"] [part="label"] {
+[part='surface'][aria-busy='true'] [part='label'] {
   opacity: 0;
 }
 
 /* Show and animate spinner */
-[part="spinner"] {
+[part='spinner'] {
   display: none;
 }
 
-[part="surface"][aria-busy="true"] [part="spinner"] {
+[part='surface'][aria-busy='true'] [part='spinner'] {
   display: block;
   position: absolute;
   top: 50%;
@@ -444,12 +471,14 @@ export const AsyncButton = ({ loading, disabled, onClick, children }) => (
 }
 
 @keyframes spin {
-  to { transform: translate(-50%, -50%) rotate(360deg); }
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
 }
 
 /* Disabled state (semantic attribute) */
-[part="surface"][aria-disabled="true"],
-[part="surface"]:disabled {
+[part='surface'][aria-disabled='true'],
+[part='surface']:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
@@ -458,6 +487,7 @@ export const AsyncButton = ({ loading, disabled, onClick, children }) => (
 ### Pattern 4: Tab Panel
 
 **Component:**
+
 ```typescript
 export const Tab = ({ selected, id, controls, onClick, children }) => (
   <button
@@ -475,9 +505,10 @@ export const Tab = ({ selected, id, controls, onClick, children }) => (
 ```
 
 **Skin:**
+
 ```css
 /* Tab styles */
-[part="tab"] {
+[part='tab'] {
   background: transparent;
   border: none;
   border-bottom: 2px solid transparent;
@@ -485,19 +516,19 @@ export const Tab = ({ selected, id, controls, onClick, children }) => (
 }
 
 /* Selected state */
-[part="tab"][aria-selected="true"] {
+[part='tab'][aria-selected='true'] {
   border-bottom-color: #2196f3;
   color: #2196f3;
   font-weight: 600;
 }
 
 /* Hover (only for non-selected) */
-[part="tab"][aria-selected="false"]:hover {
-  background: rgba(0,0,0,0.05);
+[part='tab'][aria-selected='false']:hover {
+  background: rgba(0, 0, 0, 0.05);
 }
 
 /* Focus visible */
-[part="tab"]:focus-visible {
+[part='tab']:focus-visible {
   outline: 2px solid #2196f3;
   outline-offset: -2px;
 }
@@ -506,6 +537,7 @@ export const Tab = ({ selected, id, controls, onClick, children }) => (
 ### Pattern 5: Accordion with Schema.org Markup
 
 **Component:**
+
 ```typescript
 export const AccordionItem = ({ expanded, onToggle, question, answer }) => (
   <div itemScope itemType="https://schema.org/Question">
@@ -530,25 +562,26 @@ export const AccordionItem = ({ expanded, onToggle, question, answer }) => (
 ```
 
 **Skin:**
+
 ```css
 /* Trigger styling based on expanded state */
-[part="trigger"][aria-expanded="false"]::after {
+[part='trigger'][aria-expanded='false']::after {
   content: '+';
   transform: rotate(0deg);
   transition: transform 0.2s;
 }
 
-[part="trigger"][aria-expanded="true"]::after {
+[part='trigger'][aria-expanded='true']::after {
   content: '+';
   transform: rotate(45deg);
 }
 
 /* Panel visibility controlled by HTML hidden attribute */
-[part="panel"][hidden] {
+[part='panel'][hidden] {
   display: none;
 }
 
-[part="panel"]:not([hidden]) {
+[part='panel']:not([hidden]) {
   animation: slideDown 0.2s ease-out;
 }
 
@@ -568,19 +601,19 @@ export const AccordionItem = ({ expanded, onToggle, question, answer }) => (
 
 ## Comparison Table
 
-| Aspect | Prop Interpolation (CSS-in-JS) | Attribute-Driven (Your Library) |
-|--------|--------------------------------|----------------------------------|
-| **Performance** | ❌ Runtime class generation | ✅ Native CSS matching |
-| **Runtime cost** | ❌ Interpolation on every render | ✅ Zero JavaScript |
-| **Accessibility** | ⚠️ Separate concern | ✅ Styling = accessibility |
-| **Inspectability** | ❌ Hidden in JS logic | ✅ Visible in DOM |
-| **External styling** | ❌ Can't access props | ✅ Can style via ::part() |
-| **State conflicts** | ❌ Multiple classes can conflict | ✅ Attribute = single value |
-| **Type safety** | ✅ Props are typed | ✅ Can type attributes |
-| **Learning curve** | ⚠️ Need to learn template syntax | ✅ Just CSS selectors |
-| **Bundle size** | ❌ CSS-in-JS runtime | ✅ Zero runtime |
-| **HMR** | ⚠️ Component re-renders | ✅ CSS hot-replaces |
-| **Progressive enhancement** | ❌ Requires JS | ✅ Works without JS |
+| Aspect                      | Prop Interpolation (CSS-in-JS)   | Attribute-Driven (Your Library) |
+| --------------------------- | -------------------------------- | ------------------------------- |
+| **Performance**             | ❌ Runtime class generation      | ✅ Native CSS matching          |
+| **Runtime cost**            | ❌ Interpolation on every render | ✅ Zero JavaScript              |
+| **Accessibility**           | ⚠️ Separate concern              | ✅ Styling = accessibility      |
+| **Inspectability**          | ❌ Hidden in JS logic            | ✅ Visible in DOM               |
+| **External styling**        | ❌ Can't access props            | ✅ Can style via ::part()       |
+| **State conflicts**         | ❌ Multiple classes can conflict | ✅ Attribute = single value     |
+| **Type safety**             | ✅ Props are typed               | ✅ Can type attributes          |
+| **Learning curve**          | ⚠️ Need to learn template syntax | ✅ Just CSS selectors           |
+| **Bundle size**             | ❌ CSS-in-JS runtime             | ✅ Zero runtime                 |
+| **HMR**                     | ⚠️ Component re-renders          | ✅ CSS hot-replaces             |
+| **Progressive enhancement** | ❌ Requires JS                   | ✅ Works without JS             |
 
 ---
 
@@ -599,6 +632,7 @@ From [HTML Data Attributes Guide on CSS-Tricks](https://css-tricks.com/a-complet
 ### Example: Product Card
 
 **Component:**
+
 ```typescript
 export const ProductCard = ({ name, price, rating, image }) => (
   <article
@@ -630,38 +664,40 @@ export const ProductCard = ({ name, price, rating, image }) => (
 ```
 
 **Skin:**
+
 ```css
 /* Style based on rating value */
-[part="rating"][data-rating="5"] {
+[part='rating'][data-rating='5'] {
   color: #4caf50;
 }
 
-[part="rating"][data-rating="4"] {
+[part='rating'][data-rating='4'] {
   color: #8bc34a;
 }
 
-[part="rating"][data-rating="3"] {
+[part='rating'][data-rating='3'] {
   color: #ffc107;
 }
 
-[part="rating"][data-rating="2"],
-[part="rating"][data-rating="1"] {
+[part='rating'][data-rating='2'],
+[part='rating'][data-rating='1'] {
   color: #f44336;
 }
 
 /* Style offers based on availability */
-[part="price"][itemType*="Offer"][itemProp*="availability"][content="InStock"]::after {
-  content: "✓ In Stock";
+[part='price'][itemType*='Offer'][itemProp*='availability'][content='InStock']::after {
+  content: '✓ In Stock';
   color: #4caf50;
 }
 
-[part="price"][itemType*="Offer"][itemProp*="availability"][content="OutOfStock"]::after {
-  content: "✗ Out of Stock";
+[part='price'][itemType*='Offer'][itemProp*='availability'][content='OutOfStock']::after {
+  content: '✗ Out of Stock';
   color: #f44336;
 }
 ```
 
 **Benefits:**
+
 - ✅ Semantic HTML for SEO
 - ✅ Structured data for search engines
 - ✅ Styling hooks that carry meaning
@@ -676,9 +712,10 @@ From [ARIA in CSS by Jeremy Keith](https://adactio.medium.com/aria-in-css-d4b7c1
 > ARIA attributes are typically added by JavaScript at runtime, so if JavaScript fails and the aria-hidden value isn't set to "true", the CSS never kicks in and the default state is for content to be displayed.
 
 **Example:**
+
 ```css
 /* Progressive enhancement pattern */
-[aria-hidden="true"] {
+[aria-hidden='true'] {
   display: none;
 }
 
@@ -795,6 +832,7 @@ By endorsing attribute-driven styling over prop interpolation, your library:
 Combined with skins (not themes) and CSS Zen Garden philosophy, you're building:
 
 **A CSS-first component library that honors:**
+
 - Semantic HTML (attributes, ARIA, schema.org)
 - Accessibility-first design (styling enforces semantics)
 - CSS as an expressive medium (complete visual freedom)

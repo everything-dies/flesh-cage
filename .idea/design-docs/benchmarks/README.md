@@ -33,11 +33,13 @@ node projections.js > ../results/synthetic-projections.txt
 ```
 
 **What it tests:**
+
 - Memory usage projections for various app sizes
 - Performance estimates based on empirical constants
 - Scenarios: Small app → Extreme microfrontends
 
 **Output:**
+
 - Detailed breakdown per scenario
 - Memory composition analysis
 - Performance metrics (mount, theme switch)
@@ -80,6 +82,7 @@ chrome.exe --enable-precise-memory-info --js-flags="--expose-gc" http://localhos
 ```
 
 **Flags explained:**
+
 - `--enable-precise-memory-info`: Enables `performance.memory` API with precise values
 - `--js-flags="--expose-gc"`: Exposes `window.gc()` for manual garbage collection
 
@@ -88,13 +91,16 @@ chrome.exe --enable-precise-memory-info --js-flags="--expose-gc" http://localhos
 ## Available Tests
 
 ### 1. Component Mount Benchmark
+
 Tests performance of mounting N components with styles.
 
 **Buttons:**
+
 - "Constructable: 100/500/1000 Components"
 - "Traditional: 100/500/1000 Components"
 
 **Metrics:**
+
 - Mount time (total and per-component average)
 - Memory increase
 - Cache stats (constructable only)
@@ -102,16 +108,19 @@ Tests performance of mounting N components with styles.
 ---
 
 ### 2. Theme Switch Benchmark
+
 Tests performance of switching themes across all mounted components.
 
 **Button:** "Theme Switch Speed"
 
 **Test:**
+
 - Mounts 500 components
 - Performs 5 theme switches
 - Measures average switch time
 
 **Metrics:**
+
 - Switch time (total and per-component)
 - Speedup comparison
 - Memory impact
@@ -119,16 +128,19 @@ Tests performance of switching themes across all mounted components.
 ---
 
 ### 3. Memory Comparison
+
 Comprehensive memory test across multiple component counts.
 
 **Button:** "Memory Comparison"
 
 **Test:**
+
 - Tests 100, 500, and 1000 components
 - Both constructable and traditional approaches
 - Measures memory increase for each
 
 **Metrics:**
+
 - Memory increase per scenario
 - Side-by-side comparison table
 - Memory efficiency analysis
@@ -140,16 +152,19 @@ Comprehensive memory test across multiple component counts.
 ### Performance Metrics
 
 **Mount Time:**
+
 - **Good:** <0.5ms per component (constructable)
 - **Acceptable:** <1ms per component
 - **Poor:** >2ms per component
 
 **Theme Switch:**
+
 - **Good:** <0.3ms per component (constructable)
 - **Acceptable:** <0.5ms per component
 - **Poor:** >1ms per component
 
 **Expected speedup (Constructable vs Traditional):**
+
 - Mount: 4-6× faster
 - Theme switch: 6-10× faster
 
@@ -158,17 +173,20 @@ Comprehensive memory test across multiple component counts.
 ### Memory Metrics
 
 **Memory increase per 100 components:**
+
 - **Excellent:** <500 KB
 - **Good:** 500-1000 KB
 - **Acceptable:** 1-2 MB
 - **Poor:** >2 MB
 
 **Expected savings (Constructable vs Traditional):**
+
 - Small apps (100 components): 3-7%
 - Medium apps (500 components): 10-20%
 - Large apps (1000+ components): 25-40%
 
 **Red flags:**
+
 - Constructable uses MORE memory than traditional (check cache strategy)
 - Memory doesn't release after unmount (memory leak)
 - Cache size grows unbounded (no eviction)
@@ -179,12 +197,12 @@ Comprehensive memory test across multiple component counts.
 
 ### Scenario Comparison
 
-| Scenario | Components | Instances | Skins | Complexity | Expected Memory Savings |
-|----------|------------|-----------|-------|------------|------------------------|
-| Small SPA | 20 | 100 | 3 | Medium | 5-10% |
-| Dashboard | 50 | 400 | 5 | Medium | 10-15% |
-| Enterprise DS | 100 | 2000 | 10 | Large | 30-40% |
-| Microfrontends | 500 | 10000 | 20 | Medium | ⚠️ Potential regression |
+| Scenario       | Components | Instances | Skins | Complexity | Expected Memory Savings |
+| -------------- | ---------- | --------- | ----- | ---------- | ----------------------- |
+| Small SPA      | 20         | 100       | 3     | Medium     | 5-10%                   |
+| Dashboard      | 50         | 400       | 5     | Medium     | 10-15%                  |
+| Enterprise DS  | 100        | 2000      | 10    | Large      | 30-40%                  |
+| Microfrontends | 500        | 10000     | 20    | Medium     | ⚠️ Potential regression |
 
 ---
 
@@ -213,11 +231,13 @@ Comprehensive memory test across multiple component counts.
 ### 3. Results Seem Inconsistent
 
 **Causes:**
+
 - Browser extensions interfering
 - Background tabs consuming resources
 - System under load
 
 **Solutions:**
+
 - Use incognito mode
 - Close other tabs
 - Close resource-heavy applications
@@ -254,7 +274,7 @@ async function runCustomScenario() {
   const config = {
     count: 300,
     skins: ['light', 'dark', 'custom'],
-    tagName: 'constructable-component'
+    tagName: 'constructable-component',
   }
 
   // Your test logic...

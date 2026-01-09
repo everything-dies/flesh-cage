@@ -11,21 +11,25 @@
 Your library combines **four interconnected innovations** that together create something unprecedented:
 
 ### 1. **Skins (Not Themes)**
+
 - Complete visual languages, not variable swaps
 - CSS Zen Garden philosophy at scale
 - Explicit composition through imports
 
 ### 2. **Attribute-Driven Styling (Not Prop Interpolation)**
-- Semantic attributes (ARIA, data-*, schema.org)
+
+- Semantic attributes (ARIA, data-\*, schema.org)
 - Accessibility enforced, not optional
 - Zero runtime cost
 
 ### 3. **CSS-in-TypeScript (Not CSS-in-JS)**
+
 - Full TypeScript/JavaScript ecosystem access
 - Zero runtime overhead (compiles to strings)
 - Type-safe tokens and helpers
 
 ### 4. **Constructable Stylesheets + Shadow DOM**
+
 - True encapsulation (no cascade pollution)
 - Lazy loading with code splitting
 - Efficient style management
@@ -106,6 +110,7 @@ export type ColorKey = keyof typeof COLORS
 ```
 
 **Benefits:**
+
 - ✅ Single source of truth
 - ✅ Type-safe (autocomplete, refactoring)
 - ✅ Can import from any file
@@ -129,6 +134,7 @@ export function getVariantColor(variant: 'primary' | 'danger') {
 ```
 
 **Benefits:**
+
 - ✅ Reusable CSS logic
 - ✅ Type-safe functions
 - ✅ Can import npm packages (polished, color, etc.)
@@ -157,6 +163,7 @@ export const baseButtonStyles = `
 ```
 
 **Benefits:**
+
 - ✅ Shared across all skins
 - ✅ Enforces accessibility (aria-disabled)
 - ✅ DRY (Don't Repeat Yourself)
@@ -198,6 +205,7 @@ export default `
 ```
 
 **Benefits:**
+
 - ✅ Complete visual freedom per skin
 - ✅ Explicit composition (imports)
 - ✅ Can be 50-150 KB (full design language)
@@ -221,7 +229,7 @@ export class SheetsCache {
     if (!this.#cache.has(skin)) {
       const { default: cssString } = await SKINS[skin]()
       const sheet = new CSSStyleSheet()
-      await sheet.replace(cssString)  // String → CSSOM
+      await sheet.replace(cssString) // String → CSSOM
       this.#cache.set(skin, sheet)
       this.#refCounts.set(skin, 0)
     }
@@ -232,7 +240,7 @@ export class SheetsCache {
   release(skin: string) {
     const count = this.#refCounts.get(skin)! - 1
     if (count <= 0) {
-      this.#cache.delete(skin)  // Evict unused skin
+      this.#cache.delete(skin) // Evict unused skin
       this.#refCounts.delete(skin)
     } else {
       this.#refCounts.set(skin, count)
@@ -257,6 +265,7 @@ class ButtonElement extends HTMLElement {
 ```
 
 **Benefits:**
+
 - ✅ Lazy loading (only load active skin)
 - ✅ Sheet sharing (100 instances = 1 CSSStyleSheet)
 - ✅ Ref counting (memory lifecycle-bound)
@@ -308,6 +317,7 @@ function App() {
 ```
 
 **Benefits:**
+
 - ✅ Attributes control styling (no prop interpolation)
 - ✅ Accessibility baked in (ARIA attributes)
 - ✅ Shadow DOM encapsulation
@@ -537,15 +547,17 @@ export default `
 
 ```css
 /* Styling requires semantic attribute */
-[part="surface"][aria-pressed="true"] {
+[part='surface'][aria-pressed='true'] {
   background: green;
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 ```
 
 ```tsx
 /* If developer forgets aria-pressed: */
-<button part="surface">  {/* ❌ No aria-pressed */}
+<button part="surface">
+  {' '}
+  {/* ❌ No aria-pressed */}
   Toggle
 </button>
 
@@ -566,11 +578,13 @@ From Ben Myers: "If your visual styling requires the ARIA property, getting that
 ### Multi-Brand Enterprise
 
 **Setup:**
+
 - 50 unique components
 - 5 brand skins (Coca-Cola, Sprite, Fanta, Schweppes, Dasani)
 - Each brand: unique colors, typography, spacing, shapes
 
 **Traditional CSS-in-JS:**
+
 ```typescript
 // Need brand-specific prop logic everywhere
 <Button brand="coke" variant="primary" />
@@ -585,6 +599,7 @@ const Button = styled.button`
 ```
 
 **Your architecture:**
+
 ```typescript
 // components/button/skins/coca-cola.ts
 import { COKE_COLORS } from '../../../brands/coca-cola/tokens'
@@ -609,6 +624,7 @@ export default `
 ```
 
 **Results:**
+
 - Traditional: 1.25 MB all brands loaded
 - Your architecture: 250 KB (one brand active)
 - **Savings: 1 MB (80% reduction)**
@@ -683,22 +699,27 @@ export default `
 Your architecture is backed by research and expert opinions:
 
 ### CSS Zen Garden (2003)
+
 - Same HTML, infinite visual expressions
 - **Your contribution:** Make it work at scale with modern tooling
 
 ### Heydon Pickering's Inclusive Components
+
 - Semantic HTML + CSS over JavaScript
 - **Your contribution:** Enforce accessibility through styling
 
 ### Ben Myers: Semantic Selectors
+
 - ARIA attributes as styling hooks
 - **Your contribution:** Make it type-safe with TypeScript
 
 ### Emotion Benchmarks
+
 - 25× faster with CSS variables vs prop interpolation
 - **Your contribution:** Zero runtime cost (attributes + constructable sheets)
 
 ### Ben Frain's ECSS
+
 - State through ARIA attributes
 - **Your contribution:** Add type safety + ecosystem access
 
@@ -747,12 +768,12 @@ This is not just "another CSS library." This is a **paradigm shift** that:
 
 ### The Four Pillars
 
-| Pillar | Innovation | Benefit |
-|--------|-----------|---------|
-| **Skins** | Complete visual languages | CSS as expressive medium |
-| **Attributes** | Semantic styling hooks | Accessibility enforced |
-| **CSS-in-TS** | Ecosystem access | Type safety + code sharing |
-| **Constructable Sheets** | Performance primitives | Efficient style management |
+| Pillar                   | Innovation                | Benefit                    |
+| ------------------------ | ------------------------- | -------------------------- |
+| **Skins**                | Complete visual languages | CSS as expressive medium   |
+| **Attributes**           | Semantic styling hooks    | Accessibility enforced     |
+| **CSS-in-TS**            | Ecosystem access          | Type safety + code sharing |
+| **Constructable Sheets** | Performance primitives    | Efficient style management |
 
 **Together, these create something unprecedented in the web platform ecosystem.**
 

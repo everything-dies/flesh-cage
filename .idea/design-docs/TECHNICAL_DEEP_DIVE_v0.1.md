@@ -15,6 +15,7 @@ This document validates the technical assumptions behind the Web Components + Co
 ## 1. CSS Loading Efficiency: Constructable Stylesheets vs. Header Manipulation
 
 ### Your Assumption
+
 > Using Constructable Stylesheets with lazy loading is more efficient than adding/removing `<style>` tags in the document `<head>`.
 
 ### ✅ ACCURATE - With Important Nuances
@@ -25,10 +26,11 @@ This document validates the technical assumptions behind the Web Components + Co
 // Traditional approach (styled-components, Emotion)
 const style = document.createElement('style')
 style.textContent = css
-document.head.appendChild(style)  // ❌ Forces style recalc on entire document
+document.head.appendChild(style) // ❌ Forces style recalc on entire document
 ```
 
 **Problems with header manipulation:**
+
 1. **Global style recalculation**: Every `<style>` tag insertion triggers CSSOM rebuild for the entire document
 2. **Selector matching overhead**: Browser re-evaluates ALL selectors against ALL elements
 3. **Layout thrashing**: Multiple rapid insertions = multiple reflows
@@ -38,16 +40,18 @@ document.head.appendChild(style)  // ❌ Forces style recalc on entire document
 // Constructable Stylesheets approach
 const sheet = new CSSStyleSheet()
 await sheet.replace(css)
-shadowRoot.adoptedStyleSheets = [sheet]  // ✅ Isolated to shadow tree
+shadowRoot.adoptedStyleSheets = [sheet] // ✅ Isolated to shadow tree
 ```
 
 **Performance wins:**
+
 1. **Isolated recalculation**: Style changes only affect shadow tree, not document
 2. **No CSSOM pollution**: Main document CSSOM unchanged
 3. **Instant adoption**: `adoptedStyleSheets` assignment is synchronous (after replace resolves)
 4. **Sheet reuse**: Same CSSStyleSheet instance can be adopted by multiple shadow roots
 
 **Benchmark data** (Chrome DevTools Performance):
+
 ```
 Traditional (<style> in <head>):
 - Insert style tag: ~1-3ms (recalc + layout)
@@ -63,6 +67,7 @@ Constructable Stylesheets:
 
 **⚠️ Critical Nuance:**
 The efficiency gain is **most significant** when you:
+
 - Share CSSStyleSheet instances across multiple components (your `Sheets` cache)
 - Have many instances of the same component
 - Update styles frequently (theming, hot reload)
@@ -74,54 +79,81 @@ If you have **one instance per component type**, the gain is smaller but still r
 ## 2. True Scoped CSS Without Hashing
 
 ### Your Assumption
+
 > Shadow DOM provides true encapsulation without needing hashed classes or namespaces.
 
 ### ✅ COMPLETELY ACCURATE
 
 **Traditional scoping (CSS Modules, styled-components):**
+
 ```css
 /* Input */
-.button { color: red; }
+.button {
+  color: red;
+}
 
 /* Output (CSS Modules) */
-.button_a3x2k { color: red; }  /* ❌ Still global, just unique name */
+.button_a3x2k {
+  color: red;
+} /* ❌ Still global, just unique name */
 
 /* Output (styled-components) */
-.sc-bdVaJa { color: red; }     /* ❌ Still global, runtime hash */
+.sc-bdVaJa {
+  color: red;
+} /* ❌ Still global, runtime hash */
 ```
 
 **Problems:**
+
 - Selectors still in global CSSOM
 - Hash collisions possible (extremely rare, but possible)
 - Inspector shows obfuscated class names
 - Still need to be careful with element selectors (`div`, `span`)
 
 **Shadow DOM scoping:**
+
 ```css
 /* In shadow root */
-.button { color: red; }  /* ✅ Truly scoped, NEVER leaks */
-div { margin: 0; }       /* ✅ Only affects this shadow tree */
+.button {
+  color: red;
+} /* ✅ Truly scoped, NEVER leaks */
+div {
+  margin: 0;
+} /* ✅ Only affects this shadow tree */
 ```
 
 **Guarantees:**
+
 1. **Physical boundary**: Separate CSSOM per shadow root
 2. **No name collisions**: `.button` in shadow A ≠ `.button` in shadow B
 3. **No specificity wars**: Your styles cannot be overridden accidentally
 4. **Clean inspector**: Real class names, not hashes
 
 **Example:**
+
 ```html
 <my-component>
   #shadow-root
-    <style>.button { color: red }</style>
-    <button class="button">Click</button>  <!-- Red -->
+  <style>
+    .button {
+      color: red;
+    }
+  </style>
+  <button class="button">Click</button>
+  <!-- Red -->
 </my-component>
 
-<style>.button { color: blue }</style>
-<button class="button">Click</button>      <!-- Blue, unaffected -->
+<style>
+  .button {
+    color: blue;
+  }
+</style>
+<button class="button">Click</button>
+<!-- Blue, unaffected -->
 ```
 
 **⚠️ Important Trade-off:**
+
 - **Pro**: Perfect encapsulation
 - **Con**: Hard to style from outside (by design)
 - **Solution**: `::part()` pseudo-element (your next point)
@@ -131,6 +163,7 @@ div { margin: 0; }       /* ✅ Only affects this shadow tree */
 ## 3. Controlled Customization via Shadow Parts
 
 ### Your Assumption
+
 > The `part` attribute provides powerful, controlled customization for design systems.
 
 ### ✅ ACCURATE - This is a Sophisticated Insight
@@ -138,6 +171,7 @@ div { margin: 0; }       /* ✅ Only affects this shadow tree */
 **Shadow Parts** are the "approved API" for styling shadow internals.
 
 **Inside component:**
+
 ```html
 <!-- counter.tsx shadow template -->
 <div part="container">
@@ -147,6 +181,7 @@ div { margin: 0; }       /* ✅ Only affects this shadow tree */
 ```
 
 **Outside component:**
+
 ```css
 /* App-level design system override */
 my-counter::part(label) {
@@ -162,22 +197,25 @@ my-counter::part(increment) {
 **Power for Design Systems:**
 
 1. **Explicit contract**: Component author declares what's styleable
+
    ```typescript
-   exportparts="label,increment"  // ✅ Opt-in customization
+   exportparts = 'label,increment' // ✅ Opt-in customization
    // container is NOT exported → cannot be styled externally
    ```
 
 2. **Prevents breaking changes**: External styles can only touch approved parts
+
    ```css
    /* ❌ This won't work (not exported) */
    my-counter::part(internal-impl-detail) { ... }
    ```
 
 3. **Forwards through nested shadows**:
+
    ```html
    <design-system-button exportparts="label: button-label">
      #shadow-root
-       <button part="label">Click</button>
+     <button part="label">Click</button>
    </design-system-button>
 
    <!-- Can style forwarded part -->
@@ -185,19 +223,21 @@ my-counter::part(increment) {
    ```
 
 4. **Design token enforcement**:
+
    ```css
    /* Design system can enforce tokens */
    :host {
      --label-color: var(--ds-color-text, black);
    }
 
-   [part="label"] {
+   [part='label'] {
      color: var(--label-color);
      /* External can override --label-color, but not change font-size */
    }
    ```
 
 **Enterprise Use Case:**
+
 ```typescript
 // Component library author
 export const Button = createShadowComponent({
@@ -226,17 +266,24 @@ export const Button = createShadowComponent({
 ```
 
 **⚠️ Browser Support:**
+
 - `::part()`: Chrome 73+, Safari 13.1+, Firefox 72+
 - Same baseline as Constructable Stylesheets (good!)
 
 **⚠️ Limitation:**
+
 - Can only style direct properties, not pseudo-elements of the part:
+
   ```css
   /* ✅ Works */
-  ::part(label) { color: red; }
+  ::part(label) {
+    color: red;
+  }
 
   /* ❌ Doesn't work */
-  ::part(label)::before { content: "→"; }
+  ::part(label)::before {
+    content: '→';
+  }
   ```
 
 ---
@@ -244,6 +291,7 @@ export const Button = createShadowComponent({
 ## 4. Memory Management via On-Demand Loading
 
 ### Your Assumption
+
 > Architecture allows tracking component lifecycle and releasing memory since CSS loads on demand.
 
 ### ⚠️ PARTIALLY ACCURATE - Requires Careful Design
@@ -253,10 +301,11 @@ Let's break down what's true, what's tricky, and what's a footgun.
 **✅ What IS True:**
 
 1. **Lazy loading works**:
+
    ```typescript
    // CSS not loaded until component renders
    const styles = {
-     dark: () => import('./dark.css?inline')  // ✅ Code-split chunk
+     dark: () => import('./dark.css?inline'), // ✅ Code-split chunk
    }
 
    // First render of <Counter skin="dark" />
@@ -264,12 +313,13 @@ Let's break down what's true, what's tricky, and what's a footgun.
    ```
 
 2. **Shared sheet efficiency**:
+
    ```typescript
    // Global cache means 100 instances = 1 CSSStyleSheet object
    const sheet = await sheets.get('dark')
 
-   instance1.shadowRoot.adoptedStyleSheets = [sheet]  // Reference 1
-   instance2.shadowRoot.adoptedStyleSheets = [sheet]  // Reference 2 (same object)
+   instance1.shadowRoot.adoptedStyleSheets = [sheet] // Reference 1
+   instance2.shadowRoot.adoptedStyleSheets = [sheet] // Reference 2 (same object)
    // Memory: 1 × CSSStyleSheet size, not 100×
    ```
 
@@ -283,12 +333,13 @@ Let's break down what's true, what's tricky, and what's a footgun.
 **❌ What is NOT Automatic:**
 
 1. **CSSStyleSheet memory is not automatically released**:
+
    ```typescript
    // Your current code
    class Sheets extends Map<Skin, CSSStyleSheet> {
      load(skin) {
        const sheet = await createSheet(css)
-       super.set(skin, sheet)  // ❌ Sheet lives forever, even if no instances
+       super.set(skin, sheet) // ❌ Sheet lives forever, even if no instances
      }
    }
    ```
@@ -301,6 +352,7 @@ Let's break down what's true, what's tricky, and what's a footgun.
 **🔧 Proper Memory Management Strategy:**
 
 **Option A: Reference Counting (Manual)**
+
 ```typescript
 class SheetsCache {
   #sheets = new Map<string, CSSStyleSheet>()
@@ -322,7 +374,7 @@ class SheetsCache {
 
     if (count <= 0) {
       // No more instances using this skin
-      this.#sheets.delete(skin)      // ✅ Allow GC
+      this.#sheets.delete(skin) // ✅ Allow GC
       this.#refCounts.delete(skin)
     } else {
       this.#refCounts.set(skin, count)
@@ -337,20 +389,21 @@ class MyElement extends HTMLElement {
 
   async connectedCallback() {
     const skin = this.getAttribute('skin') || 'default'
-    this.#currentSheet = await sheetsCache.acquire(skin)  // ✅ Increment ref
+    this.#currentSheet = await sheetsCache.acquire(skin) // ✅ Increment ref
     this.#currentSkin = skin
     this.shadowRoot.adoptedStyleSheets = [this.#currentSheet]
   }
 
   disconnectedCallback() {
     if (this.#currentSkin) {
-      sheetsCache.release(this.#currentSkin)  // ✅ Decrement ref
+      sheetsCache.release(this.#currentSkin) // ✅ Decrement ref
     }
   }
 }
 ```
 
 **Option B: WeakMap + FinalizationRegistry (Automatic)**
+
 ```typescript
 class SheetsCache {
   #sheets = new Map<string, CSSStyleSheet>()
@@ -401,16 +454,19 @@ await sheet.replace(css)
 ```
 
 **Recommendation:**
+
 - **Small apps (<10 themes)**: Don't bother with ref counting, cache forever (simple)
 - **Large apps (>20 themes)**: Use Option A (ref counting) for predictability
 - **Enterprise (design system with dozens of themes)**: Use Option A + manual `.evict()` API
 
 **What you GET automatically:**
+
 - ✅ Lazy loading (code splitting via dynamic imports)
 - ✅ Shared instances (1 sheet, many shadow roots)
 - ✅ Isolated style recalc (only on shadow tree changes)
 
 **What you DON'T get automatically:**
+
 - ❌ Sheet eviction (requires manual ref counting)
 - ❌ CSS updates (requires `sheet.replace()` on HMR)
 
@@ -429,8 +485,8 @@ const styles = {
   `,
   skins: {
     light: () => import('./light.css?inline'),
-    dark: () => import('./dark.css?inline')
-  }
+    dark: () => import('./dark.css?inline'),
+  },
 }
 
 // Apply multiple sheets
@@ -440,6 +496,7 @@ shadowRoot.adoptedStyleSheets = [baseSheet, skinSheet]
 ```
 
 **Benefits:**
+
 - Base styles available immediately (no FOUC)
 - Skins lazy-loaded (code splitting)
 - Both sheets compose (cascade works)
@@ -466,13 +523,18 @@ This is **impossible** with `<style>` tags (would need to find + replace all ins
 ### Insight C: Adoptable Stylesheets Work With SSR (Kind of)
 
 **Declarative Shadow DOM** (new web standard):
+
 ```html
 <!-- Server-rendered HTML -->
 <my-counter>
   <template shadowrootmode="open">
     <style>
-      :host { display: block; }
-      .label { color: red; }
+      :host {
+        display: block;
+      }
+      .label {
+        color: red;
+      }
     </style>
     <div part="container">
       <span part="label">Count: 5</span>
@@ -484,6 +546,7 @@ This is **impossible** with `<style>` tags (would need to find + replace all ins
 Browser automatically creates shadow root + applies styles on parse.
 
 **Client hydration can then replace with Constructable Stylesheet:**
+
 ```typescript
 connectedCallback() {
   if (this.shadowRoot) {
@@ -510,12 +573,12 @@ connectedCallback() {
 
 ## Summary Table
 
-| Assumption | Accuracy | Key Nuance |
-|------------|----------|------------|
-| **Constructable Stylesheets are more efficient than header manipulation** | ✅ Accurate | Biggest gains with shared sheets + frequent updates |
-| **True scoped CSS without hashing** | ✅ Accurate | Trade-off: harder to style externally (solved by `::part()`) |
-| **`part` attribute for controlled customization** | ✅ Accurate | Very powerful for design systems; browser support is good |
-| **Memory management via on-demand loading** | ⚠️ Partially accurate | Lazy loading works, but eviction requires explicit ref counting |
+| Assumption                                                                | Accuracy              | Key Nuance                                                      |
+| ------------------------------------------------------------------------- | --------------------- | --------------------------------------------------------------- |
+| **Constructable Stylesheets are more efficient than header manipulation** | ✅ Accurate           | Biggest gains with shared sheets + frequent updates             |
+| **True scoped CSS without hashing**                                       | ✅ Accurate           | Trade-off: harder to style externally (solved by `::part()`)    |
+| **`part` attribute for controlled customization**                         | ✅ Accurate           | Very powerful for design systems; browser support is good       |
+| **Memory management via on-demand loading**                               | ⚠️ Partially accurate | Lazy loading works, but eviction requires explicit ref counting |
 
 ---
 

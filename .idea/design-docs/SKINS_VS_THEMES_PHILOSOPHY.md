@@ -16,28 +16,29 @@
   --bg-color: white;
   --text-color: black;
   --border-radius: 4px;
-  --shadow: 0 2px 4px rgba(0,0,0,0.1);
+  --shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* theme-dark.css */
 :root {
   --bg-color: #1a1a1a;
   --text-color: white;
-  --border-radius: 4px;  /* ← SAME VALUE, limited */
-  --shadow: 0 2px 4px rgba(255,255,255,0.1);
+  --border-radius: 4px; /* ← SAME VALUE, limited */
+  --shadow: 0 2px 4px rgba(255, 255, 255, 0.1);
 }
 
 /* component.css */
 .card {
-  background: var(--bg-color);      /* ← Constrained by variable */
+  background: var(--bg-color); /* ← Constrained by variable */
   color: var(--text-color);
-  border-radius: var(--border-radius);  /* ← Locked into same structure */
+  border-radius: var(--border-radius); /* ← Locked into same structure */
   box-shadow: var(--shadow);
-  padding: 1rem;                    /* ← Can't change per theme without new variable */
+  padding: 1rem; /* ← Can't change per theme without new variable */
 }
 ```
 
 **Limitations:**
+
 - ❌ Structure is fixed (padding, layout, box model)
 - ❌ Must predefine every customizable property as a variable
 - ❌ Adding new customization = adding new variables everywhere
@@ -50,13 +51,13 @@
 
 ```css
 /* skins/light.css */
-@import './base/typography.css';  /* ← Explicit composition */
+@import './base/typography.css'; /* ← Explicit composition */
 
 .card {
   background: white;
   color: #333;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   padding: 1.5rem;
   border: 1px solid #e0e0e0;
 }
@@ -64,14 +65,14 @@
 
 ```css
 /* skins/dark.css */
-@import './base/typography.css';  /* ← Same typography base */
+@import './base/typography.css'; /* ← Same typography base */
 
 .card {
   background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
   color: #fff;
-  border-radius: 0;                /* ← Completely different */
-  box-shadow: none;                /* ← No shadow at all */
-  padding: 2rem 1rem;              /* ← Different spacing */
+  border-radius: 0; /* ← Completely different */
+  box-shadow: none; /* ← No shadow at all */
+  padding: 2rem 1rem; /* ← Different spacing */
   border: none;
   border-left: 4px solid #90caf9; /* ← New visual element */
 }
@@ -80,7 +81,7 @@
 ```css
 /* skins/zen.css */
 @import './base/typography.css';
-@import './base/animations.css';  /* ← Different dependencies */
+@import './base/animations.css'; /* ← Different dependencies */
 
 .card {
   background: transparent;
@@ -90,7 +91,7 @@
   padding: 0;
   border: 3px double #000;
   position: relative;
-  transform: rotate(-1deg);        /* ← Completely different expression */
+  transform: rotate(-1deg); /* ← Completely different expression */
 }
 
 .card::before {
@@ -101,14 +102,15 @@
     45deg,
     transparent,
     transparent 10px,
-    rgba(0,0,0,0.05) 10px,
-    rgba(0,0,0,0.05) 20px
+    rgba(0, 0, 0, 0.05) 10px,
+    rgba(0, 0, 0, 0.05) 20px
   );
   z-index: -1;
 }
 ```
 
 **Advantages:**
+
 - ✅ Each skin is completely independent
 - ✅ No predefined variables required
 - ✅ Can fundamentally change visual expression
@@ -126,6 +128,7 @@ From https://csszengarden.com/:
 > The same HTML markup can produce radically different visual designs through CSS alone, without touching the markup.
 
 **The problem:** Most modern CSS architectures have **abandoned** this principle:
+
 - CSS-in-JS: Styles tightly coupled to components
 - Utility frameworks (Tailwind): Styles encoded in markup (`class="p-4 bg-blue-500"`)
 - Traditional themes: Variables limit expressiveness
@@ -158,6 +161,7 @@ export const Card = ({ title, content }) => (
 ### The Clean Contract
 
 **Component responsibility:** Semantic structure + behavior
+
 ```typescript
 // counter.tsx
 export const Counter = ({ count, onIncrement }) => (
@@ -170,11 +174,12 @@ export const Counter = ({ count, onIncrement }) => (
 ```
 
 **Skin responsibility:** Complete visual expression
+
 ```css
 /* skins/digital.css */
-[part="container"] {
+[part='container'] {
   display: grid;
-  grid-template: "label value" auto "increment increment" auto / 1fr 1fr;
+  grid-template: 'label value' auto 'increment increment' auto / 1fr 1fr;
   gap: 0.5rem;
   font-family: 'Courier New', monospace;
   background: #000;
@@ -183,13 +188,15 @@ export const Counter = ({ count, onIncrement }) => (
   border: 2px solid #0f0;
 }
 
-[part="label"] { grid-area: label; }
-[part="value"] {
+[part='label'] {
+  grid-area: label;
+}
+[part='value'] {
   grid-area: value;
   font-size: 2rem;
   text-align: right;
 }
-[part="increment"] {
+[part='increment'] {
   grid-area: increment;
   background: #0f0;
   color: #000;
@@ -198,7 +205,7 @@ export const Counter = ({ count, onIncrement }) => (
 
 ```css
 /* skins/analog.css */
-[part="container"] {
+[part='container'] {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -206,19 +213,23 @@ export const Counter = ({ count, onIncrement }) => (
   background: radial-gradient(circle, #f5f5f5, #e0e0e0);
   padding: 2rem;
   border-radius: 50%;
-  box-shadow: inset 0 0 20px rgba(0,0,0,0.1);
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.1);
 }
 
-[part="value"] {
+[part='value'] {
   font-size: 4rem;
   font-weight: bold;
   color: #333;
 }
 
-[part="label"], [part="increment"] { display: none; } /* ← Can hide elements */
+[part='label'],
+[part='increment'] {
+  display: none;
+} /* ← Can hide elements */
 ```
 
 **Notice:**
+
 - Same parts (semantic contract)
 - Completely different layouts (grid vs flexbox vs circular)
 - Different typography
@@ -232,6 +243,7 @@ export const Counter = ({ count, onIncrement }) => (
 ### The Problem with Implicit Coupling
 
 **Traditional themes:**
+
 ```css
 /* All themes inherit these variables implicitly */
 :root {
@@ -242,6 +254,7 @@ export const Counter = ({ count, onIncrement }) => (
 ```
 
 **Problems:**
+
 - ❌ Hidden dependencies (what uses what?)
 - ❌ Can't override fundamental structure
 - ❌ Fear of breaking other themes
@@ -252,6 +265,7 @@ export const Counter = ({ count, onIncrement }) => (
 ### Explicit Composition with Skins
 
 **Base modules (shared when desired):**
+
 ```css
 /* base/typography.css */
 @layer typography {
@@ -260,7 +274,7 @@ export const Counter = ({ count, onIncrement }) => (
     line-height: 1.5;
   }
 
-  [part="heading"] {
+  [part='heading'] {
     font-weight: 600;
     letter-spacing: -0.02em;
   }
@@ -270,24 +284,25 @@ export const Counter = ({ count, onIncrement }) => (
 ```css
 /* base/spacing.css */
 @layer spacing {
-  [part="container"] {
+  [part='container'] {
     padding: var(--spacing, 1rem);
   }
 
-  [part="stack"] > * + * {
+  [part='stack'] > * + * {
     margin-top: var(--spacing, 1rem);
   }
 }
 ```
 
 **Skin 1: Uses both bases**
+
 ```css
 /* skins/corporate.css */
 @import '../base/typography.css';
 @import '../base/spacing.css';
 
 @layer skin {
-  [part="container"] {
+  [part='container'] {
     --spacing: 1.5rem;
     background: white;
     border: 1px solid #e0e0e0;
@@ -296,13 +311,14 @@ export const Counter = ({ count, onIncrement }) => (
 ```
 
 **Skin 2: Uses only typography**
+
 ```css
 /* skins/minimal.css */
 @import '../base/typography.css';
 /* ← Deliberately NOT importing spacing.css */
 
 @layer skin {
-  [part="container"] {
+  [part='container'] {
     /* Custom spacing, not from base */
     padding: 0.25rem;
     background: transparent;
@@ -311,11 +327,12 @@ export const Counter = ({ count, onIncrement }) => (
 ```
 
 **Skin 3: Uses neither (complete independence)**
+
 ```css
 /* skins/experimental.css */
 /* No imports - completely custom */
 
-[part="container"] {
+[part='container'] {
   font-family: 'Comic Sans MS', cursive; /* ← Intentionally different */
   padding: 3rem;
   background: repeating-conic-gradient(
@@ -328,6 +345,7 @@ export const Counter = ({ count, onIncrement }) => (
 ```
 
 **Benefits:**
+
 - ✅ **Explicit dependencies**: Can see exactly what each skin uses
 - ✅ **Opt-in consistency**: Choose which bases to import
 - ✅ **Safe experimentation**: New skin = no risk to existing skins
@@ -340,26 +358,32 @@ export const Counter = ({ count, onIncrement }) => (
 ### The Technical Synergy
 
 **1. True Independence**
+
 ```typescript
 // Each skin is a separate CSSStyleSheet object
 const lightSheet = new CSSStyleSheet()
-await lightSheet.replace(lightCSS)  // Completely independent
+await lightSheet.replace(lightCSS) // Completely independent
 
 const darkSheet = new CSSStyleSheet()
-await darkSheet.replace(darkCSS)    // No coupling whatsoever
+await darkSheet.replace(darkCSS) // No coupling whatsoever
 
 // Switch = replace entire CSSOM
-shadowRoot.adoptedStyleSheets = [lightSheet]  // One world
-shadowRoot.adoptedStyleSheets = [darkSheet]   // Completely different world
+shadowRoot.adoptedStyleSheets = [lightSheet] // One world
+shadowRoot.adoptedStyleSheets = [darkSheet] // Completely different world
 ```
 
 **2. No Cascade Pollution**
+
 ```css
 /* skins/light.css */
-.button { background: white; }
+.button {
+  background: white;
+}
 
 /* skins/dark.css */
-.button { background: black; }
+.button {
+  background: black;
+}
 
 /* With traditional <style> tags: */
 /* Both rules exist in global CSSOM → specificity war */
@@ -369,6 +393,7 @@ shadowRoot.adoptedStyleSheets = [darkSheet]   // Completely different world
 ```
 
 **3. Composition Through Multiple Sheets**
+
 ```typescript
 // Base sheet (shared structure)
 const baseSheet = new CSSStyleSheet()
@@ -389,6 +414,7 @@ shadowRoot.adoptedStyleSheets = [baseSheet, skinSheet]
 ```
 
 **4. Shadow Parts = Public API**
+
 ```typescript
 // Component declares what's styleable
 <div part="container">
@@ -425,23 +451,23 @@ export const Button = ({ children, variant, ...props }) => (
 /* skins/material.css */
 @import '../base/typography.css';
 
-[part="surface"] {
+[part='surface'] {
   padding: 0.75rem 1.5rem;
   border: none;
   border-radius: 4px;
   background: #2196f3;
   color: white;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   cursor: pointer;
   transition: all 0.2s;
 }
 
-[part="surface"]:hover {
-  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+[part='surface']:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
   transform: translateY(-1px);
 }
 
-[part="label"] {
+[part='label'] {
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -454,26 +480,26 @@ export const Button = ({ children, variant, ...props }) => (
 /* skins/neumorphic.css */
 @import '../base/typography.css';
 
-[part="surface"] {
+[part='surface'] {
   padding: 1rem 2rem;
   border: none;
   border-radius: 20px;
   background: #e0e0e0;
   color: #333;
   box-shadow:
-    8px 8px 16px rgba(0,0,0,0.2),
-    -8px -8px 16px rgba(255,255,255,0.8);
+    8px 8px 16px rgba(0, 0, 0, 0.2),
+    -8px -8px 16px rgba(255, 255, 255, 0.8);
   cursor: pointer;
   transition: all 0.3s;
 }
 
-[part="surface"]:active {
+[part='surface']:active {
   box-shadow:
-    inset 4px 4px 8px rgba(0,0,0,0.2),
-    inset -4px -4px 8px rgba(255,255,255,0.8);
+    inset 4px 4px 8px rgba(0, 0, 0, 0.2),
+    inset -4px -4px 8px rgba(255, 255, 255, 0.8);
 }
 
-[part="label"] {
+[part='label'] {
   font-weight: 600;
 }
 ```
@@ -484,7 +510,7 @@ export const Button = ({ children, variant, ...props }) => (
 /* skins/brutalist.css */
 /* NO base imports - deliberately different */
 
-[part="surface"] {
+[part='surface'] {
   padding: 1.5rem 3rem;
   border: 4px solid black;
   border-radius: 0;
@@ -498,12 +524,12 @@ export const Button = ({ children, variant, ...props }) => (
   transition: none; /* No animations in brutalism */
 }
 
-[part="surface"]:hover {
+[part='surface']:hover {
   background: black;
   color: yellow;
 }
 
-[part="label"] {
+[part='label'] {
   font-size: 1.25rem;
   letter-spacing: 0.1em;
 }
@@ -515,18 +541,18 @@ export const Button = ({ children, variant, ...props }) => (
 /* skins/glass.css */
 @import '../base/typography.css';
 
-[part="surface"] {
+[part='surface'] {
   padding: 0.875rem 1.75rem;
-  border: 1px solid rgba(255,255,255,0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 12px;
-  background: rgba(255,255,255,0.1);
+  background: rgba(255, 255, 255, 0.1);
   color: white;
   backdrop-filter: blur(10px);
-  box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   cursor: pointer;
 }
 
-[part="surface"]::before {
+[part='surface']::before {
   content: '';
   position: absolute;
   inset: 0;
@@ -534,8 +560,8 @@ export const Button = ({ children, variant, ...props }) => (
   padding: 1px;
   background: linear-gradient(
     135deg,
-    rgba(255,255,255,0.4),
-    rgba(255,255,255,0)
+    rgba(255, 255, 255, 0.4),
+    rgba(255, 255, 255, 0)
   );
   -webkit-mask:
     linear-gradient(#fff 0 0) content-box,
@@ -543,9 +569,9 @@ export const Button = ({ children, variant, ...props }) => (
   mask-composite: exclude;
 }
 
-[part="label"] {
+[part='label'] {
   font-weight: 500;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 ```
 
@@ -558,6 +584,7 @@ export const Button = ({ children, variant, ...props }) => (
 ### Traditional Design Systems (Variable-Based)
 
 **Design tokens:**
+
 ```json
 {
   "color": {
@@ -576,6 +603,7 @@ export const Button = ({ children, variant, ...props }) => (
 ```
 
 **Problem:** Designers want to create a "playful" brand variant with:
+
 - Rounded, bouncy shapes
 - Handwritten font
 - Illustrations instead of photos
@@ -588,6 +616,7 @@ export const Button = ({ children, variant, ...props }) => (
 ### Skin-Based Design Systems
 
 **Design philosophy:**
+
 ```typescript
 // Core components (structure)
 export const components = {
@@ -611,29 +640,37 @@ export const skins = {
 ```
 
 **Now the "playful" skin can:**
+
 ```css
 /* skins/playful.css */
 @import url('https://fonts.googleapis.com/css2?family=Caveat&display=swap');
 
-[part="surface"] {
+[part='surface'] {
   font-family: 'Caveat', cursive;
-  border-radius: 50% 20% / 30% 40%;  /* Organic shapes */
+  border-radius: 50% 20% / 30% 40%; /* Organic shapes */
   background: linear-gradient(45deg, #ff6b6b, #feca57);
   transform: rotate(-2deg);
   box-shadow:
-    0 4px 0 rgba(0,0,0,0.1),
-    0 8px 20px rgba(0,0,0,0.2);
+    0 4px 0 rgba(0, 0, 0, 0.1),
+    0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
-[part="surface"]:hover {
+[part='surface']:hover {
   transform: rotate(-2deg) scale(1.05);
   animation: wiggle 0.5s ease-in-out;
 }
 
 @keyframes wiggle {
-  0%, 100% { transform: rotate(-2deg) scale(1.05); }
-  25% { transform: rotate(-4deg) scale(1.05); }
-  75% { transform: rotate(0deg) scale(1.05); }
+  0%,
+  100% {
+    transform: rotate(-2deg) scale(1.05);
+  }
+  25% {
+    transform: rotate(-4deg) scale(1.05);
+  }
+  75% {
+    transform: rotate(0deg) scale(1.05);
+  }
 }
 ```
 
@@ -646,21 +683,22 @@ export const skins = {
 ### When You Want Consistency
 
 **Shared base modules:**
+
 ```css
 /* base/layout.css */
 /* Used by all skins that want consistent spacing */
 @layer layout {
-  [part="container"] {
+  [part='container'] {
     container-type: inline-size;
   }
 
-  [part="stack"] {
+  [part='stack'] {
     display: flex;
     flex-direction: column;
     gap: var(--stack-gap, 1rem);
   }
 
-  [part="row"] {
+  [part='row'] {
     display: flex;
     flex-direction: row;
     gap: var(--row-gap, 1rem);
@@ -669,6 +707,7 @@ export const skins = {
 ```
 
 **Skins import what they need:**
+
 ```css
 /* skins/corporate.css */
 @import '../base/layout.css';
@@ -676,7 +715,7 @@ export const skins = {
 @import '../base/elevation.css';
 
 /* Corporate-specific overrides */
-[part="container"] {
+[part='container'] {
   --stack-gap: 1.5rem;
 }
 ```
@@ -687,8 +726,8 @@ export const skins = {
 @import '../base/typography.css';
 /* Deliberately NOT importing elevation.css - no shadows */
 
-[part="container"] {
-  --stack-gap: 0.5rem;  /* Tighter spacing */
+[part='container'] {
+  --stack-gap: 0.5rem; /* Tighter spacing */
 }
 ```
 
@@ -697,11 +736,12 @@ export const skins = {
 ### When You Want Complete Freedom
 
 **Experimental skin with no imports:**
+
 ```css
 /* skins/experimental.css */
 /* Zero imports - complete freedom */
 
-[part="container"] {
+[part='container'] {
   /* Custom everything */
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -709,7 +749,7 @@ export const skins = {
   padding: 3rem;
 }
 
-[part="stack"] {
+[part='stack'] {
   /* Ignore the "stack" semantic, make it a grid */
   display: grid;
   grid-auto-flow: dense;
@@ -720,18 +760,18 @@ export const skins = {
 
 ## Comparison Table
 
-| Aspect | Traditional Themes | Skins (Your Architecture) |
-|--------|-------------------|---------------------------|
-| **Coupling** | Variables create implicit coupling | Explicit composition via imports |
-| **Expressiveness** | Limited to predefined properties | Unlimited - complete CSS freedom |
-| **Consistency** | Enforced globally via variables | Opt-in via base imports |
-| **Experimentation** | Risky - might break other themes | Safe - each skin is isolated |
-| **CSS Zen Garden** | ❌ Not possible | ✅ Fully supported |
-| **Dependencies** | Hidden (via variable usage) | Explicit (via @import) |
-| **Override Strategy** | Specificity wars | Clean replacement |
-| **Learning Curve** | Need to learn variable system | Just write CSS |
-| **Design Systems** | Need many variables | Need semantic parts |
-| **Flexibility** | Low (variables limit changes) | High (anything CSS can do) |
+| Aspect                | Traditional Themes                 | Skins (Your Architecture)        |
+| --------------------- | ---------------------------------- | -------------------------------- |
+| **Coupling**          | Variables create implicit coupling | Explicit composition via imports |
+| **Expressiveness**    | Limited to predefined properties   | Unlimited - complete CSS freedom |
+| **Consistency**       | Enforced globally via variables    | Opt-in via base imports          |
+| **Experimentation**   | Risky - might break other themes   | Safe - each skin is isolated     |
+| **CSS Zen Garden**    | ❌ Not possible                    | ✅ Fully supported               |
+| **Dependencies**      | Hidden (via variable usage)        | Explicit (via @import)           |
+| **Override Strategy** | Specificity wars                   | Clean replacement                |
+| **Learning Curve**    | Need to learn variable system      | Just write CSS                   |
+| **Design Systems**    | Need many variables                | Need semantic parts              |
+| **Flexibility**       | Low (variables limit changes)      | High (anything CSS can do)       |
 
 ---
 
@@ -746,6 +786,7 @@ export const skins = {
 "Skins are complete visual languages - like different CSS Zen Garden designs"
 
 **What this means:**
+
 - ✅ Lazy loading is CRITICAL (skins can be large, complex stylesheets)
 - ✅ Caching is essential (you don't want to re-parse large stylesheets)
 - ✅ Code splitting wins are HUGE (each skin is a separate chunk)
@@ -793,12 +834,14 @@ export const Card = createShadowComponent({
 ### For Library Users
 
 **Emphasize the philosophy:**
+
 1. "Skins are not themes" (first section)
 2. CSS Zen Garden comparison
 3. Show radical examples (Material → Brutalist)
 4. Encourage experimentation
 
 **Provide base modules:**
+
 ```
 @my-lib/base-styles/
 ├── layout.css       # Flexbox, grid, container queries
