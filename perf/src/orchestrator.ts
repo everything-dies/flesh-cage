@@ -180,7 +180,7 @@ export async function runScenario(options: RunOptions): Promise<RunResult[]> {
   const scenarioJs = await prepareScenario(scenarioPath)
 
   console.log(`Launching browser (headless: ${headless})...`)
-  const channel = process.env.PERF_CHROME_CHANNEL || undefined
+  const channel = process.env['PERF_CHROME_CHANNEL'] || undefined
   const browser = await chromium.launch({
     headless,
     channel,

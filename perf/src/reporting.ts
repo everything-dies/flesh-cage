@@ -25,7 +25,7 @@ function calculateStats(numbers: number[]): Stats {
 
   const sorted = [...numbers].sort((a, b) => a - b)
   const p95Index = Math.floor(sorted.length * 0.95)
-  const p95 = sorted[p95Index]
+  const p95 = sorted[p95Index] ?? 0
 
   const stddev = Math.sqrt(
     numbers.map((x) => Math.pow(x - avg, 2)).reduce((a, b) => a + b, 0) /
@@ -40,7 +40,7 @@ function calculateStats(numbers: number[]): Stats {
 }
 
 function createSummary(analyses: RunAnalysis[]): Summary {
-  const metrics: { [K in keyof AnalysisMetrics]?: number[] } = {
+  const metrics: { [K in keyof AnalysisMetrics]: number[] } = {
     totalGCTimeMs: [],
     gcCount: [],
     majorGcCount: [],
@@ -53,16 +53,16 @@ function createSummary(analyses: RunAnalysis[]): Summary {
   }
 
   for (const analysis of analyses) {
-    metrics.totalGCTimeMs?.push(analysis.metrics.totalGCTimeMs)
-    metrics.gcCount?.push(analysis.metrics.gcCount)
-    metrics.majorGcCount?.push(analysis.metrics.majorGcCount)
-    metrics.meanGcPauseMs?.push(analysis.metrics.meanGcPauseMs)
-    metrics.cpuTimeMs?.push(analysis.metrics.cpuTimeMs)
-    metrics.heapUsedBeforeBytes?.push(analysis.metrics.heapUsedBeforeBytes)
-    metrics.heapUsedAfterBytes?.push(analysis.metrics.heapUsedAfterBytes)
-    metrics.heapUsedDeltaBytes?.push(analysis.metrics.heapUsedDeltaBytes)
+    metrics.totalGCTimeMs.push(analysis.metrics.totalGCTimeMs)
+    metrics.gcCount.push(analysis.metrics.gcCount)
+    metrics.majorGcCount.push(analysis.metrics.majorGcCount)
+    metrics.meanGcPauseMs.push(analysis.metrics.meanGcPauseMs)
+    metrics.cpuTimeMs.push(analysis.metrics.cpuTimeMs)
+    metrics.heapUsedBeforeBytes.push(analysis.metrics.heapUsedBeforeBytes)
+    metrics.heapUsedAfterBytes.push(analysis.metrics.heapUsedAfterBytes)
+    metrics.heapUsedDeltaBytes.push(analysis.metrics.heapUsedDeltaBytes)
     if (analysis.uaMemoryAvailable) {
-      metrics.uaMemoryBytes?.push(analysis.metrics.uaMemoryBytes)
+      metrics.uaMemoryBytes.push(analysis.metrics.uaMemoryBytes)
     }
   }
 
