@@ -64,8 +64,12 @@ export const compareCommand: CommandModule<{}, CompareOptions> = {
       const results = []
 
       for (const metric of metricsToCompare) {
-        const baselineValue = parseFloat(baselineFile.summary[metric]?.average)
-        const currentValue = parseFloat(currentFile.summary[metric]?.average)
+        const baselineValue = parseFloat(
+          baselineFile.summary[metric]?.average ?? 'NaN'
+        )
+        const currentValue = parseFloat(
+          currentFile.summary[metric]?.average ?? 'NaN'
+        )
 
         if (isNaN(baselineValue) || isNaN(currentValue)) {
           results.push({

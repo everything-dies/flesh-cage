@@ -1,12 +1,9 @@
 import type { CommandModule } from 'yargs'
 import path from 'path'
-import { fileURLToPath } from 'url'
 import fs from 'fs'
 import { runScenario } from '../orchestrator.js'
 import { analyzeRuns } from '../analysis.js'
 import { generateReport } from '../reporting.js'
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 interface RunOptions {
   scenario: string

@@ -53,6 +53,9 @@ async function prepareScenario(scenarioPath: string): Promise<string> {
     jsx: 'automatic', // Instruct esbuild to transform JSX
     absWorkingDir: path.resolve(__dirname, '..', '..'),
   })
+  if (!result.outputFiles[0]) {
+    throw new Error('esbuild failed to generate output')
+  }
   return result.outputFiles[0].text
 }
 
@@ -120,7 +123,7 @@ async function collectHeapSnapshotToFile(
   })
 
   const onChunk = (event: { chunk: string }) => {
-    pending = pending.then(() => fileHandle.write(event.chunk))
+    pending = pending.then(() => fileHandle.write(event.chunk)).then(() => {})
   }
   const onProgress = (event: { done: number; total: number }) => {
     if (event.done >= event.total && resolveDone) {
@@ -174,7 +177,7 @@ export async function runScenario(options: RunOptions): Promise<RunResult[]> {
     options
   const totalRuns = warmup + runs
   const results: RunResult[] = []
-  const skipHeapSnapshots = process.env.PERF_SKIP_HEAP === '1'
+  const skipHeapSnapshots = process.env['PERF_SKIP_HEAP'] === '1'
 
   console.log('Preparing scenario...')
   const scenarioJs = await prepareScenario(scenarioPath)
