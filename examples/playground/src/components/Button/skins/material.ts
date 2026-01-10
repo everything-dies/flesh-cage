@@ -1,8 +1,10 @@
+import { css } from '@everything-dies/flesh-cage'
+
 /**
  * Material Design skin for Button
  */
-export default `
-  [part="surface"] {
+export default css`
+  [part='surface'] {
     background: #2196f3;
     color: white;
     border: none;
@@ -15,27 +17,27 @@ export default `
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   }
 
-  [part="surface"]:hover {
+  [part='surface']:hover {
     background: #1976d2;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
     transform: translateY(-1px);
   }
 
-  [part="surface"]:active {
+  [part='surface']:active {
     background: #1565c0;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
     transform: translateY(0);
   }
 
-  [part="surface"][data-variant="secondary"] {
+  [part='surface'][data-variant='secondary'] {
     background: #757575;
   }
 
-  [part="surface"][data-variant="secondary"]:hover {
+  [part='surface'][data-variant='secondary']:hover {
     background: #616161;
   }
 
-  [part="label"] {
+  [part='label'] {
     display: inline-block;
   }
 `

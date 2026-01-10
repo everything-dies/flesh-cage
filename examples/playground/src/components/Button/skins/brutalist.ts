@@ -1,8 +1,10 @@
+import { css } from '@everything-dies/flesh-cage'
+
 /**
  * Brutalist skin for Button
  */
-export default `
-  [part="surface"] {
+export default css`
+  [part='surface'] {
     background: yellow;
     color: black;
     border: 4px solid black;
@@ -17,22 +19,22 @@ export default `
     transition: all 0.1s ease;
   }
 
-  [part="surface"]:hover {
+  [part='surface']:hover {
     background: #ffff00;
     transform: translate(2px, 2px);
     box-shadow: 6px 6px 0 black;
   }
 
-  [part="surface"]:active {
+  [part='surface']:active {
     transform: translate(4px, 4px);
     box-shadow: 4px 4px 0 black;
   }
 
-  [part="surface"][data-variant="secondary"] {
+  [part='surface'][data-variant='secondary'] {
     background: hotpink;
   }
 
-  [part="label"] {
+  [part='label'] {
     display: inline-block;
   }
 `

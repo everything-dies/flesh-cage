@@ -1,5 +1,11 @@
 # @everything-dies/flesh-cage
 
+## 0.2.1
+
+### Patch Changes
+
+- Move css module into core package for better organization
+
 ## 0.2.0
 
 ### Minor Changes

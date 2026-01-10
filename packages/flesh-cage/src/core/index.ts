@@ -14,6 +14,7 @@
  * - sheets/        Stylesheet lifecycle manager
  * - use-core/      Shadow DOM lifecycle hook
  * - styled/        Main factory function
+ * - css/           CSS template literal tag for syntax highlighting
  *
  * For detailed architecture documentation, see ./README.md
  */
@@ -46,4 +47,4 @@ export { useContext } from './use-context'
 // ============================================================================
 // Developer experience utilities
 
-export { css } from '../css'
+export { css } from './css'

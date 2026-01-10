@@ -1,8 +1,10 @@
+import { css } from '@everything-dies/flesh-cage'
+
 /**
  * Glassmorphic skin for Button
  */
-export default `
-  [part="surface"] {
+export default css`
+  [part='surface'] {
     background: rgba(255, 255, 255, 0.1);
     color: white;
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -19,7 +21,7 @@ export default `
     transition: all 0.3s ease;
   }
 
-  [part="surface"]:hover {
+  [part='surface']:hover {
     background: rgba(255, 255, 255, 0.15);
     border-color: rgba(255, 255, 255, 0.3);
     transform: translateY(-2px);
@@ -28,18 +30,18 @@ export default `
       inset 0 1px 1px rgba(255, 255, 255, 0.3);
   }
 
-  [part="surface"]:active {
+  [part='surface']:active {
     transform: translateY(0);
     box-shadow:
       0 4px 16px 0 rgba(31, 38, 135, 0.3),
       inset 0 1px 1px rgba(255, 255, 255, 0.2);
   }
 
-  [part="surface"][data-variant="secondary"] {
+  [part='surface'][data-variant='secondary'] {
     background: rgba(100, 100, 100, 0.15);
   }
 
-  [part="label"] {
+  [part='label'] {
     display: inline-block;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   }
