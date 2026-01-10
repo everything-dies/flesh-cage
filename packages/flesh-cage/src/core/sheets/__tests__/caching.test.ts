@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/await-thenable */
+/* eslint-disable @typescript-eslint/restrict-template-expressions */
 import { describe, it, expect, vi } from 'vitest'
 import { Sheets } from '../index'
 import { createMockSkin } from '../../__tests__/utils'

@@ -1,3 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/restrict-template-expressions */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { render, waitFor } from '@testing-library/react'
 import { Suspense, useState } from 'react'
@@ -12,18 +17,49 @@ import '../../__tests__/setup'
 
 // Declare custom element types for JSX
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace JSX {
     interface IntrinsicElements {
-      'test-suspend-listen': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
-      'test-suspend-detail': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
-      'test-no-suspend': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
-      'test-no-promise': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
-      'test-resume': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
-      'test-multi-suspend': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
-      'test-rapid-suspend': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
-      'test-change-event': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
-      'test-skin-change': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
-      'test-cleanup': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
+      'test-suspend-listen': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      >
+      'test-suspend-detail': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      >
+      'test-no-suspend': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      >
+      'test-no-promise': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      >
+      'test-resume': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      >
+      'test-multi-suspend': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      >
+      'test-rapid-suspend': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      >
+      'test-change-event': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      >
+      'test-skin-change': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      >
+      'test-cleanup': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      >
     }
   }
 }
@@ -49,7 +85,7 @@ describe('useCore - Suspension Logic', () => {
         customElements.define('test-suspend-listen', TestElement)
       }
 
-      let elementRef: HTMLElement | null = null
+      const elementRef = { current: null as HTMLElement | null }
 
       function TestComponent() {
         const { ref } = useCore({ suspendable: false })
@@ -58,7 +94,7 @@ describe('useCore - Suspension Logic', () => {
           <test-suspend-listen
             ref={(el) => {
               if (el) {
-                elementRef = el as HTMLElement
+                elementRef.current = el as HTMLElement
                 // Simulate ref attachment
                 Object.defineProperty(ref, 'current', {
                   value: el,
@@ -74,7 +110,7 @@ describe('useCore - Suspension Logic', () => {
       render(<TestComponent />)
 
       await waitFor(() => {
-        expect(elementRef).not.toBeNull()
+        expect(elementRef.current).not.toBeNull()
       })
 
       // Dispatch a suspend event
@@ -82,11 +118,11 @@ describe('useCore - Suspension Logic', () => {
       const suspendEvent = new CustomEvent('suspend', { detail: promise })
 
       let eventFired = false
-      elementRef?.addEventListener('suspend', () => {
+      elementRef.current?.addEventListener('suspend', () => {
         eventFired = true
       })
 
-      elementRef?.dispatchEvent(suspendEvent)
+      elementRef.current?.dispatchEvent(suspendEvent)
 
       expect(eventFired).toBe(true)
     })
@@ -103,7 +139,7 @@ describe('useCore - Suspension Logic', () => {
         customElements.define('test-suspend-detail', TestElement)
       }
 
-      let capturedPromise: Promise<unknown> | null = null
+      const capturedPromise = { current: null as Promise<unknown> | null }
 
       function TestComponent() {
         const { ref } = useCore({ suspendable: false })
@@ -121,7 +157,7 @@ describe('useCore - Suspension Logic', () => {
                 // Add listener to capture promise
                 el.addEventListener('suspend', (event: Event) => {
                   const customEvent = event as CustomEvent<Promise<unknown>>
-                  capturedPromise = customEvent.detail
+                  capturedPromise.current = customEvent.detail
                 })
 
                 // Dispatch event after setup
@@ -140,10 +176,10 @@ describe('useCore - Suspension Logic', () => {
       render(<TestComponent />)
 
       await waitFor(() => {
-        expect(capturedPromise).not.toBeNull()
+        expect(capturedPromise.current).not.toBeNull()
       })
 
-      expect(capturedPromise).toBeInstanceOf(Promise)
+      expect(capturedPromise.current).toBeInstanceOf(Promise)
     })
   })
 
@@ -246,9 +282,9 @@ describe('useCore - Suspension Logic', () => {
         customElements.define('test-resume', TestElement)
       }
 
-      let resolvePromise: (() => void) | null = null
+      const resolvePromise = { current: null as (() => void) | null }
       const suspendPromise = new Promise<void>((resolve) => {
-        resolvePromise = resolve
+        resolvePromise.current = resolve
       })
 
       function TestComponent() {
@@ -274,7 +310,7 @@ describe('useCore - Suspension Logic', () => {
       render(<TestComponent />)
 
       // Resolve the promise
-      resolvePromise?.()
+      resolvePromise.current?.()
       await suspendPromise
 
       // Component should be rendered
@@ -408,7 +444,7 @@ describe('useCore - Suspension Logic', () => {
         customElements.define('test-change-event', TestElement)
       }
 
-      let receivedSkin: string | null = null
+      const receivedSkin = { current: null as string | null }
 
       function TestComponent() {
         const { ref } = useCore({ suspendable: false })
@@ -425,7 +461,7 @@ describe('useCore - Suspension Logic', () => {
 
                 el.addEventListener('change', (event: Event) => {
                   const customEvent = event as CustomEvent<{ skin: string }>
-                  receivedSkin = customEvent.detail.skin
+                  receivedSkin.current = customEvent.detail.skin
                 })
               }
             }}
@@ -440,7 +476,7 @@ describe('useCore - Suspension Logic', () => {
       )
 
       await waitFor(() => {
-        expect(receivedSkin).toBe('dark')
+        expect(receivedSkin.current).toBe('dark')
       })
     })
 
@@ -524,7 +560,7 @@ describe('useCore - Suspension Logic', () => {
       }
 
       const removeEventListenerSpy = vi.fn()
-      let elementRef: HTMLElement | null = null
+      const elementRef = { current: null as HTMLElement | null }
 
       function TestComponent() {
         const { ref } = useCore({ suspendable: false })
@@ -533,7 +569,7 @@ describe('useCore - Suspension Logic', () => {
           <test-cleanup
             ref={(el) => {
               if (el) {
-                elementRef = el as HTMLElement
+                elementRef.current = el as HTMLElement
                 Object.defineProperty(ref, 'current', {
                   value: el,
                   writable: true,
@@ -542,7 +578,9 @@ describe('useCore - Suspension Logic', () => {
 
                 // Spy on removeEventListener
                 const original = el.removeEventListener.bind(el)
-                el.removeEventListener = (...args: Parameters<typeof original>) => {
+                el.removeEventListener = (
+                  ...args: Parameters<typeof original>
+                ) => {
                   removeEventListenerSpy(...args)
                   return original(...args)
                 }
@@ -555,7 +593,7 @@ describe('useCore - Suspension Logic', () => {
       const { unmount } = render(<TestComponent />)
 
       await waitFor(() => {
-        expect(elementRef).not.toBeNull()
+        expect(elementRef.current).not.toBeNull()
       })
 
       // Unmount component

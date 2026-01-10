@@ -1,4 +1,9 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
+/* eslint-disable react-hooks/immutability */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/require-await */
+/* eslint-disable react-hooks/purity */
+import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { render, waitFor } from '@testing-library/react'
 import { useCore } from '../index'
 import '../../__tests__/setup'
@@ -10,22 +15,65 @@ import '../../__tests__/setup'
 
 // Declare custom element types for JSX
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace JSX {
     interface IntrinsicElements {
-      'test-shadow-attach': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
-      'test-shadow-mode': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
-      'test-container-update': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
-      'test-shadow-ref': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
-      'test-shadow-query': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
-      'test-shadow-styles': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
-      'test-cleanup-listeners': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
-      'test-remove-suspend': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
-      'test-no-leak': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
-      'test-transition': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
-      'test-non-blocking': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
-      'test-multi-1': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
-      'test-multi-2': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
-      'test-independent-events': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
+      'test-shadow-attach': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      >
+      'test-shadow-mode': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      >
+      'test-container-update': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      >
+      'test-shadow-ref': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      >
+      'test-shadow-query': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      >
+      'test-shadow-styles': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      >
+      'test-cleanup-listeners': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      >
+      'test-remove-suspend': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      >
+      'test-no-leak': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      >
+      'test-transition': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      >
+      'test-non-blocking': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      >
+      'test-multi-1': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      >
+      'test-multi-2': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      >
+      'test-independent-events': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      >
     }
   }
 }
@@ -51,7 +99,7 @@ describe('useCore - Shadow DOM Lifecycle', () => {
         customElements.define('test-shadow-attach', TestElement)
       }
 
-      let shadowRootExists = false
+      const shadowRootExists = { value: false }
 
       function TestComponent() {
         const { ref } = useCore({ suspendable: false })
@@ -66,7 +114,7 @@ describe('useCore - Shadow DOM Lifecycle', () => {
                   configurable: true,
                 })
 
-                shadowRootExists = !!(el as HTMLElement).shadowRoot
+                shadowRootExists.value = !!(el as HTMLElement).shadowRoot
               }
             }}
           />
@@ -76,7 +124,7 @@ describe('useCore - Shadow DOM Lifecycle', () => {
       render(<TestComponent />)
 
       await waitFor(() => {
-        expect(shadowRootExists).toBe(true)
+        expect(shadowRootExists.value).toBe(true)
       })
     })
 
@@ -92,7 +140,7 @@ describe('useCore - Shadow DOM Lifecycle', () => {
         customElements.define('test-shadow-mode', TestElement)
       }
 
-      let shadowRoot: ShadowRoot | null = null
+      const shadowRoot = { current: null as ShadowRoot | null }
 
       function TestComponent() {
         const { ref } = useCore({ suspendable: false })
@@ -107,7 +155,7 @@ describe('useCore - Shadow DOM Lifecycle', () => {
                   configurable: true,
                 })
 
-                shadowRoot = (el as HTMLElement).shadowRoot
+                shadowRoot.current = (el as HTMLElement).shadowRoot
               }
             }}
           />
@@ -117,10 +165,10 @@ describe('useCore - Shadow DOM Lifecycle', () => {
       render(<TestComponent />)
 
       await waitFor(() => {
-        expect(shadowRoot).not.toBeNull()
+        expect(shadowRoot.current).not.toBeNull()
       })
 
-      expect(shadowRoot?.mode).toBe('open')
+      expect(shadowRoot.current?.mode).toBe('open')
     })
 
     it('updates container to shadow root after mount', async () => {
@@ -135,14 +183,18 @@ describe('useCore - Shadow DOM Lifecycle', () => {
         customElements.define('test-container-update', TestElement)
       }
 
-      let initialContainer: DocumentFragment | ShadowRoot | null = null
-      let updatedContainer: DocumentFragment | ShadowRoot | null = null
+      const initialContainer = {
+        current: null as DocumentFragment | ShadowRoot | null,
+      }
+      const updatedContainer = {
+        current: null as DocumentFragment | ShadowRoot | null,
+      }
 
       function TestComponent() {
         const { container, ref } = useCore({ suspendable: false })
 
-        if (!initialContainer) {
-          initialContainer = container
+        if (!initialContainer.current) {
+          initialContainer.current = container
         }
 
         return (
@@ -157,7 +209,7 @@ describe('useCore - Shadow DOM Lifecycle', () => {
 
                 // Give time for useLayoutEffect to run
                 setTimeout(() => {
-                  updatedContainer = container
+                  updatedContainer.current = container
                 }, 50)
               }
             }}
@@ -168,12 +220,12 @@ describe('useCore - Shadow DOM Lifecycle', () => {
       render(<TestComponent />)
 
       await waitFor(() => {
-        expect(updatedContainer).not.toBeNull()
+        expect(updatedContainer.current).not.toBeNull()
       })
 
-      expect(initialContainer).toBeInstanceOf(DocumentFragment)
+      expect(initialContainer.current).toBeInstanceOf(DocumentFragment)
       await waitFor(() => {
-        expect(updatedContainer).toBeInstanceOf(ShadowRoot)
+        expect(updatedContainer.current).toBeInstanceOf(ShadowRoot)
       })
     })
   })
@@ -191,7 +243,7 @@ describe('useCore - Shadow DOM Lifecycle', () => {
         customElements.define('test-shadow-ref', TestElement)
       }
 
-      let refShadowRoot: ShadowRoot | null = null
+      const refShadowRoot = { current: null as ShadowRoot | null }
 
       function TestComponent() {
         const { ref } = useCore({ suspendable: false })
@@ -206,7 +258,7 @@ describe('useCore - Shadow DOM Lifecycle', () => {
                   configurable: true,
                 })
 
-                refShadowRoot = (el as HTMLElement).shadowRoot
+                refShadowRoot.current = (el as HTMLElement).shadowRoot
               }
             }}
           />
@@ -216,10 +268,10 @@ describe('useCore - Shadow DOM Lifecycle', () => {
       render(<TestComponent />)
 
       await waitFor(() => {
-        expect(refShadowRoot).not.toBeNull()
+        expect(refShadowRoot.current).not.toBeNull()
       })
 
-      expect(refShadowRoot).toBeInstanceOf(ShadowRoot)
+      expect(refShadowRoot.current).toBeInstanceOf(ShadowRoot)
     })
 
     it('shadow root can be queried', async () => {
@@ -235,7 +287,7 @@ describe('useCore - Shadow DOM Lifecycle', () => {
         customElements.define('test-shadow-query', TestElement)
       }
 
-      let queryResult: Element | null = null
+      const queryResult = { current: null as Element | null }
 
       function TestComponent() {
         const { ref } = useCore({ suspendable: false })
@@ -252,7 +304,7 @@ describe('useCore - Shadow DOM Lifecycle', () => {
 
                 const shadowRoot = (el as HTMLElement).shadowRoot
                 if (shadowRoot) {
-                  queryResult = shadowRoot.querySelector('.test')
+                  queryResult.current = shadowRoot.querySelector('.test')
                 }
               }
             }}
@@ -263,10 +315,10 @@ describe('useCore - Shadow DOM Lifecycle', () => {
       render(<TestComponent />)
 
       await waitFor(() => {
-        expect(queryResult).not.toBeNull()
+        expect(queryResult.current).not.toBeNull()
       })
 
-      expect(queryResult?.textContent).toBe('Content')
+      expect(queryResult.current?.textContent).toBe('Content')
     })
 
     it('shadow root supports adoptedStyleSheets', async () => {
@@ -281,7 +333,7 @@ describe('useCore - Shadow DOM Lifecycle', () => {
         customElements.define('test-shadow-styles', TestElement)
       }
 
-      let hasAdoptedStyleSheets = false
+      const hasAdoptedStyleSheets = { value: false }
 
       function TestComponent() {
         const { ref } = useCore({ suspendable: false })
@@ -297,7 +349,8 @@ describe('useCore - Shadow DOM Lifecycle', () => {
                 })
 
                 const shadowRoot = (el as HTMLElement).shadowRoot
-                hasAdoptedStyleSheets = 'adoptedStyleSheets' in (shadowRoot || {})
+                hasAdoptedStyleSheets.value =
+                  'adoptedStyleSheets' in (shadowRoot || {})
               }
             }}
           />
@@ -307,7 +360,7 @@ describe('useCore - Shadow DOM Lifecycle', () => {
       render(<TestComponent />)
 
       await waitFor(() => {
-        expect(hasAdoptedStyleSheets).toBe(true)
+        expect(hasAdoptedStyleSheets.value).toBe(true)
       })
     })
   })
@@ -326,7 +379,7 @@ describe('useCore - Shadow DOM Lifecycle', () => {
       }
 
       const removeEventListenerCalls: string[] = []
-      let elementRef: HTMLElement | null = null
+      const elementRef = { current: null as HTMLElement | null }
 
       function TestComponent() {
         const { ref } = useCore({ suspendable: false })
@@ -335,7 +388,7 @@ describe('useCore - Shadow DOM Lifecycle', () => {
           <test-cleanup-listeners
             ref={(el) => {
               if (el) {
-                elementRef = el as HTMLElement
+                elementRef.current = el as HTMLElement
                 Object.defineProperty(ref, 'current', {
                   value: el,
                   writable: true,
@@ -343,7 +396,11 @@ describe('useCore - Shadow DOM Lifecycle', () => {
                 })
 
                 // Spy on removeEventListener
-                const originalRemove = el.removeEventListener.bind(el)
+                const originalRemove = el.removeEventListener.bind(el) as (
+                  type: string,
+                  listener: EventListenerOrEventListenerObject | null,
+                  options?: boolean | EventListenerOptions
+                ) => void
                 el.removeEventListener = (
                   type: string,
                   listener: EventListenerOrEventListenerObject | null,
@@ -361,7 +418,7 @@ describe('useCore - Shadow DOM Lifecycle', () => {
       const { unmount } = render(<TestComponent />)
 
       await waitFor(() => {
-        expect(elementRef).not.toBeNull()
+        expect(elementRef.current).not.toBeNull()
       })
 
       unmount()
@@ -383,7 +440,7 @@ describe('useCore - Shadow DOM Lifecycle', () => {
         customElements.define('test-remove-suspend', TestElement)
       }
 
-      let suspendListenerRemoved = false
+      const suspendListenerRemoved = { value: false }
 
       function TestComponent() {
         const { ref } = useCore({ suspendable: false })
@@ -398,14 +455,18 @@ describe('useCore - Shadow DOM Lifecycle', () => {
                   configurable: true,
                 })
 
-                const originalRemove = el.removeEventListener.bind(el)
+                const originalRemove = el.removeEventListener.bind(el) as (
+                  type: string,
+                  listener: EventListenerOrEventListenerObject | null,
+                  options?: boolean | EventListenerOptions
+                ) => void
                 el.removeEventListener = (
                   type: string,
                   listener: EventListenerOrEventListenerObject | null,
                   options?: boolean | EventListenerOptions
                 ) => {
                   if (type === 'suspend') {
-                    suspendListenerRemoved = true
+                    suspendListenerRemoved.value = true
                   }
                   return originalRemove(type, listener, options)
                 }
@@ -424,7 +485,7 @@ describe('useCore - Shadow DOM Lifecycle', () => {
       unmount()
 
       await waitFor(() => {
-        expect(suspendListenerRemoved).toBe(true)
+        expect(suspendListenerRemoved.value).toBe(true)
       })
     })
 
@@ -489,7 +550,7 @@ describe('useCore - Shadow DOM Lifecycle', () => {
         customElements.define('test-transition', TestElement)
       }
 
-      let containerUpdated = false
+      const containerUpdated = { value: false }
 
       function TestComponent() {
         const { container, ref } = useCore({ suspendable: false })
@@ -507,7 +568,7 @@ describe('useCore - Shadow DOM Lifecycle', () => {
                 // Check if container becomes ShadowRoot
                 setTimeout(() => {
                   if (container instanceof ShadowRoot) {
-                    containerUpdated = true
+                    containerUpdated.value = true
                   }
                 }, 100)
               }
@@ -520,7 +581,7 @@ describe('useCore - Shadow DOM Lifecycle', () => {
 
       await waitFor(
         () => {
-          expect(containerUpdated).toBe(true)
+          expect(containerUpdated.value).toBe(true)
         },
         { timeout: 500 }
       )

@@ -1,10 +1,6 @@
+/* eslint-disable @typescript-eslint/no-deprecated */
 import { describe, it, expectTypeOf } from 'vitest'
-import type {
-  StyledConfig,
-  SkinLoader,
-  Skins,
-  ProviderProps,
-} from '../index'
+import type { StyledConfig, SkinLoader, Skins, ProviderProps } from '../index'
 
 describe('Core Types', () => {
   describe('SkinLoader', () => {

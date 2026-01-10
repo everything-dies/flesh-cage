@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/immutability */
 import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { render, waitFor } from '@testing-library/react'
 import { useCore } from '../index'
@@ -15,25 +16,77 @@ import '../../__tests__/setup'
 
 // Declare custom element types for JSX
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace JSX {
     interface IntrinsicElements {
-      'test-return-values': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
-      'test-stable-ref': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
-      'test-initial-container': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
-      'test-container-not-null': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
-      'test-ref-rerender': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
-      'test-ref-stability': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
-      'test-multi-ref-1': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
-      'test-multi-ref-2': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
-      'test-container-start': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
-      'test-portal-target': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
-      'test-with-context': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
-      'test-no-context': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
-      'test-context-change': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
-      'test-suspendable-false': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
-      'test-suspendable-true': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
-      'test-no-suspend-false': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
-      'test-no-suspend-true': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
+      'test-return-values': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      >
+      'test-stable-ref': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      >
+      'test-initial-container': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      >
+      'test-container-not-null': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      >
+      'test-ref-rerender': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      >
+      'test-ref-stability': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      >
+      'test-multi-ref-1': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      >
+      'test-multi-ref-2': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      >
+      'test-container-start': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      >
+      'test-portal-target': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      >
+      'test-with-context': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      >
+      'test-no-context': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      >
+      'test-context-change': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      >
+      'test-suspendable-false': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      >
+      'test-suspendable-true': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      >
+      'test-no-suspend-false': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      >
+      'test-no-suspend-true': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      >
     }
   }
 }
@@ -60,20 +113,25 @@ describe('useCore - Basic Behavior', () => {
         customElements.define('test-return-values', TestElement)
       }
 
-      let hookResult: { ref: RefObject<HTMLElement>; container: DocumentFragment | ShadowRoot } | null = null
+      const hookResult = {
+        current: null as {
+          ref: RefObject<HTMLElement>
+          container: DocumentFragment | ShadowRoot
+        } | null,
+      }
 
       function TestComponent() {
         const result = useCore({ suspendable: false })
-        hookResult = result
+        hookResult.current = result
 
         return <test-return-values ref={result.ref} />
       }
 
       render(<TestComponent />)
 
-      expect(hookResult).not.toBeNull()
-      expect(hookResult).toHaveProperty('ref')
-      expect(hookResult).toHaveProperty('container')
+      expect(hookResult.current).not.toBeNull()
+      expect(hookResult.current).toHaveProperty('ref')
+      expect(hookResult.current).toHaveProperty('container')
     })
 
     it('returns a stable ref object', () => {
@@ -88,13 +146,13 @@ describe('useCore - Basic Behavior', () => {
         customElements.define('test-stable-ref', TestElement)
       }
 
-      let firstRef: RefObject<HTMLElement> | null = null
+      const firstRef = { current: null as RefObject<HTMLElement> | null }
 
       function TestComponent() {
         const { ref } = useCore({ suspendable: false })
 
-        if (!firstRef) {
-          firstRef = ref
+        if (!firstRef.current) {
+          firstRef.current = ref
         }
 
         return <test-stable-ref ref={ref} />
@@ -102,8 +160,8 @@ describe('useCore - Basic Behavior', () => {
 
       render(<TestComponent />)
 
-      expect(firstRef).toBeDefined()
-      expect(firstRef!.current).not.toBeNull() // Attached to element
+      expect(firstRef.current).toBeDefined()
+      expect(firstRef.current?.current).not.toBeNull() // Attached to element
     })
 
     it('returns a container that is initially a DocumentFragment', () => {
@@ -118,13 +176,15 @@ describe('useCore - Basic Behavior', () => {
         customElements.define('test-initial-container', TestElement)
       }
 
-      let initialContainer: DocumentFragment | ShadowRoot | null = null
+      const initialContainer = {
+        current: null as DocumentFragment | ShadowRoot | null,
+      }
 
       function TestComponent() {
         const { container, ref } = useCore({ suspendable: false })
 
-        if (!initialContainer) {
-          initialContainer = container
+        if (!initialContainer.current) {
+          initialContainer.current = container
         }
 
         return <test-initial-container ref={ref} />
@@ -132,7 +192,7 @@ describe('useCore - Basic Behavior', () => {
 
       render(<TestComponent />)
 
-      expect(initialContainer).toBeInstanceOf(DocumentFragment)
+      expect(initialContainer.current).toBeInstanceOf(DocumentFragment)
     })
 
     it('container is not null (safe for portals)', () => {
@@ -147,18 +207,20 @@ describe('useCore - Basic Behavior', () => {
         customElements.define('test-container-not-null', TestElement)
       }
 
-      let containerValue: DocumentFragment | ShadowRoot | null = null
+      const containerValue = {
+        current: null as DocumentFragment | ShadowRoot | null,
+      }
 
       function TestComponent() {
         const { container, ref } = useCore({ suspendable: false })
-        containerValue = container
+        containerValue.current = container
 
         return <test-container-not-null ref={ref} />
       }
 
       render(<TestComponent />)
 
-      expect(containerValue).not.toBeNull()
+      expect(containerValue.current).not.toBeNull()
     })
   })
 
@@ -175,20 +237,20 @@ describe('useCore - Basic Behavior', () => {
         customElements.define('test-ref-rerender', TestElement)
       }
 
-      let initialRef: RefObject<HTMLElement> | null = null
-      let rerenderRef: RefObject<HTMLElement> | null = null
-      let renderCount = 0
+      const initialRef = { current: null as RefObject<HTMLElement> | null }
+      const rerenderRef = { current: null as RefObject<HTMLElement> | null }
+      const renderCount = { value: 0 }
 
       function TestComponent({ trigger: _trigger }: { trigger: number }) {
         const { ref } = useCore({ suspendable: false })
 
-        if (renderCount === 0) {
-          initialRef = ref
-        } else if (renderCount === 1) {
-          rerenderRef = ref
+        if (renderCount.value === 0) {
+          initialRef.current = ref
+        } else if (renderCount.value === 1) {
+          rerenderRef.current = ref
         }
 
-        renderCount++
+        renderCount.value++
 
         return <test-ref-rerender ref={ref} />
       }
@@ -197,7 +259,7 @@ describe('useCore - Basic Behavior', () => {
 
       rerender(<TestComponent trigger={1} />)
 
-      expect(initialRef).toBe(rerenderRef) // Same object reference
+      expect(initialRef.current).toBe(rerenderRef.current) // Same object reference
     })
 
     it('ref object is stable even when container updates', async () => {
@@ -212,17 +274,21 @@ describe('useCore - Basic Behavior', () => {
         customElements.define('test-ref-stability', TestElement)
       }
 
-      let initialRef: React.RefObject<HTMLElement> | null = null
-      let updatedContainer: DocumentFragment | ShadowRoot | null = null
+      const initialRef = {
+        current: null as React.RefObject<HTMLElement> | null,
+      }
+      const updatedContainer = {
+        current: null as DocumentFragment | ShadowRoot | null,
+      }
 
       function TestComponent() {
         const { container, ref } = useCore({ suspendable: false })
 
-        if (!initialRef) {
-          initialRef = ref
+        if (!initialRef.current) {
+          initialRef.current = ref
         }
 
-        updatedContainer = container
+        updatedContainer.current = container
 
         return <test-ref-stability ref={ref} />
       }
@@ -231,11 +297,11 @@ describe('useCore - Basic Behavior', () => {
 
       // Wait for container to update to ShadowRoot
       await waitFor(() => {
-        expect(updatedContainer).toBeInstanceOf(ShadowRoot)
+        expect(updatedContainer.current).toBeInstanceOf(ShadowRoot)
       })
 
       // Ref object should still be the same
-      expect(initialRef!.current).not.toBeNull()
+      expect(initialRef.current?.current).not.toBeNull()
     })
 
     it('multiple hook calls create separate refs', () => {
@@ -260,18 +326,18 @@ describe('useCore - Basic Behavior', () => {
         customElements.define('test-multi-ref-2', TestElement2)
       }
 
-      let ref1: RefObject<HTMLElement> | null = null
-      let ref2: RefObject<HTMLElement> | null = null
+      const ref1 = { current: null as RefObject<HTMLElement> | null }
+      const ref2 = { current: null as RefObject<HTMLElement> | null }
 
       function Component1() {
         const { ref } = useCore({ suspendable: false })
-        ref1 = ref
+        ref1.current = ref
         return <test-multi-ref-1 ref={ref} />
       }
 
       function Component2() {
         const { ref } = useCore({ suspendable: false })
-        ref2 = ref
+        ref2.current = ref
         return <test-multi-ref-2 ref={ref} />
       }
 
@@ -282,7 +348,7 @@ describe('useCore - Basic Behavior', () => {
         </>
       )
 
-      expect(ref1).not.toBe(ref2)
+      expect(ref1.current).not.toBe(ref2.current)
     })
   })
 
@@ -299,13 +365,15 @@ describe('useCore - Basic Behavior', () => {
         customElements.define('test-container-start', TestElement)
       }
 
-      let containerValue: DocumentFragment | ShadowRoot | null = null
+      const containerValue = {
+        current: null as DocumentFragment | ShadowRoot | null,
+      }
 
       function TestComponent() {
         const { container, ref } = useCore({ suspendable: false })
 
-        if (!containerValue) {
-          containerValue = container
+        if (!containerValue.current) {
+          containerValue.current = container
         }
 
         return <test-container-start ref={ref} />
@@ -313,7 +381,7 @@ describe('useCore - Basic Behavior', () => {
 
       render(<TestComponent />)
 
-      expect(containerValue).toBeInstanceOf(DocumentFragment)
+      expect(containerValue.current).toBeInstanceOf(DocumentFragment)
     })
 
     it('container can be used as portal target immediately', () => {
@@ -328,11 +396,13 @@ describe('useCore - Basic Behavior', () => {
         customElements.define('test-portal-target', TestElement)
       }
 
-      let containerValue: DocumentFragment | ShadowRoot | null = null
+      const containerValue = {
+        current: null as DocumentFragment | ShadowRoot | null,
+      }
 
       function TestComponent() {
         const { container, ref } = useCore({ suspendable: false })
-        containerValue = container
+        containerValue.current = container
 
         return <test-portal-target ref={ref} />
       }
@@ -340,8 +410,8 @@ describe('useCore - Basic Behavior', () => {
       render(<TestComponent />)
 
       // DocumentFragment should be a valid Node
-      expect(containerValue).toBeInstanceOf(Node)
-      expect(containerValue!.nodeType).toBeDefined()
+      expect(containerValue.current).toBeInstanceOf(Node)
+      expect(containerValue.current?.nodeType).toBeDefined()
     })
   })
 
@@ -358,11 +428,11 @@ describe('useCore - Basic Behavior', () => {
         customElements.define('test-with-context', TestElement)
       }
 
-      let hookWorked = false
+      const hookWorked = { value: false }
 
       function TestComponent() {
         const { ref } = useCore({ suspendable: false })
-        hookWorked = true
+        hookWorked.value = true
 
         return <test-with-context ref={ref} />
       }
@@ -374,7 +444,7 @@ describe('useCore - Basic Behavior', () => {
       )
 
       // Hook should work normally with Context
-      expect(hookWorked).toBe(true)
+      expect(hookWorked.value).toBe(true)
     })
 
     it('works without Context Provider', () => {
@@ -389,11 +459,11 @@ describe('useCore - Basic Behavior', () => {
         customElements.define('test-no-context', TestElement)
       }
 
-      let hookWorked = false
+      const hookWorked = { value: false }
 
       function TestComponent() {
         const { ref } = useCore({ suspendable: false })
-        hookWorked = true
+        hookWorked.value = true
 
         return <test-no-context ref={ref} />
       }
@@ -401,7 +471,7 @@ describe('useCore - Basic Behavior', () => {
       render(<TestComponent />)
 
       // Hook should work even without Provider
-      expect(hookWorked).toBe(true)
+      expect(hookWorked.value).toBe(true)
     })
 
     it('handles Context value changes', () => {
@@ -416,20 +486,24 @@ describe('useCore - Basic Behavior', () => {
         customElements.define('test-context-change', TestElement)
       }
 
-      let initialRef: React.RefObject<HTMLElement> | null = null
-      let updatedRef: React.RefObject<HTMLElement> | null = null
-      let renderCount = 0
+      const initialRef = {
+        current: null as React.RefObject<HTMLElement> | null,
+      }
+      const updatedRef = {
+        current: null as React.RefObject<HTMLElement> | null,
+      }
+      const renderCount = { value: 0 }
 
       function TestComponent() {
         const { ref } = useCore({ suspendable: false })
 
-        if (renderCount === 0) {
-          initialRef = ref
+        if (renderCount.value === 0) {
+          initialRef.current = ref
         } else {
-          updatedRef = ref
+          updatedRef.current = ref
         }
 
-        renderCount++
+        renderCount.value++
 
         return <test-context-change ref={ref} />
       }
@@ -448,7 +522,7 @@ describe('useCore - Basic Behavior', () => {
       )
 
       // Ref should remain stable
-      expect(initialRef).toBe(updatedRef)
+      expect(initialRef.current).toBe(updatedRef.current)
     })
   })
 
@@ -465,18 +539,18 @@ describe('useCore - Basic Behavior', () => {
         customElements.define('test-suspendable-false', TestElement)
       }
 
-      let hookWorked = false
+      const hookWorked = { value: false }
 
       function TestComponent() {
         const { ref } = useCore({ suspendable: false })
-        hookWorked = true
+        hookWorked.value = true
 
         return <test-suspendable-false ref={ref} />
       }
 
       render(<TestComponent />)
 
-      expect(hookWorked).toBe(true)
+      expect(hookWorked.value).toBe(true)
     })
 
     it('accepts suspendable: true', () => {
@@ -491,18 +565,18 @@ describe('useCore - Basic Behavior', () => {
         customElements.define('test-suspendable-true', TestElement)
       }
 
-      let hookWorked = false
+      const hookWorked = { value: false }
 
       function TestComponent() {
         const { ref } = useCore({ suspendable: true })
-        hookWorked = true
+        hookWorked.value = true
 
         return <test-suspendable-true ref={ref} />
       }
 
       render(<TestComponent />)
 
-      expect(hookWorked).toBe(true)
+      expect(hookWorked.value).toBe(true)
     })
 
     it('does not suspend when suspendable is false', () => {

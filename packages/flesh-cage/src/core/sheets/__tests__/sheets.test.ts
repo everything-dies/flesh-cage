@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/require-await */
+/* eslint-disable @typescript-eslint/no-floating-promises */
 import { describe, it, expect, vi } from 'vitest'
 import { Sheets } from '../index'
 import { createMockSkin } from '../../__tests__/utils'
@@ -84,7 +86,7 @@ describe('Sheets', () => {
       const sheets = new Sheets({
         skins: {
           'skin-with-dashes': createMockSkin(''),
-          'skin_with_underscores': createMockSkin(''),
+          skin_with_underscores: createMockSkin(''),
           'skin.with.dots': createMockSkin(''),
         },
       })

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { describe, it, expect, vi } from 'vitest'
 import { render, act, waitFor } from '@testing-library/react'
 import { styled } from '../index'

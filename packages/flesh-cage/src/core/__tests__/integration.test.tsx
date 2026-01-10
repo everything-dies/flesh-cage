@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/require-await */
+/* eslint-disable @typescript-eslint/await-thenable */
 import { describe, it, expect } from 'vitest'
 import { render, act, waitFor } from '@testing-library/react'
 import { useState, Suspense } from 'react'
@@ -29,7 +31,8 @@ import {
  */
 
 let integrationTestCounter = 0
-const uniqueIntegrationName = () => `integration-test-${String(integrationTestCounter++)}`
+const uniqueIntegrationName = () =>
+  `integration-test-${String(integrationTestCounter++)}`
 
 describe('Core Integration - Full Stack', () => {
   it('complete flow: Provider → Context → useCore → styled → Shadow DOM → rendering', async () => {
@@ -58,9 +61,9 @@ describe('Core Integration - Full Stack', () => {
     expect(element).toBeInTheDocument()
 
     // 4. Verify Shadow DOM is attached (use-core module)
-    const shadowRoot = (element as HTMLElement)?.shadowRoot
+    const shadowRoot = (element as HTMLElement).shadowRoot
     expect(shadowRoot).toBeTruthy()
-    expect(shadowRoot?.mode).toBe('open')
+    expect(shadowRoot.mode).toBe('open')
 
     // 5. Wait for stylesheet loading (sheets module)
     await act(async () => {
@@ -68,13 +71,13 @@ describe('Core Integration - Full Stack', () => {
     })
 
     // 6. Verify styles are adopted into shadow DOM
-    expect(shadowRoot?.adoptedStyleSheets).toHaveLength(1)
+    expect(shadowRoot.adoptedStyleSheets).toHaveLength(1)
     const css = normalizeCSS(getShadowCSS(shadowRoot))
     expect(css).toContain('blue')
     expect(css).toContain('white')
 
     // 7. Verify children are rendered inside shadow DOM (portal)
-    const button = shadowRoot?.querySelector('button')
+    const button = shadowRoot.querySelector('button')
     expect(button).toBeTruthy()
     expect(button?.textContent).toBe('Integration Test')
   })
@@ -115,12 +118,12 @@ describe('Core Integration - Full Stack', () => {
       await waitForStyles(element)
     })
 
-    let css = normalizeCSS(getShadowCSS((element as HTMLElement)?.shadowRoot))
+    let css = normalizeCSS(getShadowCSS((element as HTMLElement).shadowRoot))
     expect(css).toContain('white')
     expect(css).toContain('gray')
 
     // Switch theme
-    await act(async () => {
+    await act(() => {
       getByTestId('switcher').click()
     })
 
@@ -130,7 +133,7 @@ describe('Core Integration - Full Stack', () => {
     })
 
     // Verify theme changed
-    css = normalizeCSS(getShadowCSS((element as HTMLElement)?.shadowRoot))
+    css = normalizeCSS(getShadowCSS((element as HTMLElement).shadowRoot))
     expect(css).toContain('black')
     expect(css).toContain('silver')
   })
@@ -176,11 +179,9 @@ describe('Core Integration - Full Stack', () => {
 
     // Both should have the primary theme styles
     const buttonCSS = normalizeCSS(
-      getShadowCSS((button as HTMLElement)?.shadowRoot)
+      getShadowCSS((button as HTMLElement).shadowRoot)
     )
-    const cardCSS = normalizeCSS(
-      getShadowCSS((card as HTMLElement)?.shadowRoot)
-    )
+    const cardCSS = normalizeCSS(getShadowCSS((card as HTMLElement).shadowRoot))
 
     expect(buttonCSS).toContain('blue')
     expect(cardCSS).toContain('blue')
@@ -254,17 +255,17 @@ describe('Core Integration - Full Stack', () => {
 
     // Verify initial light theme
     expect(
-      normalizeCSS(getShadowCSS((header as HTMLElement)?.shadowRoot))
+      normalizeCSS(getShadowCSS((header as HTMLElement).shadowRoot))
     ).toContain('lightgray')
     expect(
-      normalizeCSS(getShadowCSS((footer as HTMLElement)?.shadowRoot))
+      normalizeCSS(getShadowCSS((footer as HTMLElement).shadowRoot))
     ).toContain('lightblue')
     expect(
-      normalizeCSS(getShadowCSS((sidebar as HTMLElement)?.shadowRoot))
+      normalizeCSS(getShadowCSS((sidebar as HTMLElement).shadowRoot))
     ).toContain('lightyellow')
 
     // Switch to dark theme
-    await act(async () => {
+    await act(() => {
       getByTestId('theme-toggle').click()
     })
 
@@ -275,13 +276,13 @@ describe('Core Integration - Full Stack', () => {
 
     // Verify all components switched to dark theme
     expect(
-      normalizeCSS(getShadowCSS((header as HTMLElement)?.shadowRoot))
+      normalizeCSS(getShadowCSS((header as HTMLElement).shadowRoot))
     ).toContain('darkgray')
     expect(
-      normalizeCSS(getShadowCSS((footer as HTMLElement)?.shadowRoot))
+      normalizeCSS(getShadowCSS((footer as HTMLElement).shadowRoot))
     ).toContain('darkblue')
     expect(
-      normalizeCSS(getShadowCSS((sidebar as HTMLElement)?.shadowRoot))
+      normalizeCSS(getShadowCSS((sidebar as HTMLElement).shadowRoot))
     ).toContain('darkyellow')
   })
 
@@ -317,18 +318,21 @@ describe('Core Integration - Full Stack', () => {
 
     // Wait for styles
     await act(async () => {
-      await Promise.all([waitForStyles(outerButton), waitForStyles(innerButton)])
+      await Promise.all([
+        waitForStyles(outerButton),
+        waitForStyles(innerButton),
+      ])
     })
 
     // Outer should be light
     const outerCSS = normalizeCSS(
-      getShadowCSS((outerButton as HTMLElement)?.shadowRoot)
+      getShadowCSS((outerButton as HTMLElement).shadowRoot)
     )
     expect(outerCSS).toContain('black')
 
     // Inner should be dark (overridden)
     const innerCSS = normalizeCSS(
-      getShadowCSS((innerButton as HTMLElement)?.shadowRoot)
+      getShadowCSS((innerButton as HTMLElement).shadowRoot)
     )
     expect(innerCSS).toContain('white')
   })
@@ -359,7 +363,7 @@ describe('Core Integration - Full Stack', () => {
 
     // Component should eventually render after loading
     await waitFor(
-      async () => {
+      () => {
         const element = findCustomElement(container, tagName)
         expect(element).toBeInTheDocument()
       },
@@ -371,7 +375,7 @@ describe('Core Integration - Full Stack', () => {
       await waitForStyles(element, 5000)
     })
 
-    const css = normalizeCSS(getShadowCSS((element as HTMLElement)?.shadowRoot))
+    const css = normalizeCSS(getShadowCSS((element as HTMLElement).shadowRoot))
     expect(css).toContain('20px')
   })
 
@@ -407,7 +411,7 @@ describe('Core Integration - Full Stack', () => {
 
     // All should have the same stylesheet content
     const cssContents = Array.from(buttons).map((button) =>
-      normalizeCSS(getShadowCSS((button as HTMLElement)?.shadowRoot))
+      normalizeCSS(getShadowCSS((button as HTMLElement).shadowRoot))
     )
 
     // All should contain 'purple'
@@ -476,7 +480,9 @@ describe('Core Integration - Full Stack', () => {
         <Provider skin={skin}>
           <button
             data-testid="switch"
-            onClick={() => setSkin((prev) => (prev === 'slow' ? 'fast' : 'slow'))}
+            onClick={() =>
+              setSkin((prev) => (prev === 'slow' ? 'fast' : 'slow'))
+            }
           >
             Switch
           </button>
@@ -493,7 +499,7 @@ describe('Core Integration - Full Stack', () => {
     })
 
     // Rapidly switch to 'fast' before 'slow' completes
-    await act(async () => {
+    await act(() => {
       getByTestId('switch').click()
     })
 
@@ -510,7 +516,7 @@ describe('Core Integration - Full Stack', () => {
       await waitForStyles(element, 5000)
     })
 
-    const css = normalizeCSS(getShadowCSS((element as HTMLElement)?.shadowRoot))
+    const css = normalizeCSS(getShadowCSS((element as HTMLElement).shadowRoot))
 
     // Should have 'fast' skin (green), not 'slow' skin (red)
     expect(css).toContain('green')

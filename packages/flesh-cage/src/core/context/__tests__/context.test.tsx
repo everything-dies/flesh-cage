@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/immutability */
 import { describe, it, expect } from 'vitest'
 import { render } from '@testing-library/react'
 import { useContext as useGenericContext } from 'react'
@@ -28,16 +29,16 @@ describe('Context', () => {
 
   describe('Default value', () => {
     it('provides undefined by default when no Provider exists', () => {
-      let receivedValue: string | undefined = 'not-set'
+      const receivedValue = { current: 'not-set' as string | undefined }
 
       function Consumer() {
-        receivedValue = useGenericContext(Context)
+        receivedValue.current = useGenericContext(Context)
         return null
       }
 
       render(<Consumer />)
 
-      expect(receivedValue).toBe(undefined)
+      expect(receivedValue.current).toBe(undefined)
     })
 
     it('types the context as string | undefined', () => {
@@ -57,10 +58,10 @@ describe('Context', () => {
 
   describe('Value propagation', () => {
     it('passes string value through Provider to consumer', () => {
-      let receivedValue: string | undefined = 'not-set'
+      const receivedValue = { current: 'not-set' as string | undefined }
 
       function Consumer() {
-        receivedValue = useGenericContext(Context)
+        receivedValue.current = useGenericContext(Context)
         return null
       }
 
@@ -70,7 +71,7 @@ describe('Context', () => {
         </Context.Provider>
       )
 
-      expect(receivedValue).toBe('dark')
+      expect(receivedValue.current).toBe('dark')
     })
 
     it('passes different skin names correctly', () => {
@@ -103,10 +104,10 @@ describe('Context', () => {
     })
 
     it('supports Provider with undefined value', () => {
-      let receivedValue: string | undefined = 'not-set'
+      const receivedValue = { current: 'not-set' as string | undefined }
 
       function Consumer() {
-        receivedValue = useGenericContext(Context)
+        receivedValue.current = useGenericContext(Context)
         return null
       }
 
@@ -116,21 +117,24 @@ describe('Context', () => {
         </Context.Provider>
       )
 
-      expect(receivedValue).toBe(undefined)
+      expect(receivedValue.current).toBe(undefined)
     })
   })
 
   describe('Nested Providers', () => {
     it('inner Provider overrides outer Provider value', () => {
-      const values: Record<string, string | undefined> = {}
+      const values = {
+        outer: undefined as string | undefined,
+        inner: undefined as string | undefined,
+      }
 
       function OuterConsumer() {
-        values['outer'] = useGenericContext(Context)
+        values.outer = useGenericContext(Context)
         return null
       }
 
       function InnerConsumer() {
-        values['inner'] = useGenericContext(Context)
+        values.inner = useGenericContext(Context)
         return null
       }
 
@@ -143,8 +147,8 @@ describe('Context', () => {
         </Context.Provider>
       )
 
-      expect(values['outer']).toBe('light')
-      expect(values['inner']).toBe('dark')
+      expect(values.outer).toBe('light')
+      expect(values.inner).toBe('dark')
     })
 
     it('deeply nested Providers follow closest ancestor', () => {
@@ -152,7 +156,7 @@ describe('Context', () => {
 
       function Consumer({ id }: { id: string }) {
         const value = useGenericContext(Context)
-        values.push(`${id}:${value}`)
+        values.push(`${id}:${value ?? 'undefined'}`)
         return null
       }
 
@@ -182,9 +186,13 @@ describe('Context', () => {
 
   describe('Multiple consumers', () => {
     it('multiple consumers receive same value from same Provider', () => {
-      const values: Array<string | undefined> = []
+      const values = {
+        0: undefined as string | undefined,
+        1: undefined as string | undefined,
+        2: undefined as string | undefined,
+      }
 
-      function Consumer({ id }: { id: number }) {
+      function Consumer({ id }: { id: 0 | 1 | 2 }) {
         const value = useGenericContext(Context)
         values[id] = value
         return null
