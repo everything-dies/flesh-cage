@@ -40,3 +40,10 @@ export { Provider } from './provider'
 
 export { useCore } from './use-core'
 export { useContext } from './use-context'
+
+// ============================================================================
+// Utility Exports
+// ============================================================================
+// Developer experience utilities
+
+export { css } from '../css'
