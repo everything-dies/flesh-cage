@@ -34,8 +34,6 @@ packages/benchmarks/profiling/data/
 .vscode/*
 !.vscode/settings.json
 !.vscode/extensions.json
-.idea
-.codex
 *.swp
 *.swo
 *~
