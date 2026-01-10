@@ -1,5 +1,17 @@
 # Chapter 3: The Cost of a Coat of Paint - Eager vs. Lazy Style Loading
 
+**Navigation**
+
+- [Chapter 1: Project Overview](./01-project-overview.md)
+- [Chapter 2: Theming vs. Skins](./02-skins-vs-themes.md)
+- **Chapter 3: Lazy vs. Eager Loading**
+- [Chapter 4: Runtime vs. Platform](./04-runtime-vs-platform.md)
+- [Chapter 5: Design Systems](./05-design-systems.md)
+- [Chapter 6: Specificity and Scope](./06-specificity-and-scope.md)
+- [Chapter 7: The Semantic Contract](./07-semantic-contract.md)
+
+---
+
 **Table of Contents**
 
 - [The Old Guard: The Monolithic Stylesheet](#the-old-guard-the-monolithic-stylesheet)

@@ -1,5 +1,17 @@
 # Chapter 4: A War of Runtimes - Flesh Cage in the Landscape of Modern Styling
 
+**Navigation**
+
+- [Chapter 1: Project Overview](./01-project-overview.md)
+- [Chapter 2: Theming vs. Skins](./02-skins-vs-themes.md)
+- [Chapter 3: Lazy vs. Eager Loading](./03-lazy-vs-eager-loading.md)
+- **Chapter 4: Runtime vs. Platform**
+- [Chapter 5: Design Systems](./05-design-systems.md)
+- [Chapter 6: Specificity and Scope](./06-specificity-and-scope.md)
+- [Chapter 7: The Semantic Contract](./07-semantic-contract.md)
+
+---
+
 **Table of Contents**
 
 - [The Titans: Runtime CSS-in-JS (Emotion, Styled-Components)](#the-titans-runtime-css-in-js-emotion-styled-components)
