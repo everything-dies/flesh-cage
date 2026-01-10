@@ -1,25 +1,24 @@
 import { describe, it, expect } from 'vitest'
 import { render, act, waitFor } from '@testing-library/react'
 import React from 'react'
-import { styled } from '../styled'
-import { Provider } from '../provider'
+import { styled } from '../index'
+import { Provider } from '../../provider'
 import {
   getShadowCSS,
   normalizeCSS,
   waitForStyles,
   findCustomElement,
   createMockSkin,
-} from './utils'
+} from '../../__tests__/utils'
 
 let uniqueId = 0
 const uniqueName = (prefix: string) => `${prefix}-${String(uniqueId++)}`
 
 /**
- * Basic functionality tests
- * Inspired by styled-components and emotion test patterns,
- * but adapted for Shadow DOM + Custom Elements architecture
+ * CustomElement lifecycle and behavior tests
+ * Tests focused on the CustomElement class that backs styled components
  */
-describe('styled - basic functionality', () => {
+describe('styled - CustomElement class', () => {
   it('creates a custom element with shadow DOM', async () => {
     const Button = styled('button', {
       name: 'test-button-basic',
@@ -125,63 +124,6 @@ describe('styled - basic functionality', () => {
     }
   })
 
-  it.skip('forwards refs to inner component (not custom element)', async () => {
-    // Note: Unlike traditional styled components, flesh-cage forwards refs
-    // to the inner component (inside shadow DOM), not the custom element wrapper.
-    // This gives users direct access to the actual interactive element.
-    const Button = styled('button', {
-      name: 'test-button-ref',
-      skins: {
-        default: createMockSkin('color: purple;'),
-      },
-    })
-
-    const ref = React.createRef<HTMLButtonElement>()
-
-    render(
-      <Provider skin="default">
-        {/* @ts-expect-error - ref forwarding not yet implemented */}
-        <Button ref={ref}>Test</Button>
-      </Provider>
-    )
-
-    await waitFor(() => {
-      expect(ref.current).toBeInstanceOf(HTMLElement)
-      expect(ref.current?.tagName.toLowerCase()).toBe('button')
-      // The button is inside the shadow DOM
-      expect(ref.current?.getRootNode()).toHaveProperty('mode', 'open')
-    })
-  })
-
-  it('applies correct styles based on skin from Provider', async () => {
-    const Button = styled('button', {
-      name: 'test-button-provider',
-      skins: {
-        primary: createMockSkin('color: blue; background: navy;'),
-        secondary: createMockSkin('color: gray; background: silver;'),
-      },
-    })
-
-    const { container } = render(
-      <Provider skin="primary">
-        <Button>Primary</Button>
-      </Provider>
-    )
-
-    const element = findCustomElement(container, 'test-button-provider')
-
-    await act(async () => {
-      await waitForStyles(element)
-    })
-
-    const css = normalizeCSS(getShadowCSS(element?.shadowRoot))
-
-    expect(css).toContain('blue')
-    expect(css).toContain('navy')
-    expect(css).not.toContain('gray')
-    expect(css).not.toContain('silver')
-  })
-
   it('works with different base components', async () => {
     const CustomDiv = (props: React.ComponentProps<'div'>) => (
       <div data-custom="true" {...props} />
@@ -247,76 +189,6 @@ describe('styled - basic functionality', () => {
 
     expect(css1).toContain('red')
     expect(css2).toContain('blue')
-  })
-
-  it('forwards configured attributes to the custom element', async () => {
-    const name = uniqueName('test-attrs')
-    const Button = styled('button', {
-      name,
-      skins: {
-        default: createMockSkin('color: navy;'),
-      },
-      exportparts: 'label, surface',
-      className: 'alpha beta',
-      'data-variant': 'primary',
-      'aria-label': 'Primary action',
-    })
-
-    const { container } = render(
-      <Provider skin="default">
-        <Button>Attrs</Button>
-      </Provider>
-    )
-
-    const element = findCustomElement(container, name)
-
-    await waitFor(() => {
-      expect(element).toBeInTheDocument()
-      expect(element?.getAttribute('exportparts')).toBe('label, surface')
-      expect(element?.getAttribute('class')).toContain('alpha')
-      expect(element?.getAttribute('class')).toContain('beta')
-      expect(element?.getAttribute('data-variant')).toBe('primary')
-      expect(element?.getAttribute('aria-label')).toBe('Primary action')
-    })
-  })
-
-  it('updates styles when skin attribute changes directly', async () => {
-    const name = uniqueName('test-attr-skin')
-    const Button = styled('button', {
-      name,
-      skins: {
-        first: createMockSkin('color: red;'),
-        second: createMockSkin('color: blue;'),
-      },
-    })
-
-    const { container } = render(
-      <Provider skin="first">
-        <Button>Attribute Switch</Button>
-      </Provider>
-    )
-
-    const element = findCustomElement(container, name)
-
-    await waitFor(() => {
-      expect(element).toBeInTheDocument()
-    })
-
-    await act(async () => {
-      await waitForStyles(element, 1000)
-    })
-
-    let css = normalizeCSS(getShadowCSS(element?.shadowRoot))
-    expect(css).toContain('red')
-
-    await act(async () => {
-      element?.setAttribute('skin', 'second')
-      await waitForStyles(element, 1000)
-    })
-
-    css = normalizeCSS(getShadowCSS(element?.shadowRoot))
-    expect(css).toContain('blue')
-    expect(css).not.toContain('red')
   })
 
   it('throws when defining the same custom element name twice', () => {
@@ -410,5 +282,147 @@ describe('styled - basic functionality', () => {
 
     const sheetsAfter = element?.shadowRoot?.adoptedStyleSheets ?? []
     expect(sheetsAfter.length).toBe(0)
+  })
+
+  it('applies correct styles based on skin from Provider', async () => {
+    const Button = styled('button', {
+      name: 'test-button-provider',
+      skins: {
+        primary: createMockSkin('color: blue; background: navy;'),
+        secondary: createMockSkin('color: gray; background: silver;'),
+      },
+    })
+
+    const { container } = render(
+      <Provider skin="primary">
+        <Button>Primary</Button>
+      </Provider>
+    )
+
+    const element = findCustomElement(container, 'test-button-provider')
+
+    await act(async () => {
+      await waitForStyles(element)
+    })
+
+    const css = normalizeCSS(getShadowCSS(element?.shadowRoot))
+
+    expect(css).toContain('blue')
+    expect(css).toContain('navy')
+    expect(css).not.toContain('gray')
+    expect(css).not.toContain('silver')
+  })
+
+  it('handles custom element lifecycle callbacks correctly', async () => {
+    const name = uniqueName('test-lifecycle')
+    const Button = styled('button', {
+      name,
+      skins: {
+        default: createMockSkin('color: green;'),
+      },
+    })
+
+    const { container, unmount } = render(
+      <Provider skin="default">
+        <Button>Lifecycle</Button>
+      </Provider>
+    )
+
+    const element = findCustomElement(container, name)
+
+    await waitFor(() => {
+      expect(element).toBeInTheDocument()
+      expect(element?.shadowRoot).toBeTruthy()
+    })
+
+    // Element should be connected (has event listeners)
+    await act(async () => {
+      await waitForStyles(element)
+    })
+
+    const sheetsConnected = element?.shadowRoot?.adoptedStyleSheets ?? []
+    expect(sheetsConnected.length).toBeGreaterThan(0)
+
+    // Unmount triggers disconnectedCallback
+    act(() => {
+      unmount()
+    })
+
+    // Sheets should be cleared
+    const sheetsDisconnected = element?.shadowRoot?.adoptedStyleSheets ?? []
+    expect(sheetsDisconnected.length).toBe(0)
+  })
+
+  it('observes skin attribute changes via attributeChangedCallback', async () => {
+    const name = uniqueName('test-attr-observed')
+    const Button = styled('button', {
+      name,
+      skins: {
+        red: createMockSkin('color: red;'),
+        blue: createMockSkin('color: blue;'),
+      },
+    })
+
+    const { container } = render(
+      <Provider skin="red">
+        <Button>Observable</Button>
+      </Provider>
+    )
+
+    const element = findCustomElement(container, name)
+
+    await act(async () => {
+      await waitForStyles(element)
+    })
+
+    let css = normalizeCSS(getShadowCSS(element?.shadowRoot))
+    expect(css).toContain('red')
+
+    // Manually change attribute to trigger attributeChangedCallback
+    await act(async () => {
+      element?.setAttribute('skin', 'blue')
+      await waitForStyles(element, 1000)
+    })
+
+    css = normalizeCSS(getShadowCSS(element?.shadowRoot))
+    expect(css).toContain('blue')
+    expect(css).not.toContain('red')
+  })
+
+  it('responds to custom change events', async () => {
+    const name = uniqueName('test-change-event')
+    const Button = styled('button', {
+      name,
+      skins: {
+        first: createMockSkin('background: yellow;'),
+        second: createMockSkin('background: pink;'),
+      },
+    })
+
+    const { container } = render(
+      <Provider skin="first">
+        <Button>Change Event</Button>
+      </Provider>
+    )
+
+    const element = findCustomElement(container, name)
+
+    await act(async () => {
+      await waitForStyles(element)
+    })
+
+    let css = normalizeCSS(getShadowCSS(element?.shadowRoot))
+    expect(css).toContain('yellow')
+
+    // Dispatch custom change event
+    await act(async () => {
+      element?.dispatchEvent(
+        new CustomEvent('change', { detail: { skin: 'second' } })
+      )
+      await new Promise((resolve) => setTimeout(resolve, 100))
+    })
+
+    css = normalizeCSS(getShadowCSS(element?.shadowRoot))
+    expect(css).toContain('pink')
   })
 })

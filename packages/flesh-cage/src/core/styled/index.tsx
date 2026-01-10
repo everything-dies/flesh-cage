@@ -5,9 +5,9 @@ import {
   createElement,
 } from 'react'
 
-import type { StyledConfig } from './types'
-import { Sheets } from './sheets'
-import { useCore } from './use-core'
+import type { StyledConfig } from '../types'
+import { Sheets } from '../sheets'
+import { useCore } from '../use-core'
 
 export const verify = (error: Error) =>
   error instanceof DOMException && error.name === 'AbortError'

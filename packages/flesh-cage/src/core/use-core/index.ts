@@ -1,6 +1,6 @@
 import { startTransition, use, useLayoutEffect, useRef, useState } from 'react'
 
-import { useContext } from './use-context'
+import { useContext } from '../use-context'
 
 export const useCore = ({ suspendable }: { suspendable: boolean }) => {
   const skin = useContext()

@@ -1,14 +1,14 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, act, waitFor } from '@testing-library/react'
 import { Suspense } from 'react'
-import { styled } from '../styled'
-import { Provider } from '../provider'
+import { styled } from '../index'
+import { Provider } from '../../provider'
 import {
   getShadowCSS,
   normalizeCSS,
   waitForStyles,
   findCustomElement,
-} from './utils'
+} from '../../__tests__/utils'
 
 /**
  * Async loading and Suspense tests

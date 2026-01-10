@@ -1,4 +1,4 @@
-import type { Skins } from './types'
+import type { Skins } from '../types'
 
 export class Sheets<Names extends string = string> extends Map<
   Names,
