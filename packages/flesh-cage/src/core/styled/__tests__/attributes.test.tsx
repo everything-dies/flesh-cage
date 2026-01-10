@@ -187,9 +187,7 @@ describe('styled - attribute forwarding', () => {
       expect(element?.getAttribute('class')).toContain('interactive')
       expect(element?.getAttribute('data-testid')).toBe('multi-button')
       expect(element?.getAttribute('data-variant')).toBe('outline')
-      expect(element?.getAttribute('aria-label')).toBe(
-        'Multi-attribute button'
-      )
+      expect(element?.getAttribute('aria-label')).toBe('Multi-attribute button')
       expect(element?.getAttribute('exportparts')).toBe('label')
       expect(element?.getAttribute('role')).toBe('button')
       expect(element?.getAttribute('tabindex')).toBe('0')

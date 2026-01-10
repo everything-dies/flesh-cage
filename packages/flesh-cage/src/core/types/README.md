@@ -119,7 +119,7 @@ export interface StyledConfig<Names extends string = string> extends Partial<
 
 1. **`<Names extends string = string>`**: Generic type parameter that constrains skin names to string literals. The default `string` makes the generic optional.
 
-2. **`extends Partial<HTMLAttributes<HTMLElement>>`**: Inherits all valid HTML attributes (id, className, style, data-*, aria-*, etc.). `Partial` makes all inherited properties optional.
+2. **`extends Partial<HTMLAttributes<HTMLElement>>`**: Inherits all valid HTML attributes (id, className, style, data-_, aria-_, etc.). `Partial` makes all inherited properties optional.
 
 3. **`name: string`**: The custom element tag name (e.g., "my-button"). Required. Must be unique per component.
 
@@ -145,10 +145,11 @@ export type SkinLoader = () => Promise<{ default: string }>
 - **`string` payload:** The CSS content to inject into the shadow DOM
 
 **Example usage:**
+
 ```typescript
 const skins = {
   dark: () => import('./dark.css?inline'),
-  light: () => import('./light.css?inline')
+  light: () => import('./light.css?inline'),
 }
 ```
 
@@ -165,12 +166,14 @@ export type Skins<T extends string = string> = Record<T, SkinLoader>
 - **Type-safe skin access:** TypeScript knows which skin names are valid
 
 **Example with literal types:**
+
 ```typescript
 type MySkins = Skins<'dark' | 'light'>
 // TypeScript knows only 'dark' and 'light' are valid keys
 ```
 
 **Example with generic strings:**
+
 ```typescript
 type AnySkins = Skins
 // Accepts any string key
@@ -212,8 +215,8 @@ const config: StyledConfig = {
   name: 'my-button',
   skins: {
     primary: () => import('./primary.css?inline'),
-    secondary: () => import('./secondary.css?inline')
-  }
+    secondary: () => import('./secondary.css?inline'),
+  },
 }
 
 const Button = styled(config)
@@ -222,20 +225,23 @@ const Button = styled(config)
 ### With Literal Type Safety
 
 ```typescript
-import type { StyledConfig, Skins } from '@everything-dies/flesh-cage/core/types'
+import type {
+  StyledConfig,
+  Skins,
+} from '@everything-dies/flesh-cage/core/types'
 
 type ButtonSkins = 'primary' | 'secondary' | 'danger'
 
 const skins: Skins<ButtonSkins> = {
   primary: () => import('./primary.css?inline'),
   secondary: () => import('./secondary.css?inline'),
-  danger: () => import('./danger.css?inline')
+  danger: () => import('./danger.css?inline'),
   // TypeScript error if you add an unlisted skin
 }
 
 const config: StyledConfig<ButtonSkins> = {
   name: 'my-button',
-  skins
+  skins,
 }
 ```
 
@@ -247,7 +253,7 @@ const config: StyledConfig = {
   skins: { default: () => import('./icon.css?inline') },
   role: 'img',
   'aria-label': 'Icon',
-  'data-testid': 'icon-component'
+  'data-testid': 'icon-component',
 }
 ```
 
@@ -287,9 +293,11 @@ const App = () => {
 ## Related Modules
 
 ### Dependencies (Imports)
+
 - **`react`**: For `HTMLAttributes` and `ReactNode` types
 
 ### Dependents (Imported By)
+
 - **[`../sheets/`](../sheets/README.md)**: Uses `Skins<Names>` in the `Sheets` class constructor
 - **[`../use-core/`](../use-core/README.md)**: Uses `StyledConfig` to validate and load skins
 - **[`../provider/`](../provider/README.md)**: Uses `ProviderProps` for component props
@@ -308,9 +316,14 @@ const App = () => {
 ### How We Test
 
 Type tests use the pattern:
+
 ```typescript
-expectType<StyledConfig>({ /* valid config */ }) // Should compile
-expectType<StyledConfig>({ /* invalid config */ }) // Should error
+expectType<StyledConfig>({
+  /* valid config */
+}) // Should compile
+expectType<StyledConfig>({
+  /* invalid config */
+}) // Should error
 ```
 
 See [`__tests__/types.test.ts`](./__tests__/types.test.ts) for full test suite.
@@ -329,13 +342,17 @@ See [`__tests__/types.test.ts`](./__tests__/types.test.ts) for full test suite.
 // ❌ Invalid - no hyphen
 const config: StyledConfig = {
   name: 'button', // Will cause runtime error
-  skins: { /* ... */ }
+  skins: {
+    /* ... */
+  },
 }
 
 // ✅ Valid
 const config: StyledConfig = {
   name: 'my-button',
-  skins: { /* ... */ }
+  skins: {
+    /* ... */
+  },
 }
 ```
 
@@ -348,8 +365,8 @@ const config: StyledConfig<'dark' | 'light'> = {
   name: 'my-component',
   skins: {
     dark: () => import('./dark.css?inline'),
-    lite: () => import('./light.css?inline') // ❌ Typo: 'lite' instead of 'light'
-  }
+    lite: () => import('./light.css?inline'), // ❌ Typo: 'lite' instead of 'light'
+  },
 }
 ```
 
@@ -360,12 +377,12 @@ const config: StyledConfig<'dark' | 'light'> = {
 ```typescript
 // ❌ Wrong return type
 const skins = {
-  dark: () => import('./dark.css') // Returns { default: CSS Module object }
+  dark: () => import('./dark.css'), // Returns { default: CSS Module object }
 }
 
 // ✅ Correct - use ?inline suffix
 const skins = {
-  dark: () => import('./dark.css?inline') // Returns { default: string }
+  dark: () => import('./dark.css?inline'), // Returns { default: string }
 }
 ```
 

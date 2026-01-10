@@ -104,23 +104,29 @@ graph TD
 The modules are organized in a strict dependency hierarchy to prevent circular dependencies:
 
 **Level 0: Foundation Types**
+
 - [`types/`](./types/README.md) - Pure TypeScript interfaces, no dependencies
 
 **Level 1: Infrastructure**
+
 - [`sheets/`](./sheets/README.md) - CSS lifecycle manager (depends on: `types/`)
 - [`context/`](./context/README.md) - React Context instance (no dependencies)
 
 **Level 2: React Hooks**
+
 - [`use-context/`](./use-context/README.md) - Context consumer hook (depends on: `context/`)
 - [`provider/`](./provider/README.md) - Theme provider component (depends on: `types/`, `context/`)
 
 **Level 3: Core Hook**
+
 - [`use-core/`](./use-core/README.md) - Shadow DOM lifecycle hook (depends on: `use-context/`)
 
 **Level 4: Factory**
+
 - [`styled/`](./styled/README.md) - Main factory function (depends on: `types/`, `sheets/`, `use-core/`)
 
 **Level 5: Public API**
+
 - `index.ts` - Re-exports everything (depends on all modules)
 
 ### Data Flow Diagram
@@ -220,6 +226,7 @@ classDiagram
 **Purpose:** Foundation type definitions for the entire core module.
 
 **Key types:**
+
 - `StyledConfig<Names>` - Configuration for styled components
 - `Skins<T>` - Record of skin names to lazy loaders
 - `SkinLoader` - Function signature for async CSS imports
@@ -262,6 +269,7 @@ classDiagram
 **Exports:** `Provider` - React functional component
 
 **Usage:**
+
 ```tsx
 <Provider skin="dark">
   <App />
@@ -281,6 +289,7 @@ classDiagram
 **Exports:** `Sheets` - A `Map` subclass that coordinates stylesheet loading
 
 **Key features:**
+
 - Lazy loading (skins only load when requested)
 - Promise coordination (prevents duplicate loads)
 - Caching (stylesheets persist across components)
@@ -299,6 +308,7 @@ classDiagram
 **Exports:** `useCore(config)` - Hook that returns `{ container, ref }`
 
 **What it does:**
+
 1. Attaches shadow root to custom element
 2. Listens for suspension events (for Suspense support)
 3. Dispatches change events when skin updates
@@ -319,6 +329,7 @@ classDiagram
 **Exports:** `styled(tag, config)` - Factory function
 
 **What it does:**
+
 1. Creates a Custom Element class
 2. Registers the custom element with the browser
 3. Returns a React component that renders the custom element
@@ -342,9 +353,9 @@ Let's trace the complete lifecycle of a styled component from definition to rend
 const Button = styled('button', {
   name: 'my-button',
   skins: {
-    dark: () => import('./dark.css?inline'),    // Not loaded yet
-    light: () => import('./light.css?inline')   // Not loaded yet
-  }
+    dark: () => import('./dark.css?inline'), // Not loaded yet
+    light: () => import('./light.css?inline'), // Not loaded yet
+  },
 })
 ```
 
@@ -408,13 +419,18 @@ function App() {
    - The `<button>` element is created inside the shadow DOM
 
 **Final DOM structure:**
+
 ```html
 <my-button>
   #shadow-root (mode: open)
-    <style>                    ← adoptedStyleSheets rendered as <style>
-      button { color: white; background: black; }
-    </style>
-    <button>Click me</button>  ← Portal target
+  <style>
+    ← adoptedStyleSheets rendered as <style > button {
+      color: white;
+      background: black;
+    }
+  </style>
+  <button>Click me</button> ← Portal target</my-button
+>
 ```
 
 ---
@@ -505,6 +521,7 @@ Traditional CSS-in-JS solutions (styled-components, Emotion) inject styles into 
 ### Key Trade-offs
 
 **Pros:**
+
 - Zero CSS leakage - Shadow DOM is a true boundary
 - Async loading - Skins load on-demand, not eagerly
 - Code splitting - Each skin is a separate chunk
@@ -513,6 +530,7 @@ Traditional CSS-in-JS solutions (styled-components, Emotion) inject styles into 
 - React Suspense support - First-class async support
 
 **Cons:**
+
 - Learning curve - Requires understanding Custom Elements and Shadow DOM
 - Browser support - Requires modern browsers (Shadow DOM, adoptedStyleSheets)
 - Complexity - More moving parts than traditional CSS-in-JS
@@ -522,6 +540,7 @@ Traditional CSS-in-JS solutions (styled-components, Emotion) inject styles into 
 ### When to Use This
 
 **Good fit:**
+
 - Design systems with multiple themes
 - Component libraries with style isolation requirements
 - Applications with dynamic theming
@@ -529,6 +548,7 @@ Traditional CSS-in-JS solutions (styled-components, Emotion) inject styles into 
 - Projects targeting modern browsers
 
 **Not a good fit:**
+
 - Server-side rendering (SSR) without hydration
 - Progressive enhancement requirements
 - Legacy browser support (IE11, older Safari)
@@ -587,6 +607,7 @@ core/
 ### Test Utilities
 
 **Shared utilities** (`__tests__/utils.ts`):
+
 - `getShadowCSS(shadowRoot)` - Extract CSS from adoptedStyleSheets
 - `normalizeCSS(css)` - Normalize whitespace for comparison
 - `waitForCustomElement(tagName)` - Wait for element registration
@@ -595,6 +616,7 @@ core/
 - `createMockSkin(css)` - Create mock skin loaders
 
 **Setup configuration** (`__tests__/setup.ts`):
+
 - Polyfills for `CSSStyleSheet.replace()` and `CSSStyleSheet.replaceSync()`
 - Polyfills for `ShadowRoot.adoptedStyleSheets`
 - Custom matchers (e.g., `toHaveShadowRoot`)
@@ -612,16 +634,19 @@ core/
 ### Memory Profile
 
 **Per styled component:**
+
 - Custom Element class: ~1KB (registered once per component type)
 - Sheets instance: ~0.5KB + stylesheet cache
 - React component wrapper: ~0.2KB
 
 **Per component instance:**
+
 - Custom element DOM node: ~500 bytes
 - Shadow root: ~200 bytes
 - React portal overhead: ~100 bytes
 
 **Stylesheet caching:**
+
 - Stylesheets are cached globally in `Sheets` instances
 - Multiple components of the same type share the same `Sheets` instance
 - Multiple instances of the same component share the same cached stylesheets
@@ -630,18 +655,21 @@ core/
 ### Runtime Performance
 
 **Initial render:**
+
 - Custom element registration: ~1ms (once per component type)
 - Shadow root attachment: ~0.1ms per instance
 - Skin loading: Network-bound (typically 10-50ms)
 - Stylesheet adoption: ~0.1ms per stylesheet
 
 **Theme switching:**
+
 - Context update: ~0.1ms
 - Event dispatch: ~0.01ms
 - Stylesheet adoption: ~0.1ms (cached) or network-bound (new skin)
 - React re-render: **0ms** (styles change without re-rendering)
 
 **Memory cleanup:**
+
 - Event listeners removed on unmount
 - Shadow roots garbage collected
 - Stylesheets remain cached (reusable)
@@ -649,6 +677,7 @@ core/
 ### Bundle Size Impact
 
 **Core module:**
+
 - types/: 0KB (types are erased at compile time)
 - context/: ~0.1KB
 - use-context/: ~0.2KB
@@ -659,10 +688,12 @@ core/
 - **Total:** ~4KB minified + gzipped
 
 **Per styled component:**
+
 - Component definition: ~0.5KB
 - Skin loaders: ~0.1KB each
 
 **Skin CSS files:**
+
 - Code split automatically by Vite
 - Only loaded when needed
 - Cached after first load
@@ -796,7 +827,7 @@ const Icon = styled('span', {
 // Define skin loaders once
 const skins = {
   light: () => import('./theme.light.css?inline'),
-  dark: () => import('./theme.dark.css?inline')
+  dark: () => import('./theme.dark.css?inline'),
 }
 
 // Reuse across components
@@ -816,6 +847,7 @@ const Card = styled('div', { name: 'my-card', skins })
 **Cause:** Custom element spec requires at least one hyphen in the tag name
 
 **Solution:**
+
 ```typescript
 // ❌ Invalid
 const Button = styled('button', { name: 'button', skins: {} })
@@ -833,6 +865,7 @@ const Button = styled('button', { name: 'my-button', skins: {} })
 **Cause:** Component is rendered outside a `<Provider>` wrapper
 
 **Solution:**
+
 ```typescript
 // ❌ Invalid
 <Button>Click</Button>
@@ -852,6 +885,7 @@ const Button = styled('button', { name: 'my-button', skins: {} })
 **Possible causes:**
 
 1. **Skin not loaded yet** - Check if you're awaiting async loading
+
    ```typescript
    // Add logging to debug
    const sheets = new Sheets(skins)
@@ -859,16 +893,22 @@ const Button = styled('button', { name: 'my-button', skins: {} })
    ```
 
 2. **Shadow DOM encapsulation** - Global styles don't penetrate shadow roots
+
    ```css
    /* ❌ Won't work - global style */
-   button { color: blue; }
+   button {
+     color: blue;
+   }
 
    /* ✅ Works - skin-specific style */
    /* In button.css: */
-   :host button { color: blue; }
+   :host button {
+     color: blue;
+   }
    ```
 
 3. **Incorrect skin name** - Provider skin doesn't match component skins
+
    ```typescript
    // ❌ Mismatched
    <Provider skin="lite">  {/* Typo */}
@@ -890,12 +930,13 @@ const Button = styled('button', { name: 'my-button', skins: {} })
 **Cause:** jsdom doesn't fully support Shadow DOM APIs
 
 **Solution:** Ensure `__tests__/setup.ts` is imported in your test configuration
+
 ```typescript
 // vitest.config.ts
 export default defineConfig({
   test: {
-    setupFiles: ['./src/core/__tests__/setup.ts']
-  }
+    setupFiles: ['./src/core/__tests__/setup.ts'],
+  },
 })
 ```
 
@@ -922,6 +963,7 @@ export default defineConfig({
 **Is this a problem?** Usually no - stylesheets are small and reusable
 
 **If it's actually a problem:** You'd need to manually clear the cache
+
 ```typescript
 // Access the Sheets instance and clear it (advanced usage)
 // Note: This is not exposed in the public API by design
@@ -936,6 +978,7 @@ export default defineConfig({
 1. **Read the module READMEs** - Each module has a comprehensive README with "If I Die Tomorrow" sections explaining critical invariants
 
 2. **Run the test suite** - Ensure all tests pass before making changes
+
    ```bash
    npm test -- core/
    ```
@@ -950,15 +993,17 @@ export default defineConfig({
 **Example: Adding a new optional config property**
 
 1. **Update types/** - Add the property to `StyledConfig`
+
    ```typescript
    export interface StyledConfig {
      name: string
      skins: Skins
-     myNewFeature?: boolean  // Add here
+     myNewFeature?: boolean // Add here
    }
    ```
 
 2. **Update styled/** - Use the new property
+
    ```typescript
    export function styled(tag, config) {
      if (config.myNewFeature) {
@@ -968,12 +1013,13 @@ export default defineConfig({
    ```
 
 3. **Add tests** - Test the new feature
+
    ```typescript
    it('supports myNewFeature', () => {
      const Component = styled('div', {
        name: 'test',
        skins: {},
-       myNewFeature: true
+       myNewFeature: true,
      })
      // Test behavior
    })
@@ -994,6 +1040,7 @@ export default defineConfig({
 ### Testing Your Changes
 
 **Run specific test suites:**
+
 ```bash
 # Test a specific module
 npm test -- core/styled
@@ -1006,6 +1053,7 @@ npm run test:coverage
 ```
 
 **Debug tests:**
+
 ```typescript
 import { screen, debug } from '@testing-library/react'
 

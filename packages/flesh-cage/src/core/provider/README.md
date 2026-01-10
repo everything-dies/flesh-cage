@@ -9,11 +9,13 @@ The `provider/` module exports a React component that wraps the flesh-cage Conte
 **Lines of code:** 8 lines (2 type imports, 1 context import, 1 component definition with 4 lines of implementation)
 
 **Dependencies:**
+
 - `react` - For `FC` type
 - `../types/` - For `ProviderProps` interface
 - `../context/` - For the Context instance
 
 **Dependents:**
+
 - User applications - Primary entry point for theming
 - Test suites - Used to wrap components for theme testing
 - Storybook/demos - Used to demonstrate different themes
@@ -33,21 +35,23 @@ The Provider pattern is a fundamental React pattern for distributing data throug
 4. **Enables future extensibility:** We can add validation, logging, or other logic without changing the API
 
 **Without Provider component:**
+
 ```tsx
 import { Context } from '@everything-dies/flesh-cage/core/context'
 
 // ❌ Verbose, exposes implementation details
-<Context.Provider value="dark">
+;<Context.Provider value="dark">
   <App />
 </Context.Provider>
 ```
 
 **With Provider component:**
+
 ```tsx
 import { Provider } from '@everything-dies/flesh-cage/core'
 
 // ✅ Clean, semantic API
-<Provider skin="dark">
+;<Provider skin="dark">
   <App />
 </Provider>
 ```
@@ -69,6 +73,7 @@ export const Provider: FC<ProviderProps> = ({ skin, children }) => { ... }
 4. **Performance:** No class instance overhead, just a function call
 
 **Alternative considered:**
+
 ```typescript
 // Rejected: Verbose, manual children typing
 export function Provider(props: ProviderProps & { children: ReactNode }): JSX.Element {
@@ -89,6 +94,7 @@ The Provider component is intentionally "dumb"—it doesn't validate the `skin` 
 4. **Error location:** Validation at the component level (where skins are used) gives better error messages
 
 **Rejected alternatives:**
+
 ```typescript
 // ❌ Rejected: Validation in Provider
 export const Provider: FC<ProviderProps> = ({ skin, children }) => {
@@ -109,6 +115,7 @@ export const Provider: FC<ProviderProps> = ({ skin = 'default', children }) => {
 ### Trade-offs
 
 **Pros:**
+
 - Clean, minimal API (just `skin` and `children`)
 - Zero runtime overhead (thin wrapper)
 - Type-safe via TypeScript
@@ -116,6 +123,7 @@ export const Provider: FC<ProviderProps> = ({ skin = 'default', children }) => {
 - Composable with other Context providers
 
 **Cons:**
+
 - No built-in validation (validation happens later in chain)
 - Doesn't prevent invalid skin names
 - Re-renders all consumers when skin changes (React behavior)
@@ -124,10 +132,12 @@ export const Provider: FC<ProviderProps> = ({ skin = 'default', children }) => {
 ### Alternatives Considered
 
 1. **Higher-Order Component (HOC):**
+
    ```typescript
    export const withSkin = (skin: string) => (Component) => (props) =>
      <Provider skin={skin}><Component {...props} /></Provider>
    ```
+
    - Rejected: Less flexible than Provider component
    - Rejected: HOCs are legacy pattern (hooks are modern)
 
@@ -142,9 +152,11 @@ export const Provider: FC<ProviderProps> = ({ skin = 'default', children }) => {
    - Rejected: Limited browser support (older browsers)
 
 4. **Render props:**
+
    ```typescript
    <Provider skin="dark" render={children} />
    ```
+
    - Rejected: Less ergonomic than children prop
    - Rejected: Harder to compose with other components
 
@@ -258,11 +270,13 @@ import type { FC } from 'react'
 ```
 
 **Why `type` import?**
+
 - Erased at runtime (no bundle size impact)
 - Signals to TypeScript this is type-only
 - Prevents accidental usage of types as values
 
 **Why `FC` type?**
+
 - `FC` = `FunctionComponent` (shorthand)
 - Provides correct return type (`ReactElement | null`)
 - Includes `children` in props automatically (via `PropsWithChildren`)
@@ -276,11 +290,13 @@ import { Context } from './context'
 ```
 
 **`ProviderProps` import:**
+
 - Type-only import (no runtime code)
 - Defines the shape: `{ skin: string, children: ReactNode }`
 - Enforces type safety at compile time
 
 **`Context` import:**
+
 - Runtime import (actual Context object)
 - Relative import `'./context'` resolves to `'../context/index.ts'`
 - This is the shared Context instance all components use
@@ -321,6 +337,7 @@ export const Provider: FC<ProviderProps> = ({ skin, children }) => {
    - Rendered inside Provider so they have access to Context value
 
 **Critical behavior:**
+
 - When `skin` prop changes, Context value updates, triggering re-renders in all consumers
 - Provider doesn't prevent re-renders (that's React's job with memoization)
 - Provider can be nested—inner Provider overrides outer Provider's value
@@ -336,6 +353,7 @@ This component is a **thin wrapper** by design:
 ```
 
 Each layer adds specific value:
+
 - **Provider component:** Type-safe API, semantic naming
 - **Context.Provider:** React's Context system
 - **Component tree:** Consumes Context via hooks
@@ -543,16 +561,19 @@ const html = renderToString(
 ## Related Modules
 
 ### Dependencies (Imports)
+
 - **`react`**: For `FC` type and JSX support
 - **[`../types/`](../types/README.md)**: For `ProviderProps` interface definition
 - **[`../context/`](../context/README.md)**: For the Context instance to wrap
 
 ### Dependents (Imported By)
+
 - **User applications**: Primary consumer, used to wrap app roots
 - **[`../use-context/`](../use-context/README.md)**: Indirectly related (consumers of Provider values)
 - **[`../styled/`](../styled/README.md)**: Indirectly benefits (styled components consume Context)
 
 ### Conceptual Relationships
+
 - **[`../use-core/`](../use-core/README.md)**: Reads the skin value set by Provider
 - **Test utilities**: Used in test wrappers to provide theme context
 
@@ -618,6 +639,7 @@ it('provides skin to styled components', async () => {
 ```
 
 See:
+
 - [`__tests__/provider.test.tsx`](./__tests__/provider.test.tsx) - Core functionality
 - [`__tests__/nesting.test.tsx`](./__tests__/nesting.test.tsx) - Nesting behavior
 
@@ -734,6 +756,7 @@ const [skin, setSkin] = useState('light')
 ### Planned Improvements
 
 1. **Development-mode validation:**
+
    ```typescript
    export const Provider: FC<ProviderProps> = ({ skin, children }) => {
      if (process.env.NODE_ENV === 'development' && !skin) {
@@ -744,6 +767,7 @@ const [skin, setSkin] = useState('light')
    ```
 
 2. **Skin registry integration:**
+
    ```typescript
    interface EnhancedProviderProps extends ProviderProps {
      validSkins?: string[]
@@ -758,6 +782,7 @@ const [skin, setSkin] = useState('light')
    ```
 
 3. **Theme transition callbacks:**
+
    ```typescript
    interface ProviderProps {
      skin: string
@@ -787,9 +812,11 @@ const [skin, setSkin] = useState('light')
    - Any logic added here affects all Provider usage
 
 2. **Children MUST be rendered inside Context.Provider:**
+
    ```typescript
    <Context.Provider value={skin}>{children}</Context.Provider>
    ```
+
    Never render children outside the Provider—it breaks theming.
 
 3. **Skin prop MUST be passed directly as Context value:**
@@ -822,11 +849,13 @@ const [skin, setSkin] = useState('light')
 #### Problem: "Components don't receive theme"
 
 **Likely causes:**
+
 1. Provider not wrapping components
 2. Components rendered before Provider
 3. Wrong Context instance imported
 
 **Fix:**
+
 ```typescript
 // Verify component tree structure
 <Provider skin="dark">  {/* ✓ Provider at top */}
@@ -839,6 +868,7 @@ const [skin, setSkin] = useState('light')
 **Likely cause:** Not using state for skin prop
 
 **Fix:**
+
 ```typescript
 // ❌ Wrong
 const skin = 'dark'
@@ -854,6 +884,7 @@ const [skin, setSkin] = useState('dark')
 **Likely cause:** Expecting outer Provider to take precedence (it doesn't)
 
 **Fix:** Understand that inner Provider ALWAYS wins:
+
 ```typescript
 <Provider skin="outer">
   <Provider skin="inner">
@@ -867,6 +898,7 @@ const [skin, setSkin] = useState('dark')
 **Likely cause:** Missing required props
 
 **Fix:**
+
 ```typescript
 // ❌ Wrong - missing skin
 <Provider><App /></Provider>
@@ -878,11 +910,13 @@ const [skin, setSkin] = useState('dark')
 ### When to Modify This File
 
 **SAFE changes:**
+
 - Add JSDoc comments
 - Add development-mode warnings
 - Improve type annotations (without changing behavior)
 
 **BREAKING changes (require major version bump):**
+
 - Add required props
 - Remove or rename `skin` prop
 - Change `skin` prop type
@@ -890,6 +924,7 @@ const [skin, setSkin] = useState('dark')
 - Change export name
 
 **NEVER do:**
+
 - Add state or side effects
 - Transform `skin` value before passing to Context
 - Render children outside Context.Provider
@@ -903,6 +938,7 @@ const [skin, setSkin] = useState('dark')
    - React optimizes this with bailout checks
 
 2. **Optimization tips:**
+
    ```typescript
    // Memoize skin value if computed
    const skin = useMemo(() => computeSkin(props), [deps])
@@ -935,6 +971,7 @@ The Provider component implements the **Provider pattern** (also called Dependen
 - **Benefit:** Decouples components from theme configuration
 
 This is similar to:
+
 - `styled-components`'s `<ThemeProvider>`
 - `react-router`'s `<BrowserRouter>`
 - `react-redux`'s `<Provider>`

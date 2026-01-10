@@ -11,10 +11,12 @@ The `use-core/` module exports the most complex and critical hook in the flesh-c
 **Complexity level:** CRITICAL - This is the most complex hook in the system. Every line matters. Changes here can break the entire styling system.
 
 **Dependencies:**
+
 - `react` - For `startTransition`, `use`, `useLayoutEffect`, `useRef`, `useState`
 - `../use-context/` - For accessing the current skin name from Context
 
 **Dependents:**
+
 - `../styled/` - Primary consumer, uses this hook in every styled component
 - User applications - Indirectly via styled components
 - Test suites - Tests verify hook behavior across lifecycle phases
@@ -28,6 +30,7 @@ The `useCore` hook solves a fundamental problem: **How do you connect React's co
 Shadow DOM provides style encapsulation, but it's a browser API that exists outside React's paradigm. React components render to the virtual DOM, which reconciles with the real DOM. But Shadow DOM adds a third layer—an isolated styling boundary that React doesn't understand natively.
 
 **The challenge:**
+
 1. Shadow DOM can only be attached after an element exists in the real DOM
 2. React components may render before the DOM is ready
 3. Skin loading is asynchronous, but React needs synchronous access to refs
@@ -35,6 +38,7 @@ Shadow DOM provides style encapsulation, but it's a browser API that exists outs
 5. Suspense requires throwing promises, but hooks can't throw in cleanup
 
 **Our solution:** A hook that:
+
 - Uses `useLayoutEffect` to synchronize with DOM mutations
 - Provides stable refs that survive re-renders
 - Creates a portal target (container) for rendering children
@@ -85,6 +89,7 @@ return startTransition(transition)
 **Important note:** We return `startTransition(transition)`, which seems unusual. `startTransition` doesn't return a cleanup function, but returning it from `useLayoutEffect` is safe—React will ignore the return value if it's not a function.
 
 **Rejected alternative:**
+
 ```typescript
 // ❌ Rejected: Immediate state update blocks rendering
 useLayoutEffect(() => {
@@ -115,11 +120,13 @@ const [container, attach] = useState<DocumentFragment | ShadowRoot>(
 3. **Naming expressiveness:** `persist` and `attach` are more descriptive than generic setters like `setState1` and `setState2`.
 
 **Initial container value:**
+
 ```typescript
 document.createDocumentFragment()
 ```
 
 We initialize `container` to a `DocumentFragment` (not `null`) because:
+
 - Children can safely render into a fragment before the shadow root is ready
 - Avoids null checks in the styled component
 - Provides a "staging area" for initial render
@@ -149,10 +156,12 @@ element.dispatchEvent(new CustomEvent('change', { detail: { skin } }))
 4. **Detail payload:** `CustomEvent` supports typed payloads via the `detail` property, enabling rich data transfer.
 
 **Event types:**
+
 - `suspend`: Dispatched by custom elements when skin loading starts (carries a promise)
 - `change`: Dispatched by React components when skin context changes (carries skin name)
 
 **Rejected alternatives:**
+
 - **Props:** Can't pass data from custom elements to React (flow is unidirectional)
 - **Callbacks:** Would require custom elements to hold references to React functions (memory leaks)
 - **Observables:** Over-engineering for simple event-driven communication
@@ -176,6 +185,7 @@ if (suspendable && suspension) {
 3. **Progressive enhancement:** Components work fine without Suspense boundaries—they just render with unstyled content until skins load. Adding a Suspense boundary improves UX but isn't required.
 
 **Conditional logic breakdown:**
+
 ```typescript
 if (suspendable && suspension) {
   // suspendable: User opted into Suspense behavior
@@ -188,6 +198,7 @@ if (suspendable && suspension) {
 **Important:** The `use()` hook is called conditionally, which normally violates the Rules of Hooks. However, `use()` is explicitly designed to be called conditionally—it's an exception to the rule.
 
 **Rejected alternative:**
+
 ```typescript
 // ❌ Rejected: Always suspend
 if (suspension) {
@@ -314,6 +325,7 @@ import { startTransition, use, useLayoutEffect, useRef, useState } from 'react'
 ```
 
 **Imports:**
+
 - `startTransition`: Concurrent mode API for non-blocking state updates
 - `use`: React 18 hook for Suspense integration (throwing promises)
 - `useLayoutEffect`: Synchronous effect for DOM mutations
@@ -333,6 +345,7 @@ export const useCore = ({ suspendable }: { suspendable: boolean }) => {
 ```
 
 **Function signature:**
+
 - Exported as a named export (not default) for consistent API
 - Takes a single object parameter with `suspendable` flag
 - Returns an object with `ref` and `container` (inferred return type)
@@ -350,6 +363,7 @@ const skin = useContext()
 **Important:** This is our `useContext` wrapper (from `../use-context/`), not React's `useContext`.
 
 **Value:** `string | undefined`
+
 - `string` when inside a `<Provider skin="name">`
 - `undefined` when no Provider exists
 
@@ -362,10 +376,12 @@ const ref = useRef<HTMLElement>(null)
 **Purpose:** Create a stable reference to the custom element that will be rendered.
 
 **Type:** `MutableRefObject<HTMLElement | null>`
+
 - Generic type `<HTMLElement>` ensures TypeScript knows this refs a DOM element
 - Initial value is `null` (element doesn't exist yet)
 
 **Stability:** The ref object itself never changes—only `ref.current` changes when React attaches it to an element. This stability is critical for:
+
 1. Event listeners (they reference `ref.current`, which persists across re-renders)
 2. Shadow DOM attachment (we read `ref.current.shadowRoot` safely)
 
@@ -380,12 +396,14 @@ const [suspension, persist] = useState<Promise<unknown> | undefined>()
 **Purpose:** Track the active skin loading promise for Suspense integration.
 
 **Type:** `Promise<unknown> | undefined`
+
 - `undefined`: No skin loading in progress (initial state)
 - `Promise<unknown>`: Custom element dispatched a 'suspend' event with a promise
 
 **Setter naming:** `persist` (not `setSuspension`) semantically indicates we're "persisting" a promise for future use.
 
 **Lifecycle:**
+
 1. Initial: `undefined`
 2. Custom element dispatches 'suspend' event: `persist(promise)` → `suspension = promise`
 3. Hook re-renders, calls `use(suspension)` → React suspends
@@ -401,17 +419,20 @@ const [container, attach] = useState<DocumentFragment | ShadowRoot>(
 **Purpose:** Track the portal target where children will render.
 
 **Type:** `DocumentFragment | ShadowRoot`
+
 - Initial: `DocumentFragment` (temporary staging area)
 - After shadow root attached: `ShadowRoot` (actual encapsulated rendering target)
 
 **Setter naming:** `attach` (not `setContainer`) semantically indicates we're "attaching" the shadow root.
 
 **Why DocumentFragment initially?**
+
 1. **Safe fallback:** Children can render into a fragment without errors
 2. **Portal compatibility:** React portals work with fragments
 3. **Zero-cost abstraction:** Fragments are lightweight, no DOM overhead
 
 **Why not null?**
+
 ```typescript
 // ❌ Rejected: Requires null checks everywhere
 const [container, attach] = useState<ShadowRoot | null>(null)
@@ -445,6 +466,7 @@ const transition = () => attach(ref.current?.shadowRoot as ShadowRoot)
 ```
 
 **What this does:**
+
 1. `ref.current`: Get the custom element (could be `null` if not yet attached)
 2. `?.shadowRoot`: Optional chaining—safely access `shadowRoot` property (returns `undefined` if `ref.current` is `null`)
 3. `as ShadowRoot`: Type assertion—tells TypeScript this is definitely a `ShadowRoot` (not `null` or `undefined`)
@@ -459,6 +481,7 @@ return startTransition(transition)
 ```
 
 **What this does:**
+
 1. Call `startTransition(transition)` → React marks the `attach()` call as a non-urgent update
 2. Return the result (which is `undefined`, but returning it is harmless)
 
@@ -516,6 +539,7 @@ const suspend = (event: Event) => {
 ```
 
 **Event handler:**
+
 1. Receives a generic `Event` object (typed as `Event` for compatibility)
 2. Casts to `CustomEvent<Promise<unknown>>` to access the `detail` property
 3. Extracts `detail` (which is the promise from the custom element)
@@ -524,6 +548,7 @@ const suspend = (event: Event) => {
 **Why return `persist(detail)`?** Convention—returning the result of the state setter. The return value is unused (event handlers don't need return values), but it's harmless.
 
 **Type safety:** `CustomEvent<Promise<unknown>>` tells TypeScript:
+
 - This is a `CustomEvent` (has `detail` property)
 - The `detail` is a `Promise<unknown>` (skin loading promise)
 
@@ -542,11 +567,13 @@ return element.removeEventListener.bind(element, 'suspend', suspend)
 **Cleanup function:** Removes the event listener when the component unmounts.
 
 **Why `.bind()`?** This is a clever trick:
+
 - `element.removeEventListener.bind(element, 'suspend', suspend)` creates a bound function
 - When called (by React during cleanup), it's equivalent to `element.removeEventListener('suspend', suspend)`
 - This avoids creating a separate cleanup function
 
 **Equivalent conventional cleanup:**
+
 ```typescript
 return () => {
   element.removeEventListener('suspend', suspend)
@@ -584,11 +611,13 @@ element.dispatchEvent(new CustomEvent('change', { detail: { skin } }))
 ```
 
 **What this does:**
+
 1. Create a new `CustomEvent` with type 'change'
 2. Set the `detail` payload to `{ skin }` (object with current skin name)
 3. Dispatch the event on the custom element
 
 **Event flow:**
+
 1. User changes Provider's `skin` prop: `<Provider skin="dark">` → `<Provider skin="light">`
 2. Context value updates, triggering re-render
 3. `useCore` hook re-runs, `skin` variable changes from "dark" to "light"
@@ -611,11 +640,13 @@ if (suspendable && suspension) {
 **Purpose:** Suspend rendering if the component is suspendable and a skin loading promise exists.
 
 **Conditional logic:**
+
 - `suspendable`: The styled component opted into Suspense behavior (via `suspendable: true` config)
 - `suspension`: A promise exists (custom element dispatched a 'suspend' event)
 - Both must be true to suspend
 
 **What `use()` does:**
+
 1. Checks if the promise is resolved or pending
 2. If pending: Throws the promise (React catches it, shows Suspense fallback)
 3. If resolved: Returns the resolved value (rendering continues)
@@ -624,14 +655,15 @@ if (suspendable && suspension) {
 
 **Behavior by state:**
 
-| `suspendable` | `suspension` | Behavior |
-|---------------|--------------|----------|
-| `false` | `undefined` | Render immediately (no suspension) |
-| `false` | `Promise` | Render immediately (ignore promise) |
-| `true` | `undefined` | Render immediately (no promise to wait for) |
-| `true` | `Promise` | Suspend (throw promise, show Suspense fallback) |
+| `suspendable` | `suspension` | Behavior                                        |
+| ------------- | ------------ | ----------------------------------------------- |
+| `false`       | `undefined`  | Render immediately (no suspension)              |
+| `false`       | `Promise`    | Render immediately (ignore promise)             |
+| `true`        | `undefined`  | Render immediately (no promise to wait for)     |
+| `true`        | `Promise`    | Suspend (throw promise, show Suspense fallback) |
 
 **Example flow:**
+
 ```typescript
 // Initial render: suspendable=true, suspension=undefined
 if (true && undefined) { // false
@@ -665,6 +697,7 @@ return { container, ref } as const
 **Return type:** `{ container: DocumentFragment | ShadowRoot, ref: RefObject<HTMLElement> }` (inferred)
 
 **`as const` assertion:** Makes the return type readonly and literal:
+
 - Without: `{ container: DocumentFragment | ShadowRoot, ref: RefObject<HTMLElement> }`
 - With: `readonly { container: DocumentFragment | ShadowRoot, ref: RefObject<HTMLElement> }`
 
@@ -676,6 +709,7 @@ result.ref = null // ❌ TypeScript error (readonly)
 ```
 
 **Usage in styled component:**
+
 ```typescript
 const { container, ref } = useCore({ suspendable: config.suspendable ?? false })
 
@@ -935,6 +969,7 @@ graph LR
 ```
 
 **Flow:**
+
 1. `Provider` sets skin value in `Context`
 2. `useContext` reads skin from `Context`
 3. `useCore` consumes skin, manages Shadow DOM and events
@@ -950,6 +985,7 @@ The `useCore` hook is tested across three specialized test files, each focusing 
 **Focus:** Verify the hook's return values, ref stability, and basic integration.
 
 **Key tests:**
+
 - Hook returns correct `ref` and `container` objects
 - `ref` object is stable across re-renders (same object reference)
 - `container` starts as `DocumentFragment`, updates to `ShadowRoot`
@@ -962,6 +998,7 @@ The `useCore` hook is tested across three specialized test files, each focusing 
 **Focus:** Verify suspension state management and Suspense integration.
 
 **Key tests:**
+
 - Hook responds to 'suspend' events from custom elements
 - `suspension` state updates with promise from event
 - Suspense boundary shows fallback when `suspendable=true` and promise is pending
@@ -976,6 +1013,7 @@ The `useCore` hook is tested across three specialized test files, each focusing 
 **Focus:** Verify Shadow DOM attachment, cleanup, and event listener lifecycle.
 
 **Key tests:**
+
 - Shadow DOM attached on mount (via `useLayoutEffect`)
 - `container` updates from `DocumentFragment` to `ShadowRoot`
 - Event listeners attached correctly (no errors when custom element dispatches events)
@@ -992,6 +1030,7 @@ All tests leverage shared utilities from `core/__tests__/`:
 - `utils.ts` - Helpers like `getShadowCSS`, `waitForStyles`, `waitForCustomElement`
 
 Tests also use:
+
 - `@testing-library/react` - For `renderHook`, `render`, `waitFor`
 - `vitest` - For `describe`, `it`, `expect`, `vi` (mocking)
 
@@ -1004,6 +1043,7 @@ Target coverage for `use-core/index.ts`:
 - **Function coverage:** 100% (hook and all callbacks tested)
 
 **Critical paths to cover:**
+
 1. Hook with `suspendable=false` (no suspension)
 2. Hook with `suspendable=true` and pending promise (suspends)
 3. Hook with `suspendable=true` and resolved promise (doesn't suspend)
@@ -1124,6 +1164,7 @@ useLayoutEffect(() => {
 ```
 
 **Why this fails:** If the component unmounts, the event listener remains attached. When the custom element dispatches 'suspend' events, the listener runs, calling `persist()` on an unmounted component. This causes:
+
 1. Memory leaks (listener holds references to unmounted component)
 2. React warnings ("Can't perform state update on unmounted component")
 
@@ -1159,6 +1200,7 @@ useLayoutEffect(() => {
 **Why this is fragile:** If the custom element doesn't have a shadow root (e.g., defined with `{mode: 'open'}` but shadow root creation failed), the type assertion hides the null value, causing runtime errors.
 
 **Mitigation:** Our current implementation uses optional chaining (`?.shadowRoot`), which safely handles null. The type assertion is safe because:
+
 1. Custom elements are always defined with `attachShadow({ mode: 'open' })`
 2. This happens synchronously before React attaches refs
 3. The optional chaining is defensive (handles edge cases gracefully)
@@ -1188,14 +1230,17 @@ useLayoutEffect(() => {
 **Why this is wrong:** `startTransition` marks updates as low-priority. If you need immediate DOM mutations (like setting attributes for accessibility), wrapping them in `startTransition` delays them, potentially causing bugs.
 
 **When to use `startTransition`:**
+
 - State updates that trigger re-renders (like `attach(shadowRoot)`)
 - Non-urgent UI updates (like animations, transitions)
 
 **When NOT to use `startTransition`:**
+
 - Direct DOM mutations (use them directly)
 - High-priority state updates (user input, accessibility)
 
 In our implementation, `startTransition` is correct because:
+
 1. Updating `container` state triggers a re-render (non-urgent)
 2. Children can render into the `DocumentFragment` initially (no urgency)
 3. Deferring the state update improves responsiveness under load
@@ -1209,8 +1254,11 @@ In our implementation, `startTransition` is correct because:
 **Current behavior:** If the user changes skin from "light" to "dark" while "light" is still loading, both loads complete. The "light" load is wasted work.
 
 **Proposed enhancement:**
+
 ```typescript
-const [abortController, setAbortController] = useState<AbortController | null>(null)
+const [abortController, setAbortController] = useState<AbortController | null>(
+  null
+)
 
 useLayoutEffect(() => {
   const element = ref.current as HTMLElement
@@ -1235,11 +1283,13 @@ useLayoutEffect(() => {
 ```
 
 **Benefits:**
+
 - Reduces network usage (aborts unnecessary requests)
 - Improves performance (no wasted work)
 - Better UX (faster skin switching)
 
 **Trade-offs:**
+
 - More complex state management (track abort controllers)
 - Requires custom elements to support abortion (breaking change)
 
@@ -1250,6 +1300,7 @@ useLayoutEffect(() => {
 **Current behavior:** If a skin fails to load (network error, 404), the promise rejects, the component suspends indefinitely (Suspense boundary shows fallback forever), and no error is displayed.
 
 **Proposed enhancement:**
+
 ```typescript
 const [error, setError] = useState<Error | null>(null)
 
@@ -1277,11 +1328,13 @@ if (error) {
 ```
 
 **Benefits:**
+
 - Better error handling (Error Boundaries can show fallback UI)
 - Debugging info (error messages visible in dev tools)
 - Production resilience (app doesn't crash on skin load failures)
 
 **Trade-offs:**
+
 - Requires Error Boundaries in user apps (more setup)
 - Complicates hook logic (error state tracking)
 
@@ -1290,13 +1343,14 @@ if (error) {
 **Goal:** Warn developers about common mistakes in development.
 
 **Examples:**
+
 ```typescript
 if (process.env.NODE_ENV !== 'production') {
   // Warn if suspendable=true but no Suspense boundary detected
   if (suspendable && !isSuspenseBoundaryPresent()) {
     console.warn(
       '[useCore] Component is suspendable but no Suspense boundary found. ' +
-      'Wrap in <Suspense> to prevent errors.'
+        'Wrap in <Suspense> to prevent errors.'
     )
   }
 
@@ -1305,7 +1359,7 @@ if (process.env.NODE_ENV !== 'production') {
     if (!ref.current?.shadowRoot) {
       console.warn(
         '[useCore] Shadow root is null. Ensure custom element calls ' +
-        'attachShadow({ mode: "open" }) in its constructor.'
+          'attachShadow({ mode: "open" }) in its constructor.'
       )
     }
   }, [])
@@ -1313,11 +1367,13 @@ if (process.env.NODE_ENV !== 'production') {
 ```
 
 **Benefits:**
+
 - Helps developers catch mistakes early
 - Provides actionable error messages
 - No performance impact in production (warnings stripped by bundlers)
 
 **Trade-offs:**
+
 - More code (increases bundle size in dev mode)
 - Requires detecting Suspense boundaries (complex)
 
@@ -1326,6 +1382,7 @@ if (process.env.NODE_ENV !== 'production') {
 **Goal:** Track skin loading performance for monitoring and optimization.
 
 **Proposed enhancement:**
+
 ```typescript
 useLayoutEffect(() => {
   const element = ref.current as HTMLElement
@@ -1352,11 +1409,13 @@ useLayoutEffect(() => {
 ```
 
 **Benefits:**
+
 - Visibility into skin loading performance
 - Identifies slow skins for optimization
 - Real user monitoring (RUM) integration
 
 **Trade-offs:**
+
 - More complex hook logic
 - Requires performance monitoring setup
 
@@ -1391,6 +1450,7 @@ These areas are delicate and prone to bugs. Proceed with extreme caution:
 3. **Conditional use() call (Lines 38-40):** The `use()` hook is called conditionally, which violates the Rules of Hooks. This works because `use()` is explicitly designed to be called conditionally. If React changes this behavior in future versions, this code will break.
 
 4. **Event listener binding (Line 29):** The `.bind()` trick for cleanup is unconventional. If you refactor this to a traditional cleanup function, ensure you capture the correct `element` reference:
+
    ```typescript
    // ✅ GOOD: Capture element in closure
    return () => {
@@ -1414,6 +1474,7 @@ Common issues and how to diagnose them:
 **Symptoms:** `container` stays as `DocumentFragment` forever, children don't render.
 
 **Diagnosis:**
+
 1. Check if custom element is defined: `console.log(customElements.get('element-name'))`
 2. Check if shadow root was attached: `console.log(ref.current?.shadowRoot)`
 3. Verify `attachShadow` is called in custom element constructor
@@ -1425,6 +1486,7 @@ Common issues and how to diagnose them:
 **Symptoms:** App crashes with error when suspendable component renders.
 
 **Diagnosis:**
+
 1. Check if component has `suspendable: true` in config
 2. Verify `<Suspense>` boundary exists in parent tree
 
@@ -1435,6 +1497,7 @@ Common issues and how to diagnose them:
 **Symptoms:** React warning in console after component unmounts.
 
 **Diagnosis:**
+
 1. Check if event listeners are cleaned up: add `console.log('cleanup')` in return statement
 2. Verify cleanup runs on unmount: unmount component and check console
 
@@ -1445,6 +1508,7 @@ Common issues and how to diagnose them:
 **Symptoms:** Suspense fallback shows forever, component never renders.
 
 **Diagnosis:**
+
 1. Check if promise resolves: `suspension.then(() => console.log('resolved'))`
 2. Verify custom element dispatches 'suspend' event with valid promise
 3. Check for errors in promise: `suspension.catch(console.error)`
@@ -1456,6 +1520,7 @@ Common issues and how to diagnose them:
 **Symptoms:** Changing Provider's `skin` prop doesn't update component styles.
 
 **Diagnosis:**
+
 1. Check if 'change' event is dispatched: add listener to custom element
 2. Verify `useLayoutEffect` runs when `skin` changes: add `console.log(skin)` in effect
 3. Check if custom element updates styles on 'change' event
@@ -1471,6 +1536,7 @@ If you've broken the hook and need to recover quickly:
 2. **Disable Suspense:** If suspension logic is broken, set `suspendable: false` in all styled configs to bypass `use()` hook.
 
 3. **Remove startTransition:** If shadow root attachment is broken, remove `startTransition` wrapper:
+
    ```typescript
    useLayoutEffect(() => {
      attach(ref.current?.shadowRoot as ShadowRoot)
@@ -1478,6 +1544,7 @@ If you've broken the hook and need to recover quickly:
    ```
 
 4. **Add defensive null checks:** If type assertions are causing crashes, replace them with null checks:
+
    ```typescript
    useLayoutEffect(() => {
      const shadowRoot = ref.current?.shadowRoot
@@ -1494,6 +1561,7 @@ If you've broken the hook and need to recover quickly:
 This hook is the heart of the flesh-cage system. It's complex because it bridges three different worlds (React, Shadow DOM, and custom elements), each with its own lifecycle and timing constraints. Every line of code exists for a reason—there are no "nice-to-haves" or "style choices" here. It's all critical path.
 
 If you're making changes, test thoroughly:
+
 - Test with `suspendable=false` and `suspendable=true`
 - Test with and without Suspense boundaries
 - Test skin changes (Provider updates)

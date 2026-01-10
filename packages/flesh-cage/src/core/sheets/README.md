@@ -11,6 +11,7 @@ The `Sheets` class is a specialized `Map` subclass that manages the entire lifec
 **Dependencies:** `../types` (imports `Skins` type)
 
 **Dependents:**
+
 - `../use-core/` - Consumes `Sheets` instances to load and adopt stylesheets
 - `../styled/` - Creates `Sheets` instances from `StyledConfig`
 
@@ -44,6 +45,7 @@ const sheet3 = sheets.get('dark') // Returns CSSStyleSheet (resolved)
 ```
 
 This pattern is critical for:
+
 - **Performance:** Avoids redundant network requests
 - **Consistency:** All components get the same stylesheet instance
 - **Simplicity:** Calling code doesn't need to coordinate—it's automatic
@@ -59,12 +61,14 @@ The `#skins` field uses JavaScript private field syntax (`#`) instead of TypeScr
 ### Trade-offs
 
 **Pros:**
+
 - Zero duplication of stylesheets across components
 - Automatic coordination of concurrent loads
 - Type-safe skin name validation
 - Minimal memory overhead (Map is efficient)
 
 **Cons:**
+
 - Stylesheets are never evicted from cache (no LRU, no TTL)
 - No preloading mechanism (skins only load on first request)
 - Validation happens at runtime, not compile-time
@@ -251,6 +255,7 @@ validate(skin?: string): skin is Names {
 Defensive programming. If someone passes a `Skins` object with a `hasOwnProperty` property (unlikely but possible), the direct call would break. Using `call()` ensures we're using the built-in method.
 
 **Type predicate in action:**
+
 ```typescript
 const skin = getSkinFromProps()
 if (sheets.validate(skin)) {
@@ -368,8 +373,8 @@ import { Sheets } from '@everything-dies/flesh-cage/core/sheets'
 const sheets = new Sheets({
   skins: {
     dark: () => import('./dark.css?inline'),
-    light: () => import('./light.css?inline')
-  }
+    light: () => import('./light.css?inline'),
+  },
 })
 
 // Validate a skin name
@@ -395,9 +400,9 @@ import type { Skins } from '@everything-dies/flesh-cage/core/types'
 type ThemeSkins = 'dark' | 'light' | 'high-contrast'
 
 const skins: Skins<ThemeSkins> = {
-  'dark': () => import('./dark.css?inline'),
-  'light': () => import('./light.css?inline'),
-  'high-contrast': () => import('./high-contrast.css?inline')
+  dark: () => import('./dark.css?inline'),
+  light: () => import('./light.css?inline'),
+  'high-contrast': () => import('./high-contrast.css?inline'),
 }
 
 const sheets = new Sheets<ThemeSkins>({ skins })
@@ -412,8 +417,8 @@ const sheets = new Sheets<ThemeSkins>({ skins })
 ```typescript
 const sheets = new Sheets({
   skins: {
-    broken: () => import('./nonexistent.css?inline')
-  }
+    broken: () => import('./nonexistent.css?inline'),
+  },
 })
 
 try {
@@ -435,17 +440,15 @@ try {
 const sheets = new Sheets({
   skins: {
     dark: () => import('./dark.css?inline'),
-    light: () => import('./light.css?inline')
-  }
+    light: () => import('./light.css?inline'),
+  },
 })
 
 // Preload all skins on app initialization
 async function preloadSkins() {
   const skinNames = ['dark', 'light'] as const
 
-  await Promise.all(
-    skinNames.map(name => sheets.get(name))
-  )
+  await Promise.all(skinNames.map((name) => sheets.get(name)))
 
   console.log('All skins preloaded!')
 }
@@ -464,7 +467,7 @@ class MyComponent extends HTMLElement {
 
   async connectedCallback() {
     const sheets = new Sheets({
-      skins: { default: () => import('./styles.css?inline') }
+      skins: { default: () => import('./styles.css?inline') },
     })
 
     const sheet = await sheets.get('default')
@@ -483,7 +486,7 @@ customElements.define('my-component', MyComponent)
 
 ```typescript
 const sheets = new Sheets({
-  skins: { heavy: () => import('./heavy.css?inline') } // 500KB file
+  skins: { heavy: () => import('./heavy.css?inline') }, // 500KB file
 })
 
 // Three components mount simultaneously
@@ -492,7 +495,7 @@ async function mountComponents() {
   const [sheet1, sheet2, sheet3] = await Promise.all([
     sheets.get('heavy'),
     sheets.get('heavy'),
-    sheets.get('heavy')
+    sheets.get('heavy'),
   ])
 
   // All three receive the SAME CSSStyleSheet instance
@@ -508,8 +511,8 @@ async function mountComponents() {
 const sheets = new Sheets({
   skins: {
     dark: () => import('./dark.css?inline'),
-    light: () => import('./light.css?inline')
-  }
+    light: () => import('./light.css?inline'),
+  },
 })
 
 // Trigger some loads
@@ -533,13 +536,16 @@ for (const [name, value] of sheets) {
 ## Related Modules
 
 ### Dependencies (Imports)
+
 - **[`../types/`](../types/README.md)**: Imports `Skins` type for constructor parameter
 
 ### Dependents (Imported By)
+
 - **[`../use-core/`](../use-core/README.md)**: Creates `Sheets` instances and calls `validate()` and `get()`
 - **[`../styled/`](../styled/README.md)**: Instantiates `Sheets` with `StyledConfig.skins`
 
 ### Related Files
+
 - **[`__tests__/sheets.test.ts`](./__tests__/sheets.test.ts)**: Direct unit tests for Sheets class
 - **[`__tests__/caching.test.ts`](./__tests__/caching.test.ts)**: Tests for caching behavior and concurrent loads
 
@@ -591,6 +597,7 @@ for (const [name, value] of sheets) {
 ### Test Utilities
 
 Tests use:
+
 - `createMockSkin(css)` from `../../__tests__/utils.ts` to create mock loaders
 - `waitFor()` from `@testing-library/react` for async assertions
 - Vitest's `describe`, `it`, `expect` for structure
@@ -638,15 +645,15 @@ if (sheets.validate('dark')) {
 // ❌ Wrong - imports CSS Module object, not string
 const sheets = new Sheets({
   skins: {
-    dark: () => import('./dark.css')
-  }
+    dark: () => import('./dark.css'),
+  },
 })
 
 // ✅ Correct - use ?inline to get raw CSS string
 const sheets = new Sheets({
   skins: {
-    dark: () => import('./dark.css?inline')
-  }
+    dark: () => import('./dark.css?inline'),
+  },
 })
 ```
 
@@ -693,6 +700,7 @@ const sheet = sheets.get('dark') // Now returns CSSStyleSheet
    - Track access time for each sheet
 
 2. **Preloading API:**
+
    ```typescript
    await sheets.preload(['dark', 'light'])
    ```
@@ -726,10 +734,12 @@ const sheet = sheets.get('dark') // Now returns CSSStyleSheet
 ### Critical Invariants (DO NOT BREAK)
 
 1. **Promise MUST be stored before returning from load():**
+
    ```typescript
    super.set(skin, promise) // MUST happen first
-   return promise           // THEN return
+   return promise // THEN return
    ```
+
    Breaking this order causes race conditions in concurrent loads.
 
 2. **Never store both promise and sheet for same skin simultaneously:**
@@ -771,6 +781,7 @@ const sheet = sheets.get('dark') // Now returns CSSStyleSheet
 **Fix:** Check that `super.set(skin, sheet)` is being called in the second `.then()` of `load()`
 
 **Verification:**
+
 ```typescript
 const result = await sheets.get('dark')
 console.log(sheets.get('dark') instanceof Promise) // Should be false
@@ -783,6 +794,7 @@ console.log(sheets.get('dark') instanceof Promise) // Should be false
 **Fix:** Ensure `super.set(skin, promise)` happens BEFORE `return promise`
 
 **Verification:**
+
 ```typescript
 // Add logging to load()
 super.set(skin, promise)
@@ -795,6 +807,7 @@ return promise
 **Likely cause:** Skin name is dynamic string, not literal type
 
 **Fix:** Use type assertion or widen generic:
+
 ```typescript
 const skinName: string = getSkinDynamically()
 if (sheets.validate(skinName as Names)) {
@@ -811,12 +824,14 @@ if (sheets.validate(skinName as Names)) {
 ### When to Modify This File
 
 **SAFE changes:**
+
 - Add new methods that don't override Map methods (e.g., `preload()`, `clear()`)
 - Add optional constructor parameters (with defaults)
 - Improve error messages
 - Add JSDoc comments
 
 **BREAKING changes:**
+
 - Change `get()` signature or return type
 - Change `load()` signature or return type
 - Change `validate()` signature or type predicate
@@ -825,6 +840,7 @@ if (sheets.validate(skinName as Names)) {
 - Change cache eviction behavior (if added)
 
 **NEVER do:**
+
 - Make `#skins` public (breaks encapsulation)
 - Change load() to not cache the promise (breaks concurrency)
 - Add synchronous loading mode (fundamentally incompatible)
@@ -838,6 +854,7 @@ if (sheets.validate(skinName as Names)) {
 4. **Network request is most expensive:** 10-500ms depending on file size
 
 **Optimization priorities:**
+
 1. Minimize network requests (cache invalidation is not a concern)
 2. Share stylesheets across components (already done via caching)
 3. Avoid redundant CSSStyleSheet objects (already done via promise coordination)
@@ -845,11 +862,13 @@ if (sheets.validate(skinName as Names)) {
 ### Memory Leak Potential
 
 **Current implementation:** No memory leaks because:
+
 - Stylesheets are intentionally never evicted
 - Each stylesheet is created once and reused
 - No event listeners or timers
 
 **Future risk:** If LRU eviction is added, must ensure:
+
 - Weak references to evicted sheets (allow GC)
 - No dangling references in component shadow DOMs
 - Clear eviction events for debugging
@@ -859,11 +878,13 @@ if (sheets.validate(skinName as Names)) {
 If this module causes production issues:
 
 1. **Immediate fix:** Revert to previous commit
+
    ```bash
    git revert <this-commit-hash>
    ```
 
 2. **Temporary workaround:** Inline skin loading in `use-core/` without caching
+
    ```typescript
    // In use-core/index.ts
    const sheet = await skinLoader().then(({ default: css }) =>

@@ -9,10 +9,12 @@ The `use-context/` module exports a custom React hook that wraps the flesh-cage 
 **Lines of code:** 5 lines (2 imports, 1 hook function, 2 blank lines)
 
 **Dependencies:**
+
 - `react` - For the base `useContext` hook
 - `../context/` - For the Context instance to consume
 
 **Dependents:**
+
 - `../use-core/` - Uses this hook to read the active skin name
 - User code - Can use this hook directly in components
 
@@ -23,6 +25,7 @@ The `use-context/` module exports a custom React hook that wraps the flesh-cage 
 React provides `useContext(Context)` out of the box, so why create a wrapper?
 
 1. **Convenience:** One import instead of two
+
    ```typescript
    // ❌ Without wrapper
    import { useContext } from 'react'
@@ -35,6 +38,7 @@ React provides `useContext(Context)` out of the box, so why create a wrapper?
    ```
 
 2. **Type safety:** The return type is automatically inferred as `string | undefined`
+
    ```typescript
    // TypeScript knows the type without manual annotation
    const skin = useContext() // Type: string | undefined
@@ -57,6 +61,7 @@ This hook is intentionally a thin wrapper—it doesn't add validation, error han
 4. **Simplicity:** Easier to understand and debug
 
 **Rejected alternatives:**
+
 ```typescript
 // ❌ Rejected: Throwing on undefined
 export const useContext = () => {
@@ -79,12 +84,14 @@ export const useContext = () => {
 ### Trade-offs
 
 **Pros:**
+
 - Clean, minimal API (one import, one call)
 - Type-safe without manual annotations
 - Easy to test and mock
 - Zero runtime overhead
 
 **Cons:**
+
 - Adds one more abstraction layer (though very thin)
 - Doesn't prevent misuse (calling outside Provider returns undefined)
 - Tied specifically to flesh-cage Context (not reusable)
@@ -100,9 +107,11 @@ export const useContext = () => {
    - Rejected: HOCs add wrapper components, harder to debug
 
 3. **Selector pattern:**
+
    ```typescript
-   const skin = useContext(context => context.skin)
+   const skin = useContext((context) => context.skin)
    ```
+
    - Rejected: Over-engineered for single-value Context
    - Rejected: Context only holds one string, no need for selectors
 
@@ -183,16 +192,19 @@ import { useContext as useGenericContext } from 'react'
 ```
 
 **Why rename to `useGenericContext`?**
+
 - Avoids name collision with our exported `useContext` function
 - Makes it clear which `useContext` is being called in line 5
 - Common pattern in wrapper functions
 
 **Why named import?**
+
 - Explicit about what we're using from React
 - Better tree-shaking than default import
 - Matches React conventions
 
 **Type implications:**
+
 - `useGenericContext` is a generic function: `useGenericContext<T>(context: Context<T>): T`
 - We'll pass our `Context` instance, which is typed as `Context<string | undefined>`
 - Return type will be inferred as `string | undefined`
@@ -204,6 +216,7 @@ import { Context } from './context'
 ```
 
 **Why relative import `'./context'`?**
+
 - Node.js automatically resolves to `./context/index.ts`
 - No need for explicit `/index` suffix
 - Keeps imports clean and consistent
@@ -241,11 +254,13 @@ export const useContext = () => useGenericContext(Context)
 **What this creates:**
 
 A function with the signature:
+
 ```typescript
 const useContext: () => string | undefined
 ```
 
 **Critical behavior:**
+
 - This hook follows React's Rules of Hooks (it calls another hook)
 - Can only be called from React function components or custom hooks
 - Must be called at the top level (not in loops, conditions, or nested functions)
@@ -259,6 +274,7 @@ This is a classic **wrapper pattern**:
 ```
 
 Each layer adds specific value:
+
 - **Component layer:** Uses the hook without knowing Context internals
 - **Wrapper layer:** Provides convenient API and type inference
 - **React layer:** Handles Context subscription and re-rendering
@@ -385,14 +401,17 @@ describe('MyComponent', () => {
 ## Related Modules
 
 ### Dependencies (Imports)
+
 - **`react`**: For base `useContext` hook
 - **[`../context/`](../context/README.md)**: For the Context instance
 
 ### Dependents (Imported By)
+
 - **[`../use-core/`](../use-core/README.md)**: Primary consumer, uses hook to read active skin
 - **User components**: Can import and use directly for custom theming logic
 
 ### Conceptual Relationships
+
 - **[`../provider/`](../provider/README.md)**: Sets the values that this hook reads
 - **[`../styled/`](../styled/README.md)**: Indirectly benefits via use-core integration
 
@@ -537,6 +556,7 @@ const skin = useContext() // Works!
 ### Planned Improvements
 
 1. **Development-mode warnings:**
+
    ```typescript
    export const useContext = () => {
      const skin = useGenericContext(Context)
@@ -550,6 +570,7 @@ const skin = useContext() // Works!
    ```
 
 2. **Hook options:**
+
    ```typescript
    interface UseContextOptions {
      required?: boolean // Throw if undefined
@@ -568,6 +589,7 @@ const skin = useContext() // Works!
    ```
 
 3. **Type guards:**
+
    ```typescript
    export const useContext = <T extends string = string>(): T | undefined => {
      return useGenericContext(Context) as T | undefined
@@ -628,11 +650,13 @@ const skin = useContext() // Works!
 #### Problem: "Invalid hook call" error
 
 **Likely causes:**
+
 1. Hook called outside React component
 2. Hook called conditionally
 3. Hook called in wrong React version
 
 **Fix:**
+
 ```typescript
 // ✅ Ensure hook is called at top level of component
 function MyComponent() {
@@ -646,6 +670,7 @@ function MyComponent() {
 **Likely cause:** Using Context value without checking for undefined
 
 **Fix:**
+
 ```typescript
 const skin = useContext()
 // Always check or use optional chaining
@@ -655,11 +680,13 @@ const upper = skin?.toUpperCase() ?? 'DEFAULT'
 #### Problem: "Hook returns wrong value"
 
 **Likely causes:**
+
 1. Wrong Provider value
 2. Component outside Provider
 3. Stale closure
 
 **Fix:**
+
 ```typescript
 // Verify Provider wraps component
 <Context.Provider value="dark">
@@ -672,6 +699,7 @@ const upper = skin?.toUpperCase() ?? 'DEFAULT'
 **Likely cause:** Trying to narrow type incorrectly
 
 **Fix:**
+
 ```typescript
 const skin = useContext()
 
@@ -687,17 +715,20 @@ const definitelySkin = skin!
 ### When to Modify This File
 
 **SAFE changes:**
+
 - Add JSDoc comments
 - Add development-mode logging
 - Improve TypeScript types without changing behavior
 
 **BREAKING changes (require major version bump):**
+
 - Add required parameters
 - Change return type
 - Add error throwing
 - Rename export
 
 **NEVER do:**
+
 - Add conditional logic before `useGenericContext` call
 - Return anything other than Context value
 - Add async behavior (hooks must be synchronous)
@@ -726,6 +757,7 @@ const definitelySkin = skin!
 If this module breaks:
 
 1. **Immediate workaround:**
+
    ```typescript
    // In affected components, use React's useContext directly
    import { useContext } from 'react'
@@ -753,11 +785,13 @@ If this module breaks:
 ### Related Patterns
 
 This hook follows the **Facade pattern**:
+
 - **Complex subsystem:** React's `useContext` + Context instance
 - **Simple interface:** Our zero-parameter `useContext()` function
 - **Benefit:** Hides implementation details, reduces API surface
 
 Similar patterns in other libraries:
+
 - `styled-components`'s `useTheme()` - Wraps their ThemeContext
 - `react-router`'s `useParams()` - Wraps their ParamsContext
 - `react-redux`'s `useSelector()` - Wraps store context

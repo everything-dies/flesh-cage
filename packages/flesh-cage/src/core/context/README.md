@@ -11,6 +11,7 @@ The `context/` module exports a single React Context instance that serves as the
 **Dependencies:** Only imports from `react` (no internal dependencies)
 
 **Dependents:**
+
 - `../use-context/` - Consumes this Context via `useContext` hook
 - `../provider/` - Provides values through this Context's Provider component
 
@@ -65,6 +66,7 @@ This design choice is **intentional and critical**:
 4. **Debugging aid:** Seeing `undefined` in DevTools immediately shows that a Provider is missing
 
 **Alternative considered:** Using a default skin name like `'default'` was rejected because:
+
 - It hides configuration errors (missing Provider looks like working code)
 - It couples the Context to specific skin names
 - It breaks the "explicit is better than implicit" principle
@@ -72,12 +74,14 @@ This design choice is **intentional and critical**:
 ### Trade-offs
 
 **Pros:**
+
 - Zero runtime overhead (Context is a React primitive)
 - No prop drilling across intermediate components
 - Supports nested Providers with override behavior
 - Type-safe with TypeScript's union types
 
 **Cons:**
+
 - Components can only access one skin at a time (no multi-theme composition)
 - Context updates cause re-renders of all consumers (though React optimizes this)
 - Requires understanding React Context API to debug
@@ -190,15 +194,18 @@ import { createContext } from 'react'
 ```
 
 **What it does:**
+
 - Imports React's `createContext` factory function
 - Uses named import (not default) following React conventions
 
 **Why not import React?**
+
 - We only need `createContext`, not the entire React namespace
 - Tree-shaking works better with named imports
 - Explicit imports make dependencies clearer
 
 **Type implications:**
+
 - `createContext` is a generic function: `createContext<T>(defaultValue: T)`
 - Returns a `Context<T>` object with `.Provider` and `.Consumer` properties
 
@@ -232,6 +239,7 @@ export const Context = createContext<string | undefined>(undefined)
 **What this creates:**
 
 A React Context object with the following shape:
+
 ```typescript
 {
   Provider: React.ComponentType<{ value: string | undefined; children?: ReactNode }>
@@ -245,24 +253,30 @@ A React Context object with the following shape:
 ### The Missing Lines (Intentionally Absent)
 
 **No default skin name:**
+
 ```typescript
 // ❌ NOT done (intentionally)
 export const Context = createContext<string>('default')
 ```
+
 This would hide missing Providers and create silent bugs.
 
 **No displayName:**
+
 ```typescript
 // ❌ NOT done (could be added for debugging)
 Context.displayName = 'SkinContext'
 ```
+
 While helpful in React DevTools, it's omitted to keep the module minimal. Could be added if debugging becomes difficult.
 
 **No Consumer export:**
+
 ```typescript
 // ❌ NOT done (intentionally)
 export const Consumer = Context.Consumer
 ```
+
 We use the `useContext` hook instead of render props pattern (hooks are cleaner).
 
 ## Usage Examples
@@ -361,14 +375,17 @@ function ThemeController() {
 ## Related Modules
 
 ### Dependencies (Imports)
+
 - **`react`**: For `createContext` function
 
 ### Dependents (Imported By)
+
 - **[`../use-context/`](../use-context/README.md)**: Wraps this Context in a convenient hook
 - **[`../provider/`](../provider/README.md)**: Uses `Context.Provider` to distribute skin names
 - **[`../use-core/`](../use-core/README.md)**: Indirectly uses this via `useContext` hook
 
 ### Conceptual Relationships
+
 - **[`../types/`](../types/README.md)**: Defines the `ProviderProps` interface that includes the skin string type
 - **[`../styled/`](../styled/README.md)**: End consumer of Context values via styled components
 
@@ -498,15 +515,21 @@ function MyComponent() {
 ### Planned Improvements
 
 1. **Display name for DevTools:**
+
    ```typescript
    Context.displayName = 'FleshCageSkinContext'
    ```
+
    Would improve debugging in React DevTools.
 
 2. **Multiple context values:**
+
    ```typescript
-   createContext<{ skin: string; mode: 'light' | 'dark' } | undefined>(undefined)
+   createContext<{ skin: string; mode: 'light' | 'dark' } | undefined>(
+     undefined
+   )
    ```
+
    Could support additional theming metadata.
 
 3. **Context validation:**
@@ -568,11 +591,13 @@ function MyComponent() {
 #### Problem: "Context value is always undefined"
 
 **Likely causes:**
+
 1. Missing Provider wrapper
 2. Provider is rendered after consumer
 3. Wrong Context imported (duplicate instances)
 
 **Fix:**
+
 ```typescript
 // Verify Provider wraps consumers
 <Context.Provider value="dark">
@@ -586,6 +611,7 @@ function MyComponent() {
 **Likely cause:** Trying to use Context value without checking for undefined
 
 **Fix:**
+
 ```typescript
 const skin = useContext(Context)
 
@@ -599,10 +625,12 @@ const uppercased = skin?.toUpperCase() ?? 'DEFAULT'
 #### Problem: "Changes to Context value don't trigger re-renders"
 
 **Likely causes:**
+
 1. Mutating the value instead of replacing it
 2. Provider value is a constant reference
 
 **Fix:**
+
 ```typescript
 // ❌ Wrong - same reference
 const theme = 'dark'
@@ -616,6 +644,7 @@ const [theme, setTheme] = useState('dark')
 #### Problem: "React DevTools shows 'Context' with no name"
 
 **Fix:** Add display name for debugging:
+
 ```typescript
 if (process.env.NODE_ENV === 'development') {
   Context.displayName = 'FleshCageSkinContext'
@@ -625,16 +654,19 @@ if (process.env.NODE_ENV === 'development') {
 ### When to Modify This File
 
 **SAFE changes:**
+
 - Add display name for debugging
 - Add JSDoc comments
 - Add development-mode validation
 
 **BREAKING changes (require major version bump):**
+
 - Change default value (undefined → something else)
 - Change type (string | undefined → something else)
 - Rename export
 
 **NEVER do:**
+
 - Make Context non-const (breaks identity stability)
 - Move Context creation inside a function (breaks singleton)
 - Remove export (breaks all dependents)
@@ -667,11 +699,13 @@ if (process.env.NODE_ENV === 'development') {
 ### Related Patterns
 
 This Context follows the **Publish-Subscribe pattern**:
+
 - **Publisher:** Provider component sets the value
 - **Subscribers:** Components using `useContext()` hook
 - **Channel:** The Context object itself
 
 This is similar to:
+
 - Redux's `Provider` and `connect`
 - MobX's `Provider` and `inject`
 - Styled-components' `ThemeProvider` and `useTheme`

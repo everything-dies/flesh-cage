@@ -101,7 +101,9 @@ describe('useContext', () => {
       let providerValue = 'initial'
 
       function TestWrapper({ children }: { children: React.ReactNode }) {
-        return <Context.Provider value={providerValue}>{children}</Context.Provider>
+        return (
+          <Context.Provider value={providerValue}>{children}</Context.Provider>
+        )
       }
 
       const { result, rerender } = renderHook(() => useContext(), {

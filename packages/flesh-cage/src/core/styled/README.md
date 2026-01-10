@@ -7,6 +7,7 @@ The `styled/` module is the **crown jewel** of the flesh-cage architecture. This
 **Purpose:** Create styled React components backed by Custom Elements with Shadow DOM encapsulation, supporting both synchronous and asynchronous skin loading, dynamic skin switching, and React 18 Suspense integration.
 
 **Lines of code:** 106 lines total
+
 - Imports and exports: 11 lines
 - `verify` helper function: 4 lines
 - `styled` factory function: 91 lines
@@ -17,6 +18,7 @@ The `styled/` module is the **crown jewel** of the flesh-cage architecture. This
 **Complexity level:** CRITICAL - This is the most complex module in the system. It orchestrates Custom Elements, Shadow DOM, React portals, AbortController race condition handling, event-driven communication, and async stylesheet adoption.
 
 **Dependencies:**
+
 - `react` - For `createElement`, `createPortal`, `ComponentType`, `PropsWithChildren`
 - `react-dom` - For `createPortal`
 - `../types/` - For `StyledConfig` type
@@ -24,6 +26,7 @@ The `styled/` module is the **crown jewel** of the flesh-cage architecture. This
 - `../use-core/` - For `useCore` hook (Shadow DOM lifecycle management)
 
 **Dependents:**
+
 - User applications - This is the primary public API users interact with
 - All styled components in the wild depend on this factory
 
@@ -53,8 +56,8 @@ const Button = styled.button`
 const Button = styled('button', {
   name: 'my-button',
   skins: {
-    primary: () => import('./skins/button.primary.css')
-  }
+    primary: () => import('./skins/button.primary.css'),
+  },
 })
 // Benefit: True style encapsulation, no class name mangling needed
 // Benefit: Async skin loading with code splitting
@@ -92,6 +95,7 @@ graph LR
 Skin loading is asynchronous. Users can switch skins rapidly (e.g., clicking through theme options). Without AbortController, we'd have race conditions where an older, slower skin could overwrite a newer, faster skin.
 
 **The problem:**
+
 ```
 User clicks: skin="dark" (loads in 200ms)
 User clicks: skin="light" (loads in 50ms)
@@ -100,14 +104,15 @@ Dark loads later → Applied ✗ (Wrong! User wanted light)
 ```
 
 **Our solution:**
+
 ```typescript
 adorn = (skin: string) => {
   const { controller: previous } = this
   const next = (this.controller = new AbortController())
   // ...
-  previous.abort()  // Cancel the previous skin load
+  previous.abort() // Cancel the previous skin load
   // ...
-  next.signal.throwIfAborted()  // Don't apply if we've been aborted
+  next.signal.throwIfAborted() // Don't apply if we've been aborted
 }
 ```
 
@@ -373,8 +378,7 @@ However, other errors (network failures, invalid CSS, etc.) are **real errors** 
 **Usage pattern:**
 
 ```typescript
-someAsyncOperation()
-  .catch(verify)  // AbortErrors become resolved, others re-throw
+someAsyncOperation().catch(verify) // AbortErrors become resolved, others re-throw
 ```
 
 This is used in the `.catch(verify)` at line 49 to prevent abort errors from crashing the application.
@@ -434,6 +438,7 @@ Each styled component has its own set of skins. `Button` might have `{ primary, 
 3. **Isolation:** A bug in one component's skins doesn't affect others
 
 The `Sheets` class handles:
+
 - Validating skin names
 - Loading skins asynchronously
 - Caching loaded stylesheets
@@ -512,6 +517,7 @@ adorn = (skin: string) => {
 **Line 36:** Check if the skin name is valid using `sheets.validate(skin)`.
 
 **Lines 37-41:** Define `adopt` function that:
+
 1. Checks if this controller has been aborted (`next.signal.throwIfAborted()`)
 2. If not aborted, assigns the stylesheet to the shadow root
 3. `adoptedStyleSheets` is a browser API that applies a `CSSStyleSheet` to a shadow root
@@ -519,6 +525,7 @@ adorn = (skin: string) => {
 **Line 43:** Abort the previous controller. Any in-flight skin loads will throw `AbortError`.
 
 **Lines 45-47:** Create a promise that either:
+
 - Rejects with `Error('Invalid skin')` if skin name doesn't exist
 - Resolves with `sheets.get(skin)` (a CSSStyleSheet) if valid
 
@@ -570,6 +577,7 @@ attributeChangedCallback(
 **Browser lifecycle hook:** Called when an observed attribute changes.
 
 **Parameters:**
+
 - `name` - Which attribute changed (in our case, always `'skin'`)
 - `_` (unused) - Old value (we don't care about the old skin)
 - `skin` - New value (the new skin name)
@@ -577,6 +585,7 @@ attributeChangedCallback(
 **Type annotation:** `(typeof CustomElement.observedAttributes)[number]` ensures `name` is type-safe ('skin').
 
 **Logic:**
+
 1. Normalize the attribute name (`trim().toLowerCase()`) for case-insensitive comparison
 2. If it's the `'skin'` attribute, call `this.adorn(skin)` to load the new skin
 3. Wrap in `this.suspend(...)` to dispatch suspension events for Suspense integration
@@ -587,7 +596,7 @@ attributeChangedCallback(
 switch (true) {
   case name === 'skin':
     return this.suspend(this.adorn(skin))
-  case name === 'theme':  // hypothetical future attribute
+  case name === 'theme': // hypothetical future attribute
     return this.handleTheme(value)
 }
 ```
@@ -689,7 +698,7 @@ suspend = (promise: Promise<unknown>) => {
 useLayoutEffect(() => {
   const suspend = (e: Event) => {
     const promise = (e as CustomEvent).detail as Promise<unknown>
-    persist(promise)  // If promise exists, triggers Suspense
+    persist(promise) // If promise exists, triggers Suspense
   }
 
   ref.current?.addEventListener('suspend', suspend)
@@ -714,17 +723,21 @@ const Styled = (props: Props) => {
 **This is the React component that users will render.**
 
 **Line 94:** Call `useCore` hook. Returns:
+
 - `container` - The shadow root where we portal children
 - `...core` - Spread contains `ref` and other props for the custom element
 
 **Lines 96-100:** Create the React element tree:
 
 ```typescript
-createElement(name, { ...attributes, ...core },  // <my-button ...attributes ref={core.ref}>
-  createPortal(                                  //   Portal to shadow root:
-    createElement(component, props),             //     <button {...props} />
-    container                                    //   Portal target: shadow root
-  )                                              // </my-button>
+createElement(
+  name,
+  { ...attributes, ...core }, // <my-button ...attributes ref={core.ref}>
+  createPortal(
+    //   Portal to shadow root:
+    createElement(component, props), //     <button {...props} />
+    container //   Portal target: shadow root
+  ) // </my-button>
 )
 ```
 
@@ -813,11 +826,13 @@ function App() {
 
 ```html
 <app-button>
-  #shadow-root (open)
-    | <style> (adopted stylesheet)
-    |   button { padding: 10px 20px; ... }
-    | </style>
-    | <button>Click Me</button>
+  #shadow-root (open) |
+  <style>
+    (adopted stylesheet)
+       |   button { padding: 10px 20px; ... }
+       |
+  </style>
+  | <button>Click Me</button>
 </app-button>
 ```
 
@@ -1029,7 +1044,7 @@ const Button = styled('button', {
   className: 'interactive primary',
   'data-variant': 'solid',
   'aria-label': 'Primary action button',
-  'exportparts': 'button, icon',  // Shadow DOM parts
+  exportparts: 'button, icon', // Shadow DOM parts
 })
 
 // Renders:
@@ -1099,6 +1114,7 @@ const Button = styled('button', {
 ### Transitive Dependencies
 
 Through `use-core`, we indirectly depend on:
+
 - `../use-context/` - For accessing the current skin name from React context
 - `../context/` - The React context definition
 - `../provider/` - The Provider component that users wrap their app in
@@ -1147,11 +1163,11 @@ Dependency chain: `styled` → `use-core` → `use-context` → `context` → `p
 
 ```typescript
 // From __tests__/utils.ts
-getShadowCSS(shadowRoot)        // Extract CSS from adoptedStyleSheets
-normalizeCSS(css)               // Normalize for comparison
-waitForStyles(element)          // Wait for async skin load
-findCustomElement(container, name)  // Query for custom element
-createMockSkin(css)             // Create synchronous test skin
+getShadowCSS(shadowRoot) // Extract CSS from adoptedStyleSheets
+normalizeCSS(css) // Normalize for comparison
+waitForStyles(element) // Wait for async skin load
+findCustomElement(container, name) // Query for custom element
+createMockSkin(css) // Create synchronous test skin
 ```
 
 **Example test:**
@@ -1191,14 +1207,15 @@ it('loads async skins successfully', async () => {
 
 ### Test Coverage Metrics
 
-| Category | Coverage | Files |
-|----------|----------|-------|
-| **Line Coverage** | ~95% | All lines except error paths |
-| **Branch Coverage** | ~90% | All conditional logic |
-| **Function Coverage** | 100% | All methods tested |
-| **Statement Coverage** | ~95% | All statements executed |
+| Category               | Coverage | Files                        |
+| ---------------------- | -------- | ---------------------------- |
+| **Line Coverage**      | ~95%     | All lines except error paths |
+| **Branch Coverage**    | ~90%     | All conditional logic        |
+| **Function Coverage**  | 100%     | All methods tested           |
+| **Statement Coverage** | ~95%     | All statements executed      |
 
 **Untested edge cases:**
+
 - Network failures during skin import (requires network mocking)
 - Browser crashes mid-render (not realistically testable)
 - Exotic Custom Element collisions (requires browser environment manipulation)
@@ -1239,8 +1256,8 @@ const SecondaryButton = styled('button', { name: 'btn-secondary', skins: {...} }
 
 ```typescript
 // User rapidly clicks theme buttons
-setTheme('dark')   // Starts loading (200ms)
-setTheme('light')  // Starts loading (50ms)
+setTheme('dark') // Starts loading (200ms)
+setTheme('light') // Starts loading (50ms)
 // Light finishes first → applied ✓
 // Dark finishes later → applied ✗ (Wrong!)
 ```
@@ -1248,9 +1265,9 @@ setTheme('light')  // Starts loading (50ms)
 **Why AbortController fixes it:** We abort the first load when the second starts.
 
 ```typescript
-adorn('dark')   // controller1
-adorn('light')  // controller1.abort() ← cancels dark
-                // controller2 ← only light finishes
+adorn('dark') // controller1
+adorn('light') // controller1.abort() ← cancels dark
+// controller2 ← only light finishes
 ```
 
 **User action required:** None! This is handled internally. Just be aware that only the most recent skin load completes.
@@ -1261,7 +1278,7 @@ adorn('light')  // controller1.abort() ← cancels dark
 
 ```typescript
 // BAD: Shadow root might not exist yet
-return createPortal(children, ref.current?.shadowRoot)  // ← ref might be null
+return createPortal(children, ref.current?.shadowRoot) // ← ref might be null
 ```
 
 **Solution:** `useCore` manages this. It uses `useLayoutEffect` to ensure the shadow root is attached before rendering.
@@ -1269,7 +1286,7 @@ return createPortal(children, ref.current?.shadowRoot)  // ← ref might be null
 ```typescript
 // GOOD: useCore guarantees container exists
 const { container } = useCore({ suspendable })
-return createPortal(children, container)  // ← container is guaranteed to exist
+return createPortal(children, container) // ← container is guaranteed to exist
 ```
 
 **Why this matters:** React portals throw if the target doesn't exist. `useCore` ensures the target is ready before the component renders.
@@ -1377,6 +1394,7 @@ styled('button', { name: 'x-123', skins: {...} })          // ✓
 ```
 
 **Reason:** HTML5 spec requires custom element names to:
+
 1. Start with lowercase ASCII letter
 2. Contain at least one hyphen
 3. Not contain uppercase letters
@@ -1467,7 +1485,7 @@ import { preloadSkin } from '@everything-dies/flesh-cage/core'
 
 // Preload on route change
 useEffect(() => {
-  preloadSkin(Button, 'dark')  // Start loading dark skin
+  preloadSkin(Button, 'dark') // Start loading dark skin
 }, [location.pathname])
 ```
 
@@ -1517,8 +1535,8 @@ if (typeof customElements === 'undefined') {
 1. **Custom element must be defined before component returns**
 
    ```typescript
-   customElements.define(name, CustomElement)  // ← Must happen first
-   return Styled  // ← Then return component
+   customElements.define(name, CustomElement) // ← Must happen first
+   return Styled // ← Then return component
    ```
 
    **Why:** React will try to render `<name>` immediately. If it's not defined, browser throws `Error: Failed to construct 'HTMLElement'`.
@@ -1532,7 +1550,7 @@ if (typeof customElements === 'undefined') {
 
    // WRONG:
    this.controller.abort()
-   this.controller = new AbortController()  // ← Too late! Already aborted.
+   this.controller = new AbortController() // ← Too late! Already aborted.
    ```
 
    **Why:** We need the previous controller's reference to abort it AFTER creating the new one.
@@ -1544,7 +1562,7 @@ if (typeof customElements === 'undefined') {
    new CustomEvent('suspend', { detail: promise })
 
    // WRONG:
-   new CustomEvent('suspend', { detail: { promise } })  // ← Extra wrapping breaks useCore
+   new CustomEvent('suspend', { detail: { promise } }) // ← Extra wrapping breaks useCore
    ```
 
    **Why:** `useCore` expects `detail` to be the promise directly, not an object containing it.
@@ -1571,7 +1589,7 @@ if (typeof customElements === 'undefined') {
    this.shadow.adoptedStyleSheets = [sheet]
 
    // WRONG:
-   this.shadow.adoptedStyleSheets = sheet  // ← Type error!
+   this.shadow.adoptedStyleSheets = sheet // ← Type error!
    ```
 
    **Why:** Browser API requires an array of `CSSStyleSheet` objects.
@@ -1583,6 +1601,7 @@ if (typeof customElements === 'undefined') {
 **Location:** Lines 84-90 (`suspend` method)
 
 **Code:**
+
 ```typescript
 suspend = (promise: Promise<unknown>) => {
   const detail = promise.finally(this.resume)
@@ -1596,6 +1615,7 @@ suspend = (promise: Promise<unknown>) => {
 **Why fragile:** Event dispatch timing matters. If we dispatch synchronously, we might dispatch before `useCore` has attached the event listener, causing the event to be missed.
 
 **What could break:**
+
 - Removing `queueMicrotask` → Events fire before listeners are ready
 - Changing to `setTimeout` → Events fire too late (after a frame)
 - Changing to `requestAnimationFrame` → Events fire even later
@@ -1607,6 +1627,7 @@ suspend = (promise: Promise<unknown>) => {
 **Location:** Lines 37-41 (`adopt` function inside `adorn`)
 
 **Code:**
+
 ```typescript
 const adopt = (sheet: CSSStyleSheet) => {
   next.signal.throwIfAborted()
@@ -1618,6 +1639,7 @@ const adopt = (sheet: CSSStyleSheet) => {
 **Why fragile:** `throwIfAborted` throws a `DOMException`. If we don't catch it correctly, it propagates to React and crashes the app.
 
 **What could break:**
+
 - Not catching with `.catch(verify)` → Unhandled promise rejection
 - Checking `signal.aborted` instead of throwing → Race condition (signal could be aborted between check and assignment)
 - Moving the check after assignment → Sheet applied even when aborted
@@ -1629,6 +1651,7 @@ const adopt = (sheet: CSSStyleSheet) => {
 **Location:** `use-core/index.ts` (lines 17-20)
 
 **Code:**
+
 ```typescript
 useLayoutEffect(() => {
   const transition = () => attach(ref.current?.shadowRoot as ShadowRoot)
@@ -1639,6 +1662,7 @@ useLayoutEffect(() => {
 **Why fragile:** Depends on custom element being mounted and shadow root existing before this effect runs. If the effect runs first, `ref.current` is null.
 
 **What could break:**
+
 - Changing `useLayoutEffect` to `useEffect` → Race condition
 - Removing `startTransition` → Blocks rendering (but probably won't break)
 - Adding dependencies to the array → Re-runs effect unnecessarily
@@ -1650,6 +1674,7 @@ useLayoutEffect(() => {
 **Location:** Lines 93-101 (`Styled` component)
 
 **Code:**
+
 ```typescript
 const Styled = (props: Props) => {
   const { container, ...core } = useCore({ suspendable })
@@ -1665,6 +1690,7 @@ const Styled = (props: Props) => {
 **Why fragile:** `container` comes from `useState` in `useCore`. If it's undefined, `createPortal` throws. The initial state is `new DocumentFragment()`, which is valid but renders nothing until replaced with the shadow root.
 
 **What could break:**
+
 - Changing `useCore` to return `undefined` initially → Portal throws
 - Not updating `container` state → Children never render
 - Using `ref.current.shadowRoot` directly → Null on first render
@@ -1680,12 +1706,14 @@ const Styled = (props: Props) => {
 **Checklist:**
 
 1. **Check skin name is valid**
+
    ```typescript
    // Open browser console, look for this message:
-   sheets.validate(skin)  // Should return true
+   sheets.validate(skin) // Should return true
    ```
 
 2. **Check adoptedStyleSheets**
+
    ```javascript
    // In DevTools:
    document.querySelector('your-element').shadowRoot.adoptedStyleSheets
@@ -1693,16 +1721,22 @@ const Styled = (props: Props) => {
    ```
 
 3. **Check for AbortError**
+
    ```javascript
    // Look for unhandled promise rejections in console
    // If you see AbortError, it might be a race condition
    ```
 
 4. **Check CSS syntax**
+
    ```css
    /* Skin CSS must target elements inside shadow root */
-   button { color: red; }  /* ✓ Works */
-   .button { color: red; } /* ✗ Won't work unless <button class="button"> */
+   button {
+     color: red;
+   } /* ✓ Works */
+   .button {
+     color: red;
+   } /* ✗ Won't work unless <button class="button"> */
    ```
 
 5. **Check Provider skin prop**
@@ -1717,17 +1751,19 @@ const Styled = (props: Props) => {
 **Causes:**
 
 1. **Duplicate name**
+
    ```typescript
    // Check if name is already used
-   customElements.get('your-name')  // If defined, this returns a constructor
+   customElements.get('your-name') // If defined, this returns a constructor
    ```
 
 2. **Invalid name**
+
    ```typescript
    // Names must have a hyphen and start with lowercase letter
-   'button'      // ❌ No hyphen
-   'Button-x'    // ❌ Capital letter
-   'x-button'    // ✓ Valid
+   'button' // ❌ No hyphen
+   'Button-x' // ❌ Capital letter
+   'x-button' // ✓ Valid
    ```
 
 3. **Called `styled` multiple times with same name**
@@ -1744,18 +1780,20 @@ const Styled = (props: Props) => {
 **Diagnosis:**
 
 1. **Check AbortController is working**
+
    ```typescript
    // Add logging to adorn method
    adorn = (skin: string) => {
      console.log('[adorn] Loading skin:', skin)
      const { controller: previous } = this
-     previous.abort()  // Should log when aborted
+     previous.abort() // Should log when aborted
      console.log('[adorn] Aborted previous controller')
      // ...
    }
    ```
 
 2. **Check verify function**
+
    ```typescript
    // Ensure AbortErrors are caught
    .catch(verify)  // Should swallow AbortErrors, re-throw others
@@ -1764,7 +1802,7 @@ const Styled = (props: Props) => {
 3. **Check adoption timing**
    ```typescript
    // Verify throwIfAborted is called before assignment
-   next.signal.throwIfAborted()  // ← Must be here
+   next.signal.throwIfAborted() // ← Must be here
    this.shadow.adoptedStyleSheets = [sheet]
    ```
 
@@ -1775,6 +1813,7 @@ const Styled = (props: Props) => {
 **Causes:**
 
 1. **`suspendable` not set to `true`**
+
    ```typescript
    styled('button', {
      suspendable: true,  // ← Must be true for Suspense
@@ -1783,6 +1822,7 @@ const Styled = (props: Props) => {
    ```
 
 2. **No Suspense boundary**
+
    ```typescript
    <Suspense fallback={<div>Loading...</div>}>  {/* Must wrap component */}
      <YourComponent />
@@ -1790,6 +1830,7 @@ const Styled = (props: Props) => {
    ```
 
 3. **Skin loads synchronously**
+
    ```typescript
    // If skin is already cached, it resolves immediately
    // Suspense only triggers for truly async loads
@@ -1808,6 +1849,7 @@ const Styled = (props: Props) => {
 **Checklist:**
 
 1. **Check event listeners are removed**
+
    ```typescript
    disconnectedCallback() {
      this.removeEventListener('change', this.change)  // ← Must remove
@@ -1815,6 +1857,7 @@ const Styled = (props: Props) => {
    ```
 
 2. **Check adoptedStyleSheets cleared**
+
    ```typescript
    disconnectedCallback() {
      this.shadow.adoptedStyleSheets = []  // ← Must clear
@@ -1822,6 +1865,7 @@ const Styled = (props: Props) => {
    ```
 
 3. **Check for circular references**
+
    ```typescript
    // Avoid storing references to elements in closures
    // Bad:
@@ -1853,6 +1897,7 @@ const Styled = (props: Props) => {
 #### 2. Shadow DOM Performance
 
 **Reality check:** Shadow DOM has measurable overhead compared to light DOM. Each shadow root adds:
+
 - ~2-5ms to initial render (shadow root attachment)
 - ~0.5-1ms per style recalculation (adoptedStyleSheets)
 - Memory overhead (~1-2KB per shadow root)
@@ -1921,6 +1966,7 @@ const Styled = (props: Props) => {
 This module is the heart of flesh-cage. Every decision—from using Custom Elements to AbortController to event-driven communication—was made deliberately to solve real problems. If you need to change something, understand why it's currently designed this way first.
 
 When in doubt:
+
 1. Run the tests (`npm test styled`)
 2. Check DevTools Elements panel (look at shadow roots)
 3. Check DevTools Console (look for errors)
