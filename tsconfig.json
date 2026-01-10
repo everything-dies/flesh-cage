@@ -28,5 +28,15 @@
     "paths": {
       "@everything-dies/flesh-cage": ["./packages/flesh-cage/src/core"]
     }
-  }
+  },
+  "exclude": [
+    "node_modules",
+    "dist",
+    "build",
+    "coverage",
+    ".turbo",
+    ".idea",
+    ".codex",
+    "codesanbox"
+  ]
 }

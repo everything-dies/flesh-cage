@@ -125,7 +125,7 @@ describe('styled - CustomElement class', () => {
   })
 
   it('works with different base components', async () => {
-    const CustomDiv = (props: React.ComponentProps<'div'>) => (
+    const CustomDiv = (props: React.ComponentPropsWithoutRef<'div'>) => (
       <div data-custom="true" {...props} />
     )
 

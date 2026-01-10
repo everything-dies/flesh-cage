@@ -1,6 +1,5 @@
 /* eslint-disable react-hooks/immutability */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+
 /* eslint-disable @typescript-eslint/require-await */
 /* eslint-disable react-hooks/purity */
 import { describe, it, expect, beforeEach, afterEach } from 'vitest'
@@ -14,7 +13,7 @@ import '../../__tests__/setup'
  */
 
 // Declare custom element types for JSX
-declare global {
+declare module 'react/jsx-runtime' {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace JSX {
     interface IntrinsicElements {
@@ -106,7 +105,7 @@ describe('useCore - Shadow DOM Lifecycle', () => {
 
         return (
           <test-shadow-attach
-            ref={(el) => {
+            ref={(el: HTMLElement | null) => {
               if (el) {
                 Object.defineProperty(ref, 'current', {
                   value: el,
@@ -114,7 +113,7 @@ describe('useCore - Shadow DOM Lifecycle', () => {
                   configurable: true,
                 })
 
-                shadowRootExists.value = !!(el as HTMLElement).shadowRoot
+                shadowRootExists.value = !!el.shadowRoot
               }
             }}
           />
@@ -147,7 +146,7 @@ describe('useCore - Shadow DOM Lifecycle', () => {
 
         return (
           <test-shadow-mode
-            ref={(el) => {
+            ref={(el: HTMLElement | null) => {
               if (el) {
                 Object.defineProperty(ref, 'current', {
                   value: el,
@@ -155,7 +154,7 @@ describe('useCore - Shadow DOM Lifecycle', () => {
                   configurable: true,
                 })
 
-                shadowRoot.current = (el as HTMLElement).shadowRoot
+                shadowRoot.current = el.shadowRoot
               }
             }}
           />
@@ -199,7 +198,7 @@ describe('useCore - Shadow DOM Lifecycle', () => {
 
         return (
           <test-container-update
-            ref={(el) => {
+            ref={(el: HTMLElement | null) => {
               if (el) {
                 Object.defineProperty(ref, 'current', {
                   value: el,
@@ -250,7 +249,7 @@ describe('useCore - Shadow DOM Lifecycle', () => {
 
         return (
           <test-shadow-ref
-            ref={(el) => {
+            ref={(el: HTMLElement | null) => {
               if (el) {
                 Object.defineProperty(ref, 'current', {
                   value: el,
@@ -258,7 +257,7 @@ describe('useCore - Shadow DOM Lifecycle', () => {
                   configurable: true,
                 })
 
-                refShadowRoot.current = (el as HTMLElement).shadowRoot
+                refShadowRoot.current = el.shadowRoot
               }
             }}
           />
@@ -294,7 +293,7 @@ describe('useCore - Shadow DOM Lifecycle', () => {
 
         return (
           <test-shadow-query
-            ref={(el) => {
+            ref={(el: HTMLElement | null) => {
               if (el) {
                 Object.defineProperty(ref, 'current', {
                   value: el,
@@ -302,7 +301,7 @@ describe('useCore - Shadow DOM Lifecycle', () => {
                   configurable: true,
                 })
 
-                const shadowRoot = (el as HTMLElement).shadowRoot
+                const shadowRoot = el.shadowRoot
                 if (shadowRoot) {
                   queryResult.current = shadowRoot.querySelector('.test')
                 }
@@ -340,7 +339,7 @@ describe('useCore - Shadow DOM Lifecycle', () => {
 
         return (
           <test-shadow-styles
-            ref={(el) => {
+            ref={(el: HTMLElement | null) => {
               if (el) {
                 Object.defineProperty(ref, 'current', {
                   value: el,
@@ -348,7 +347,7 @@ describe('useCore - Shadow DOM Lifecycle', () => {
                   configurable: true,
                 })
 
-                const shadowRoot = (el as HTMLElement).shadowRoot
+                const shadowRoot = el.shadowRoot
                 hasAdoptedStyleSheets.value =
                   'adoptedStyleSheets' in (shadowRoot || {})
               }
@@ -386,9 +385,9 @@ describe('useCore - Shadow DOM Lifecycle', () => {
 
         return (
           <test-cleanup-listeners
-            ref={(el) => {
+            ref={(el: HTMLElement | null) => {
               if (el) {
-                elementRef.current = el as HTMLElement
+                elementRef.current = el
                 Object.defineProperty(ref, 'current', {
                   value: el,
                   writable: true,
@@ -447,7 +446,7 @@ describe('useCore - Shadow DOM Lifecycle', () => {
 
         return (
           <test-remove-suspend
-            ref={(el) => {
+            ref={(el: HTMLElement | null) => {
               if (el) {
                 Object.defineProperty(ref, 'current', {
                   value: el,
@@ -506,7 +505,7 @@ describe('useCore - Shadow DOM Lifecycle', () => {
 
         return (
           <test-no-leak
-            ref={(el) => {
+            ref={(el: HTMLElement | null) => {
               if (el) {
                 Object.defineProperty(ref, 'current', {
                   value: el,
@@ -557,7 +556,7 @@ describe('useCore - Shadow DOM Lifecycle', () => {
 
         return (
           <test-transition
-            ref={(el) => {
+            ref={(el: HTMLElement | null) => {
               if (el) {
                 Object.defineProperty(ref, 'current', {
                   value: el,
@@ -608,7 +607,7 @@ describe('useCore - Shadow DOM Lifecycle', () => {
 
         return (
           <test-non-blocking
-            ref={(el) => {
+            ref={(el: HTMLElement | null) => {
               if (el) {
                 Object.defineProperty(ref, 'current', {
                   value: el,
@@ -660,7 +659,7 @@ describe('useCore - Shadow DOM Lifecycle', () => {
 
         return (
           <test-multi-1
-            ref={(el) => {
+            ref={(el: HTMLElement | null) => {
               if (el) {
                 Object.defineProperty(ref, 'current', {
                   value: el,
@@ -668,7 +667,7 @@ describe('useCore - Shadow DOM Lifecycle', () => {
                   configurable: true,
                 })
 
-                shadowRoots[0] = (el as HTMLElement).shadowRoot
+                shadowRoots[0] = el.shadowRoot
               }
             }}
           />
@@ -680,7 +679,7 @@ describe('useCore - Shadow DOM Lifecycle', () => {
 
         return (
           <test-multi-2
-            ref={(el) => {
+            ref={(el: HTMLElement | null) => {
               if (el) {
                 Object.defineProperty(ref, 'current', {
                   value: el,
@@ -688,7 +687,7 @@ describe('useCore - Shadow DOM Lifecycle', () => {
                   configurable: true,
                 })
 
-                shadowRoots[1] = (el as HTMLElement).shadowRoot
+                shadowRoots[1] = el.shadowRoot
               }
             }}
           />
@@ -732,7 +731,7 @@ describe('useCore - Shadow DOM Lifecycle', () => {
 
         return (
           <test-independent-events
-            ref={(el) => {
+            ref={(el: HTMLElement | null) => {
               if (el) {
                 Object.defineProperty(ref, 'current', {
                   value: el,
@@ -741,7 +740,9 @@ describe('useCore - Shadow DOM Lifecycle', () => {
                 })
 
                 el.addEventListener('suspend', () => {
-                  eventCounts[index]++
+                  if (eventCounts[index] !== undefined) {
+                    eventCounts[index]++
+                  }
                 })
               }
             }}
@@ -764,7 +765,7 @@ describe('useCore - Shadow DOM Lifecycle', () => {
       const elements = container.querySelectorAll('test-independent-events')
 
       // Dispatch event to first element only
-      elements[0].dispatchEvent(
+      elements[0]?.dispatchEvent(
         new CustomEvent('suspend', { detail: Promise.resolve() })
       )
 

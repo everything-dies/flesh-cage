@@ -1,8 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/restrict-template-expressions */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
+
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { render, waitFor } from '@testing-library/react'
 import { Suspense, useState } from 'react'
@@ -16,7 +13,7 @@ import '../../__tests__/setup'
  */
 
 // Declare custom element types for JSX
-declare global {
+declare module 'react/jsx-runtime' {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace JSX {
     interface IntrinsicElements {
@@ -92,9 +89,9 @@ describe('useCore - Suspension Logic', () => {
 
         return (
           <test-suspend-listen
-            ref={(el) => {
+            ref={(el: HTMLElement | null) => {
               if (el) {
-                elementRef.current = el as HTMLElement
+                elementRef.current = el
                 // Simulate ref attachment
                 Object.defineProperty(ref, 'current', {
                   value: el,
@@ -146,7 +143,7 @@ describe('useCore - Suspension Logic', () => {
 
         return (
           <test-suspend-detail
-            ref={(el) => {
+            ref={(el: HTMLElement | null) => {
               if (el) {
                 Object.defineProperty(ref, 'current', {
                   value: el,
@@ -201,7 +198,7 @@ describe('useCore - Suspension Logic', () => {
 
         return (
           <test-no-suspend
-            ref={(el) => {
+            ref={(el: HTMLElement | null) => {
               if (el) {
                 Object.defineProperty(ref, 'current', {
                   value: el,
@@ -243,7 +240,7 @@ describe('useCore - Suspension Logic', () => {
 
         return (
           <test-no-promise
-            ref={(el) => {
+            ref={(el: HTMLElement | null) => {
               if (el) {
                 Object.defineProperty(ref, 'current', {
                   value: el,
@@ -292,7 +289,7 @@ describe('useCore - Suspension Logic', () => {
 
         return (
           <test-resume
-            ref={(el) => {
+            ref={(el: HTMLElement | null) => {
               if (el) {
                 Object.defineProperty(ref, 'current', {
                   value: el,
@@ -336,7 +333,7 @@ describe('useCore - Suspension Logic', () => {
 
         return (
           <test-multi-suspend
-            ref={(el) => {
+            ref={(el: HTMLElement | null) => {
               if (el) {
                 Object.defineProperty(ref, 'current', {
                   value: el,
@@ -392,7 +389,7 @@ describe('useCore - Suspension Logic', () => {
 
         return (
           <test-rapid-suspend
-            ref={(el) => {
+            ref={(el: HTMLElement | null) => {
               if (el) {
                 Object.defineProperty(ref, 'current', {
                   value: el,
@@ -451,7 +448,7 @@ describe('useCore - Suspension Logic', () => {
 
         return (
           <test-change-event
-            ref={(el) => {
+            ref={(el: HTMLElement | null) => {
               if (el) {
                 Object.defineProperty(ref, 'current', {
                   value: el,
@@ -499,7 +496,7 @@ describe('useCore - Suspension Logic', () => {
 
         return (
           <test-skin-change
-            ref={(el) => {
+            ref={(el: HTMLElement | null) => {
               if (el) {
                 Object.defineProperty(ref, 'current', {
                   value: el,
@@ -567,9 +564,9 @@ describe('useCore - Suspension Logic', () => {
 
         return (
           <test-cleanup
-            ref={(el) => {
+            ref={(el: HTMLElement | null) => {
               if (el) {
-                elementRef.current = el as HTMLElement
+                elementRef.current = el
                 Object.defineProperty(ref, 'current', {
                   value: el,
                   writable: true,

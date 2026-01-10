@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { describe, it, expect, vi } from 'vitest'
 import { render, act, waitFor } from '@testing-library/react'
 import { styled } from '../index'
@@ -312,9 +311,8 @@ describe('styled - AbortController logic', () => {
       },
     })
 
-    let unhandledRejection = false
     const handler = () => {
-      unhandledRejection = true
+      // Handler for unhandled rejections
     }
 
     process.on('unhandledRejection', handler)

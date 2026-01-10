@@ -15,7 +15,7 @@ import '../../__tests__/setup'
  */
 
 // Declare custom element types for JSX
-declare global {
+declare module 'react/jsx-runtime' {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace JSX {
     interface IntrinsicElements {
@@ -115,7 +115,7 @@ describe('useCore - Basic Behavior', () => {
 
       const hookResult = {
         current: null as {
-          ref: RefObject<HTMLElement>
+          ref: RefObject<HTMLElement | null>
           container: DocumentFragment | ShadowRoot
         } | null,
       }
@@ -146,7 +146,7 @@ describe('useCore - Basic Behavior', () => {
         customElements.define('test-stable-ref', TestElement)
       }
 
-      const firstRef = { current: null as RefObject<HTMLElement> | null }
+      const firstRef = { current: null as RefObject<HTMLElement | null> | null }
 
       function TestComponent() {
         const { ref } = useCore({ suspendable: false })
@@ -237,8 +237,12 @@ describe('useCore - Basic Behavior', () => {
         customElements.define('test-ref-rerender', TestElement)
       }
 
-      const initialRef = { current: null as RefObject<HTMLElement> | null }
-      const rerenderRef = { current: null as RefObject<HTMLElement> | null }
+      const initialRef = {
+        current: null as RefObject<HTMLElement | null> | null,
+      }
+      const rerenderRef = {
+        current: null as RefObject<HTMLElement | null> | null,
+      }
       const renderCount = { value: 0 }
 
       function TestComponent({ trigger: _trigger }: { trigger: number }) {
@@ -275,7 +279,7 @@ describe('useCore - Basic Behavior', () => {
       }
 
       const initialRef = {
-        current: null as React.RefObject<HTMLElement> | null,
+        current: null as React.RefObject<HTMLElement | null> | null,
       }
       const updatedContainer = {
         current: null as DocumentFragment | ShadowRoot | null,
@@ -326,8 +330,8 @@ describe('useCore - Basic Behavior', () => {
         customElements.define('test-multi-ref-2', TestElement2)
       }
 
-      const ref1 = { current: null as RefObject<HTMLElement> | null }
-      const ref2 = { current: null as RefObject<HTMLElement> | null }
+      const ref1 = { current: null as RefObject<HTMLElement | null> | null }
+      const ref2 = { current: null as RefObject<HTMLElement | null> | null }
 
       function Component1() {
         const { ref } = useCore({ suspendable: false })
@@ -487,10 +491,10 @@ describe('useCore - Basic Behavior', () => {
       }
 
       const initialRef = {
-        current: null as React.RefObject<HTMLElement> | null,
+        current: null as React.RefObject<HTMLElement | null> | null,
       }
       const updatedRef = {
-        current: null as React.RefObject<HTMLElement> | null,
+        current: null as React.RefObject<HTMLElement | null> | null,
       }
       const renderCount = { value: 0 }
 

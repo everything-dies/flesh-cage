@@ -63,7 +63,7 @@ describe('Core Integration - Full Stack', () => {
     // 4. Verify Shadow DOM is attached (use-core module)
     const shadowRoot = (element as HTMLElement).shadowRoot
     expect(shadowRoot).toBeTruthy()
-    expect(shadowRoot.mode).toBe('open')
+    expect(shadowRoot?.mode).toBe('open')
 
     // 5. Wait for stylesheet loading (sheets module)
     await act(async () => {
@@ -71,13 +71,13 @@ describe('Core Integration - Full Stack', () => {
     })
 
     // 6. Verify styles are adopted into shadow DOM
-    expect(shadowRoot.adoptedStyleSheets).toHaveLength(1)
+    expect(shadowRoot?.adoptedStyleSheets).toHaveLength(1)
     const css = normalizeCSS(getShadowCSS(shadowRoot))
     expect(css).toContain('blue')
     expect(css).toContain('white')
 
     // 7. Verify children are rendered inside shadow DOM (portal)
-    const button = shadowRoot.querySelector('button')
+    const button = shadowRoot?.querySelector('button')
     expect(button).toBeTruthy()
     expect(button?.textContent).toBe('Integration Test')
   })
