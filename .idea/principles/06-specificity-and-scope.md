@@ -1,10 +1,20 @@
 # Chapter 6: The Specificity Wars Are Over - Scoped Selectors vs. The Global Namespace
 
+**Table of Contents**
+
+- [A Brief History of the Specificity Arms Race](#a-brief-history-of-the-specificity-arms-race)
+  - [The Specificity Algorithm: A W3C Primer](#the-specificity-algorithm-a-w3c-primer)
+  - [The Rise of Conventions: A Cold War Truce](#the-rise-of-conventions-a-cold-war-truce)
+- [The Ceasefire: Scoped Styling with Shadow DOM](#the-ceasefire-scoped-styling-with-shadow-dom)
+  - [The "Specificity Reset"](#the-specificity-reset)
+  - [Trade-off Analysis: Global vs. Scoped](#trade-off-analysis-global-vs-scoped)
+- [The New Semantics: Attributes as a State Machine](#the-new-semantics-attributes-as-a-state-machine)
+
 For most of its history, CSS development has been a story of attrition. We, as developers, have been fighting a low-grade, decades-long war against the single greatest feature and flaw of CSS: its global nature. The history of CSS "best practices" is a history of tactics developed to survive this war. Flesh Cage proposes a permanent ceasefire by fundamentally changing the battlefield.
 
 ## A Brief History of the Specificity Arms Race
 
-To understand the solution, we must first respect the problem. The CSS Cascade and Specificity rules are the algorithm that a browser uses to determine which style rule applies to an element when multiple rules conflict. Every stylesheet loaded onto a page—yours, your users', your browser's default—contributes to a single, global scope.
+To understand the solution, we must first respect the problem. The [CSS Cascade](https://developer.mozilla.org/en-US/docs/Web/CSS/Cascade) and [Specificity](https://developer.mozilla.org/en-US/docs/Web/CSS/Specificity) rules are the algorithm that a browser uses to determine which style rule applies to an element when multiple rules conflict. Every stylesheet loaded onto a page—yours, your users', your browser's default—contributes to a single, global scope.
 
 ### The Specificity Algorithm: A W3C Primer
 
@@ -41,15 +51,15 @@ div.sidebar > .button[data-variant='primary'] {
 
 ### The Rise of Conventions: A Cold War Truce
 
-Methodologies like BEM (`.block__element--modifier`) were invented as a tactical retreat from this arms race. By creating long, unique, and highly descriptive class names (`.main-navigation__link--is-active`), developers could treat the global namespace as if it were scoped. BEM keeps specificity flat and predictable (always a single class), relying on naming conventions and developer discipline to prevent collisions.
+Methodologies like [BEM](https://getbem.com/) (`.block__element--modifier`) were invented as a tactical retreat from this arms race. By creating long, unique, and highly descriptive class names (`.main-navigation__link--is-active`), developers could treat the global namespace as if it were scoped. BEM keeps specificity flat and predictable (always a single class), relying on naming conventions and developer discipline to prevent collisions.
 
 These methodologies are brilliant and have served us well. But they are a _convention-based workaround_ for a technical limitation of the global scope. They are a truce, not a peace treaty.
 
 ## The Ceasefire: Scoped Styling with Shadow DOM
 
-Flesh Cage doesn't propose a new convention; it leverages a new platform capability that makes the old war obsolete: the **Shadow DOM**.
+Flesh Cage doesn't propose a new convention; it leverages a new platform capability that makes the old war obsolete: the **[Shadow DOM](https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_shadow_DOM)**.
 
-Every component created with `styled()` is a Web Component with its own isolated Shadow DOM. This means it has its own DOM tree, its own `adoptedStyleSheets`, and critically, its own **scoped CSS context**.
+Every component created with `styled()` is a [Web Component](https://developer.mozilla.org/en-US/docs/Web/API/Web_components) with its own isolated Shadow DOM. This means it has its own DOM tree, its own `adoptedStyleSheets`, and critically, its own **scoped CSS context**.
 
 ### The "Specificity Reset"
 

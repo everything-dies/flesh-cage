@@ -1,10 +1,15 @@
 # Chapter 2: The Theming Trap vs. The Skin Paradigm
 
+**Table of Contents**
+
+- [The Theming Trap: Painting by Numbers](#the-theming-trap-painting-by-numbers)
+- [The "Skin" Paradigm: A New Set of Blueprints](#the-skin-paradigm-a-new-set-of-blueprints)
+
 When it comes to styling, many systems offer "theming," which at first glance seems to offer flexibility. However, a deeper dive reveals significant limitations compared to the "skin" paradigm employed by Flesh Cage.
 
 ## The Theming Trap: Painting by Numbers
 
-Traditional theming, whether through CSS Custom Properties, Styled-Components' `ThemeProvider`, or similar mechanisms, is fundamentally about **swapping variables**.
+Traditional theming, whether through [CSS Custom Properties](https://developer.mozilla.org/en-US/docs/Web/CSS/--*), [Styled-Components'](https://styled-components.com/) `ThemeProvider`, or similar mechanisms, is fundamentally about **swapping variables**.
 
 ```javascript
 // Example: A typical theme object
@@ -58,13 +63,13 @@ This escalating cascade of conditional logic makes your component's styling:
 
 - **Tightly Coupled:** The component's styling becomes intimately intertwined with the specifics of every theme it needs to support.
 - **Hard to Read and Debug:** Reasoning about the component's appearance under different themes requires mentally executing complex conditional statements.
-- **Structurally Constrained:** You're always working within the existing CSS properties of the base component. Fundamentally changing layout models (e.g., from `flex` to `grid`), adding pseudo-elements (`::before`, `::after`), or entirely altering transitions and animations becomes cumbersome if not impossible without breaking encapsulation.
+- **Structurally Constrained:** You're always working within the existing CSS properties of the base component. Fundamentally changing layout models (e.g., from `flex` to `grid`), adding [pseudo-elements](https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-element) (`::before`, `::after`), or entirely altering transitions and animations becomes cumbersome if not impossible without breaking encapsulation.
 
 ## The "Skin" Paradigm: A New Set of Blueprints
 
 Skins offer a profound departure from this model. A "skin" is not a set of variables; it is a **complete, self-contained visual language** for a component. The component itself is liberated from styling concerns, focusing solely on its structure and state.
 
-Consider a component that semantically exposes its internal `parts` via Shadow DOM:
+Consider a component that semantically exposes its internal `parts` via [Shadow DOM](https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_shadow_DOM):
 
 ```tsx
 // The component only knows about its "parts"
