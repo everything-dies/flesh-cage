@@ -1,0 +1,1773 @@
+{
+  "nodes": [
+    {
+      "id": 1,
+      "callFrame": {
+        "functionName": "(root)",
+        "scriptId": "0",
+        "url": "",
+        "lineNumber": -1,
+        "columnNumber": -1
+      },
+      "hitCount": 0,
+      "children": [
+        2,
+        3,
+        7,
+        8,
+        9,
+        13,
+        14
+      ]
+    },
+    {
+      "id": 2,
+      "callFrame": {
+        "functionName": "(program)",
+        "scriptId": "0",
+        "url": "",
+        "lineNumber": -1,
+        "columnNumber": -1
+      },
+      "hitCount": 50
+    },
+    {
+      "id": 3,
+      "callFrame": {
+        "functionName": "",
+        "scriptId": "11",
+        "url": "",
+        "lineNumber": 0,
+        "columnNumber": 1
+      },
+      "hitCount": 0,
+      "children": [
+        4
+      ]
+    },
+    {
+      "id": 4,
+      "callFrame": {
+        "functionName": "evaluate",
+        "scriptId": "5",
+        "url": "",
+        "lineNumber": 283,
+        "columnNumber": 10
+      },
+      "hitCount": 0,
+      "children": [
+        5
+      ]
+    },
+    {
+      "id": 5,
+      "callFrame": {
+        "functionName": "",
+        "scriptId": "22",
+        "url": "",
+        "lineNumber": 0,
+        "columnNumber": 0
+      },
+      "hitCount": 0,
+      "children": [
+        6
+      ]
+    },
+    {
+      "id": 6,
+      "callFrame": {
+        "functionName": "gc",
+        "scriptId": "0",
+        "url": "",
+        "lineNumber": -1,
+        "columnNumber": -1
+      },
+      "hitCount": 1,
+      "positionTicks": [
+        {
+          "line": 1,
+          "ticks": 1
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "callFrame": {
+        "functionName": "(garbage collector)",
+        "scriptId": "0",
+        "url": "",
+        "lineNumber": -1,
+        "columnNumber": -1
+      },
+      "hitCount": 4
+    },
+    {
+      "id": 8,
+      "callFrame": {
+        "functionName": "(idle)",
+        "scriptId": "0",
+        "url": "",
+        "lineNumber": -1,
+        "columnNumber": -1
+      },
+      "hitCount": 3
+    },
+    {
+      "id": 9,
+      "callFrame": {
+        "functionName": "",
+        "scriptId": "27",
+        "url": "",
+        "lineNumber": 0,
+        "columnNumber": 1
+      },
+      "hitCount": 0,
+      "children": [
+        10
+      ]
+    },
+    {
+      "id": 10,
+      "callFrame": {
+        "functionName": "evaluate",
+        "scriptId": "5",
+        "url": "",
+        "lineNumber": 283,
+        "columnNumber": 10
+      },
+      "hitCount": 0,
+      "children": [
+        11
+      ]
+    },
+    {
+      "id": 11,
+      "callFrame": {
+        "functionName": "",
+        "scriptId": "28",
+        "url": "",
+        "lineNumber": 0,
+        "columnNumber": 0
+      },
+      "hitCount": 0,
+      "children": [
+        12
+      ]
+    },
+    {
+      "id": 12,
+      "callFrame": {
+        "functionName": "run",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 21909,
+        "columnNumber": 20
+      },
+      "hitCount": 1,
+      "positionTicks": [
+        {
+          "line": 21911,
+          "ticks": 1
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "callFrame": {
+        "functionName": "",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 14788,
+        "columnNumber": 36
+      },
+      "hitCount": 1,
+      "positionTicks": [
+        {
+          "line": 14790,
+          "ticks": 1
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "callFrame": {
+        "functionName": "performWorkUntilDeadline",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 1020,
+        "columnNumber": 41
+      },
+      "hitCount": 0,
+      "children": [
+        15,
+        69
+      ]
+    },
+    {
+      "id": 15,
+      "callFrame": {
+        "functionName": "performWorkOnRootViaSchedulerTask",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 14750,
+        "columnNumber": 50
+      },
+      "hitCount": 0,
+      "children": [
+        16
+      ]
+    },
+    {
+      "id": 16,
+      "callFrame": {
+        "functionName": "performWorkOnRoot",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 12967,
+        "columnNumber": 34
+      },
+      "hitCount": 1,
+      "children": [
+        17,
+        36,
+        105
+      ],
+      "positionTicks": [
+        {
+          "line": 13028,
+          "ticks": 1
+        }
+      ]
+    },
+    {
+      "id": 17,
+      "callFrame": {
+        "functionName": "renderRootSync",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 13627,
+        "columnNumber": 31
+      },
+      "hitCount": 0,
+      "children": [
+        18,
+        21
+      ]
+    },
+    {
+      "id": 18,
+      "callFrame": {
+        "functionName": "prepareFreshStack",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 13356,
+        "columnNumber": 34
+      },
+      "hitCount": 1,
+      "children": [
+        19
+      ],
+      "positionTicks": [
+        {
+          "line": 13562,
+          "ticks": 1
+        }
+      ]
+    },
+    {
+      "id": 19,
+      "callFrame": {
+        "functionName": "run",
+        "scriptId": "0",
+        "url": "",
+        "lineNumber": -1,
+        "columnNumber": -1
+      },
+      "hitCount": 0,
+      "children": [
+        20
+      ]
+    },
+    {
+      "id": 20,
+      "callFrame": {
+        "functionName": "measure",
+        "scriptId": "0",
+        "url": "",
+        "lineNumber": -1,
+        "columnNumber": -1
+      },
+      "hitCount": 0
+    },
+    {
+      "id": 21,
+      "callFrame": {
+        "functionName": "workLoopSync",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 13684,
+        "columnNumber": 29
+      },
+      "hitCount": 0,
+      "children": [
+        22
+      ]
+    },
+    {
+      "id": 22,
+      "callFrame": {
+        "functionName": "performUnitOfWork",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 13820,
+        "columnNumber": 34
+      },
+      "hitCount": 0,
+      "children": [
+        23,
+        32
+      ]
+    },
+    {
+      "id": 23,
+      "callFrame": {
+        "functionName": "runWithFiberInDEV",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 2254,
+        "columnNumber": 34
+      },
+      "hitCount": 0,
+      "children": [
+        24
+      ]
+    },
+    {
+      "id": 24,
+      "callFrame": {
+        "functionName": "run",
+        "scriptId": "0",
+        "url": "",
+        "lineNumber": -1,
+        "columnNumber": -1
+      },
+      "hitCount": 0,
+      "children": [
+        25
+      ]
+    },
+    {
+      "id": 25,
+      "callFrame": {
+        "functionName": "beginWork",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 9677,
+        "columnNumber": 26
+      },
+      "hitCount": 0,
+      "children": [
+        26
+      ]
+    },
+    {
+      "id": 26,
+      "callFrame": {
+        "functionName": "updateFunctionComponent",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 8718,
+        "columnNumber": 40
+      },
+      "hitCount": 0,
+      "children": [
+        27,
+        98
+      ]
+    },
+    {
+      "id": 27,
+      "callFrame": {
+        "functionName": "reconcileChildren",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 8442,
+        "columnNumber": 34
+      },
+      "hitCount": 0,
+      "children": [
+        28
+      ]
+    },
+    {
+      "id": 28,
+      "callFrame": {
+        "functionName": "",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 6493,
+        "columnNumber": 25
+      },
+      "hitCount": 0,
+      "children": [
+        29
+      ]
+    },
+    {
+      "id": 29,
+      "callFrame": {
+        "functionName": "reconcileChildFibersImpl",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 6328,
+        "columnNumber": 43
+      },
+      "hitCount": 0,
+      "children": [
+        30
+      ]
+    },
+    {
+      "id": 30,
+      "callFrame": {
+        "functionName": "createFiberFromElement",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 5014,
+        "columnNumber": 39
+      },
+      "hitCount": 0,
+      "children": [
+        31
+      ]
+    },
+    {
+      "id": 31,
+      "callFrame": {
+        "functionName": "createFiberFromTypeAndProps",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 4944,
+        "columnNumber": 44
+      },
+      "hitCount": 1,
+      "positionTicks": [
+        {
+          "line": 5009,
+          "ticks": 1
+        }
+      ]
+    },
+    {
+      "id": 98,
+      "callFrame": {
+        "functionName": "renderWithHooks",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 6899,
+        "columnNumber": 32
+      },
+      "hitCount": 0,
+      "children": [
+        99
+      ]
+    },
+    {
+      "id": 99,
+      "callFrame": {
+        "functionName": "react_stack_bottom_frame",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 19766,
+        "columnNumber": 44
+      },
+      "hitCount": 0,
+      "children": [
+        100
+      ]
+    },
+    {
+      "id": 100,
+      "callFrame": {
+        "functionName": "Styled",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 21860,
+        "columnNumber": 19
+      },
+      "hitCount": 0,
+      "children": [
+        101
+      ]
+    },
+    {
+      "id": 101,
+      "callFrame": {
+        "functionName": "useCore",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 21821,
+        "columnNumber": 16
+      },
+      "hitCount": 0,
+      "children": [
+        102
+      ]
+    },
+    {
+      "id": 102,
+      "callFrame": {
+        "functionName": "useContext",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 21820,
+        "columnNumber": 19
+      },
+      "hitCount": 0,
+      "children": [
+        103
+      ]
+    },
+    {
+      "id": 103,
+      "callFrame": {
+        "functionName": "exports.useContext",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 932,
+        "columnNumber": 37
+      },
+      "hitCount": 0,
+      "children": [
+        104
+      ]
+    },
+    {
+      "id": 104,
+      "callFrame": {
+        "functionName": "useContext",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 20199,
+        "columnNumber": 30
+      },
+      "hitCount": 1,
+      "positionTicks": [
+        {
+          "line": 20202,
+          "ticks": 1
+        }
+      ]
+    },
+    {
+      "id": 32,
+      "callFrame": {
+        "functionName": "completeUnitOfWork",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 13917,
+        "columnNumber": 35
+      },
+      "hitCount": 0,
+      "children": [
+        33
+      ]
+    },
+    {
+      "id": 33,
+      "callFrame": {
+        "functionName": "runWithFiberInDEV",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 2254,
+        "columnNumber": 34
+      },
+      "hitCount": 0,
+      "children": [
+        34
+      ]
+    },
+    {
+      "id": 34,
+      "callFrame": {
+        "functionName": "run",
+        "scriptId": "0",
+        "url": "",
+        "lineNumber": -1,
+        "columnNumber": -1
+      },
+      "hitCount": 0,
+      "children": [
+        35
+      ]
+    },
+    {
+      "id": 35,
+      "callFrame": {
+        "functionName": "completeWork",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 10168,
+        "columnNumber": 29
+      },
+      "hitCount": 1,
+      "positionTicks": [
+        {
+          "line": 10339,
+          "ticks": 1
+        }
+      ]
+    },
+    {
+      "id": 36,
+      "callFrame": {
+        "functionName": "commitRootWhenReady",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 13234,
+        "columnNumber": 36
+      },
+      "hitCount": 0,
+      "children": [
+        37
+      ]
+    },
+    {
+      "id": 37,
+      "callFrame": {
+        "functionName": "commitRoot",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 13977,
+        "columnNumber": 27
+      },
+      "hitCount": 0,
+      "children": [
+        38,
+        40,
+        42
+      ]
+    },
+    {
+      "id": 38,
+      "callFrame": {
+        "functionName": "logRenderPhase",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 4562,
+        "columnNumber": 31
+      },
+      "hitCount": 0,
+      "children": [
+        39
+      ]
+    },
+    {
+      "id": 39,
+      "callFrame": {
+        "functionName": "run",
+        "scriptId": "0",
+        "url": "",
+        "lineNumber": -1,
+        "columnNumber": -1
+      },
+      "hitCount": 0
+    },
+    {
+      "id": 40,
+      "callFrame": {
+        "functionName": "commitBeforeMutationEffects",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 11046,
+        "columnNumber": 44
+      },
+      "hitCount": 0,
+      "children": [
+        41
+      ]
+    },
+    {
+      "id": 41,
+      "callFrame": {
+        "functionName": "getActiveElementDeep",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 4143,
+        "columnNumber": 37
+      },
+      "hitCount": 1,
+      "positionTicks": [
+        {
+          "line": 4146,
+          "ticks": 1
+        }
+      ]
+    },
+    {
+      "id": 42,
+      "callFrame": {
+        "functionName": "flushLayoutEffects",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 14147,
+        "columnNumber": 35
+      },
+      "hitCount": 0,
+      "children": [
+        43,
+        68
+      ]
+    },
+    {
+      "id": 43,
+      "callFrame": {
+        "functionName": "commitLayoutEffectOnFiber",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 11158,
+        "columnNumber": 42
+      },
+      "hitCount": 0,
+      "children": [
+        44
+      ]
+    },
+    {
+      "id": 44,
+      "callFrame": {
+        "functionName": "recursivelyTraverseLayoutEffects",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 12050,
+        "columnNumber": 49
+      },
+      "hitCount": 0,
+      "children": [
+        45
+      ]
+    },
+    {
+      "id": 45,
+      "callFrame": {
+        "functionName": "commitLayoutEffectOnFiber",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 11158,
+        "columnNumber": 42
+      },
+      "hitCount": 0,
+      "children": [
+        46,
+        65
+      ]
+    },
+    {
+      "id": 46,
+      "callFrame": {
+        "functionName": "recursivelyTraverseLayoutEffects",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 12050,
+        "columnNumber": 49
+      },
+      "hitCount": 0,
+      "children": [
+        47
+      ]
+    },
+    {
+      "id": 47,
+      "callFrame": {
+        "functionName": "commitLayoutEffectOnFiber",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 11158,
+        "columnNumber": 42
+      },
+      "hitCount": 0,
+      "children": [
+        48
+      ]
+    },
+    {
+      "id": 48,
+      "callFrame": {
+        "functionName": "recursivelyTraverseLayoutEffects",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 12050,
+        "columnNumber": 49
+      },
+      "hitCount": 0,
+      "children": [
+        49
+      ]
+    },
+    {
+      "id": 49,
+      "callFrame": {
+        "functionName": "commitLayoutEffectOnFiber",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 11158,
+        "columnNumber": 42
+      },
+      "hitCount": 0,
+      "children": [
+        50
+      ]
+    },
+    {
+      "id": 50,
+      "callFrame": {
+        "functionName": "recursivelyTraverseLayoutEffects",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 12050,
+        "columnNumber": 49
+      },
+      "hitCount": 0,
+      "children": [
+        51
+      ]
+    },
+    {
+      "id": 51,
+      "callFrame": {
+        "functionName": "commitLayoutEffectOnFiber",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 11158,
+        "columnNumber": 42
+      },
+      "hitCount": 0,
+      "children": [
+        52,
+        63
+      ]
+    },
+    {
+      "id": 52,
+      "callFrame": {
+        "functionName": "commitHookLayoutEffects",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 10651,
+        "columnNumber": 40
+      },
+      "hitCount": 0,
+      "children": [
+        53
+      ]
+    },
+    {
+      "id": 53,
+      "callFrame": {
+        "functionName": "commitHookEffectListMount",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 10665,
+        "columnNumber": 42
+      },
+      "hitCount": 0,
+      "children": [
+        54
+      ]
+    },
+    {
+      "id": 54,
+      "callFrame": {
+        "functionName": "runWithFiberInDEV",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 2254,
+        "columnNumber": 34
+      },
+      "hitCount": 0,
+      "children": [
+        55
+      ]
+    },
+    {
+      "id": 55,
+      "callFrame": {
+        "functionName": "run",
+        "scriptId": "0",
+        "url": "",
+        "lineNumber": -1,
+        "columnNumber": -1
+      },
+      "hitCount": 0,
+      "children": [
+        56
+      ]
+    },
+    {
+      "id": 56,
+      "callFrame": {
+        "functionName": "react_stack_bottom_frame",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 19825,
+        "columnNumber": 44
+      },
+      "hitCount": 0,
+      "children": [
+        57
+      ]
+    },
+    {
+      "id": 57,
+      "callFrame": {
+        "functionName": "",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 21841,
+        "columnNumber": 38
+      },
+      "hitCount": 0,
+      "children": [
+        58
+      ]
+    },
+    {
+      "id": 58,
+      "callFrame": {
+        "functionName": "dispatchEvent",
+        "scriptId": "0",
+        "url": "",
+        "lineNumber": -1,
+        "columnNumber": -1
+      },
+      "hitCount": 0,
+      "children": [
+        59
+      ]
+    },
+    {
+      "id": 59,
+      "callFrame": {
+        "functionName": "dispatchDiscreteEvent",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 18021,
+        "columnNumber": 38
+      },
+      "hitCount": 0,
+      "children": [
+        60
+      ]
+    },
+    {
+      "id": 60,
+      "callFrame": {
+        "functionName": "dispatchEvent",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 18041,
+        "columnNumber": 30
+      },
+      "hitCount": 0,
+      "children": [
+        61
+      ]
+    },
+    {
+      "id": 61,
+      "callFrame": {
+        "functionName": "dispatchEventForPluginEventSystem",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 14995,
+        "columnNumber": 50
+      },
+      "hitCount": 0,
+      "children": [
+        62
+      ]
+    },
+    {
+      "id": 62,
+      "callFrame": {
+        "functionName": "batchedUpdates$1",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 3883,
+        "columnNumber": 33
+      },
+      "hitCount": 1,
+      "positionTicks": [
+        {
+          "line": 3886,
+          "ticks": 1
+        }
+      ]
+    },
+    {
+      "id": 63,
+      "callFrame": {
+        "functionName": "logComponentEffect",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 4506,
+        "columnNumber": 35
+      },
+      "hitCount": 0,
+      "children": [
+        64
+      ]
+    },
+    {
+      "id": 64,
+      "callFrame": {
+        "functionName": "run",
+        "scriptId": "0",
+        "url": "",
+        "lineNumber": -1,
+        "columnNumber": -1
+      },
+      "hitCount": 0
+    },
+    {
+      "id": 65,
+      "callFrame": {
+        "functionName": "logComponentTrigger",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 4416,
+        "columnNumber": 36
+      },
+      "hitCount": 0,
+      "children": [
+        66
+      ]
+    },
+    {
+      "id": 66,
+      "callFrame": {
+        "functionName": "run",
+        "scriptId": "0",
+        "url": "",
+        "lineNumber": -1,
+        "columnNumber": -1
+      },
+      "hitCount": 0,
+      "children": [
+        67
+      ]
+    },
+    {
+      "id": 67,
+      "callFrame": {
+        "functionName": "measure",
+        "scriptId": "0",
+        "url": "",
+        "lineNumber": -1,
+        "columnNumber": -1
+      },
+      "hitCount": 0
+    },
+    {
+      "id": 68,
+      "callFrame": {
+        "functionName": "run",
+        "scriptId": "0",
+        "url": "",
+        "lineNumber": -1,
+        "columnNumber": -1
+      },
+      "hitCount": 0
+    },
+    {
+      "id": 105,
+      "callFrame": {
+        "functionName": "renderRootConcurrent",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 13687,
+        "columnNumber": 37
+      },
+      "hitCount": 0,
+      "children": [
+        106
+      ]
+    },
+    {
+      "id": 106,
+      "callFrame": {
+        "functionName": "prepareFreshStack",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 13356,
+        "columnNumber": 34
+      },
+      "hitCount": 0,
+      "children": [
+        107
+      ]
+    },
+    {
+      "id": 107,
+      "callFrame": {
+        "functionName": "run",
+        "scriptId": "0",
+        "url": "",
+        "lineNumber": -1,
+        "columnNumber": -1
+      },
+      "hitCount": 0,
+      "children": [
+        108
+      ]
+    },
+    {
+      "id": 108,
+      "callFrame": {
+        "functionName": "measure",
+        "scriptId": "0",
+        "url": "",
+        "lineNumber": -1,
+        "columnNumber": -1
+      },
+      "hitCount": 0
+    },
+    {
+      "id": 69,
+      "callFrame": {
+        "functionName": "",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 14034,
+        "columnNumber": 232
+      },
+      "hitCount": 0,
+      "children": [
+        70
+      ]
+    },
+    {
+      "id": 70,
+      "callFrame": {
+        "functionName": "flushPassiveEffects",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 14351,
+        "columnNumber": 36
+      },
+      "hitCount": 0,
+      "children": [
+        71,
+        72
+      ]
+    },
+    {
+      "id": 71,
+      "callFrame": {
+        "functionName": "run",
+        "scriptId": "0",
+        "url": "",
+        "lineNumber": -1,
+        "columnNumber": -1
+      },
+      "hitCount": 0
+    },
+    {
+      "id": 72,
+      "callFrame": {
+        "functionName": "commitPassiveMountOnFiber",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 12281,
+        "columnNumber": 42
+      },
+      "hitCount": 0,
+      "children": [
+        73
+      ]
+    },
+    {
+      "id": 73,
+      "callFrame": {
+        "functionName": "recursivelyTraversePassiveMountEffects",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 12267,
+        "columnNumber": 55
+      },
+      "hitCount": 0,
+      "children": [
+        74
+      ]
+    },
+    {
+      "id": 74,
+      "callFrame": {
+        "functionName": "commitPassiveMountOnFiber",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 12281,
+        "columnNumber": 42
+      },
+      "hitCount": 0,
+      "children": [
+        75,
+        77,
+        95
+      ]
+    },
+    {
+      "id": 75,
+      "callFrame": {
+        "functionName": "logComponentRender",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 4428,
+        "columnNumber": 35
+      },
+      "hitCount": 0,
+      "children": [
+        76
+      ]
+    },
+    {
+      "id": 76,
+      "callFrame": {
+        "functionName": "run",
+        "scriptId": "0",
+        "url": "",
+        "lineNumber": -1,
+        "columnNumber": -1
+      },
+      "hitCount": 0
+    },
+    {
+      "id": 77,
+      "callFrame": {
+        "functionName": "recursivelyTraversePassiveMountEffects",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 12267,
+        "columnNumber": 55
+      },
+      "hitCount": 0,
+      "children": [
+        78
+      ]
+    },
+    {
+      "id": 78,
+      "callFrame": {
+        "functionName": "commitPassiveMountOnFiber",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 12281,
+        "columnNumber": 42
+      },
+      "hitCount": 0,
+      "children": [
+        79,
+        81
+      ]
+    },
+    {
+      "id": 79,
+      "callFrame": {
+        "functionName": "logComponentRender",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 4428,
+        "columnNumber": 35
+      },
+      "hitCount": 0,
+      "children": [
+        80
+      ]
+    },
+    {
+      "id": 80,
+      "callFrame": {
+        "functionName": "run",
+        "scriptId": "0",
+        "url": "",
+        "lineNumber": -1,
+        "columnNumber": -1
+      },
+      "hitCount": 0
+    },
+    {
+      "id": 81,
+      "callFrame": {
+        "functionName": "recursivelyTraversePassiveMountEffects",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 12267,
+        "columnNumber": 55
+      },
+      "hitCount": 0,
+      "children": [
+        82
+      ]
+    },
+    {
+      "id": 82,
+      "callFrame": {
+        "functionName": "commitPassiveMountOnFiber",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 12281,
+        "columnNumber": 42
+      },
+      "hitCount": 0,
+      "children": [
+        83
+      ]
+    },
+    {
+      "id": 83,
+      "callFrame": {
+        "functionName": "recursivelyTraversePassiveMountEffects",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 12267,
+        "columnNumber": 55
+      },
+      "hitCount": 0,
+      "children": [
+        84
+      ]
+    },
+    {
+      "id": 84,
+      "callFrame": {
+        "functionName": "commitPassiveMountOnFiber",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 12281,
+        "columnNumber": 42
+      },
+      "hitCount": 0,
+      "children": [
+        85,
+        87
+      ]
+    },
+    {
+      "id": 85,
+      "callFrame": {
+        "functionName": "logComponentRender",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 4428,
+        "columnNumber": 35
+      },
+      "hitCount": 0,
+      "children": [
+        86
+      ]
+    },
+    {
+      "id": 86,
+      "callFrame": {
+        "functionName": "run",
+        "scriptId": "0",
+        "url": "",
+        "lineNumber": -1,
+        "columnNumber": -1
+      },
+      "hitCount": 0
+    },
+    {
+      "id": 87,
+      "callFrame": {
+        "functionName": "recursivelyTraversePassiveMountEffects",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 12267,
+        "columnNumber": 55
+      },
+      "hitCount": 0,
+      "children": [
+        88
+      ]
+    },
+    {
+      "id": 88,
+      "callFrame": {
+        "functionName": "commitPassiveMountOnFiber",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 12281,
+        "columnNumber": 42
+      },
+      "hitCount": 0,
+      "children": [
+        89
+      ]
+    },
+    {
+      "id": 89,
+      "callFrame": {
+        "functionName": "recursivelyTraversePassiveMountEffects",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 12267,
+        "columnNumber": 55
+      },
+      "hitCount": 0,
+      "children": [
+        90
+      ]
+    },
+    {
+      "id": 90,
+      "callFrame": {
+        "functionName": "commitPassiveMountOnFiber",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 12281,
+        "columnNumber": 42
+      },
+      "hitCount": 0,
+      "children": [
+        91,
+        109
+      ]
+    },
+    {
+      "id": 91,
+      "callFrame": {
+        "functionName": "recursivelyTraversePassiveMountEffects",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 12267,
+        "columnNumber": 55
+      },
+      "hitCount": 0,
+      "children": [
+        92
+      ]
+    },
+    {
+      "id": 92,
+      "callFrame": {
+        "functionName": "commitPassiveMountOnFiber",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 12281,
+        "columnNumber": 42
+      },
+      "hitCount": 0,
+      "children": [
+        93
+      ]
+    },
+    {
+      "id": 93,
+      "callFrame": {
+        "functionName": "logComponentRender",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 4428,
+        "columnNumber": 35
+      },
+      "hitCount": 0,
+      "children": [
+        94
+      ]
+    },
+    {
+      "id": 94,
+      "callFrame": {
+        "functionName": "run",
+        "scriptId": "0",
+        "url": "",
+        "lineNumber": -1,
+        "columnNumber": -1
+      },
+      "hitCount": 0
+    },
+    {
+      "id": 109,
+      "callFrame": {
+        "functionName": "logComponentTrigger",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 4416,
+        "columnNumber": 36
+      },
+      "hitCount": 0,
+      "children": [
+        110
+      ]
+    },
+    {
+      "id": 110,
+      "callFrame": {
+        "functionName": "measure",
+        "scriptId": "0",
+        "url": "",
+        "lineNumber": -1,
+        "columnNumber": -1
+      },
+      "hitCount": 0
+    },
+    {
+      "id": 95,
+      "callFrame": {
+        "functionName": "logComponentTrigger",
+        "scriptId": "13",
+        "url": "",
+        "lineNumber": 4416,
+        "columnNumber": 36
+      },
+      "hitCount": 0,
+      "children": [
+        96
+      ]
+    },
+    {
+      "id": 96,
+      "callFrame": {
+        "functionName": "run",
+        "scriptId": "0",
+        "url": "",
+        "lineNumber": -1,
+        "columnNumber": -1
+      },
+      "hitCount": 0,
+      "children": [
+        97
+      ]
+    },
+    {
+      "id": 97,
+      "callFrame": {
+        "functionName": "measure",
+        "scriptId": "0",
+        "url": "",
+        "lineNumber": -1,
+        "columnNumber": -1
+      },
+      "hitCount": 0
+    }
+  ],
+  "startTime": 634123547998,
+  "endTime": 634123647169,
+  "samples": [
+    2,
+    6,
+    7,
+    8,
+    7,
+    7,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    8,
+    12,
+    13,
+    18,
+    18,
+    18,
+    18,
+    20,
+    18,
+    31,
+    35,
+    39,
+    41,
+    62,
+    64,
+    67,
+    68,
+    2,
+    71,
+    76,
+    80,
+    86,
+    94,
+    97,
+    71,
+    18,
+    18,
+    18,
+    18,
+    20,
+    104,
+    39,
+    68,
+    7,
+    71,
+    86,
+    71,
+    16,
+    106,
+    106,
+    106,
+    106,
+    108,
+    39,
+    68,
+    71,
+    86,
+    94,
+    110,
+    71,
+    8
+  ],
+  "timeDeltas": [
+    14213,
+    1410,
+    1068,
+    1018,
+    1269,
+    1492,
+    1256,
+    1252,
+    1261,
+    1257,
+    1261,
+    1254,
+    1259,
+    1253,
+    1255,
+    1255,
+    1257,
+    1256,
+    1255,
+    1256,
+    1254,
+    1258,
+    1260,
+    1257,
+    1255,
+    1273,
+    1242,
+    1263,
+    1253,
+    1113,
+    1247,
+    1257,
+    1066,
+    1272,
+    1267,
+    1272,
+    1260,
+    1283,
+    1281,
+    1246,
+    1253,
+    1257,
+    1261,
+    1261,
+    1257,
+    1256,
+    1262,
+    1254,
+    1263,
+    1137,
+    1132,
+    1153,
+    1157,
+    1258,
+    1289,
+    1260,
+    1254,
+    1250,
+    1173,
+    4,
+    2,
+    2,
+    38,
+    51,
+    1255,
+    1253,
+    1041,
+    204,
+    1262,
+    335,
+    35,
+    11,
+    890,
+    559,
+    280,
+    5,
+    3,
+    4,
+    28,
+    50,
+    56,
+    2,
+    1,
+    2,
+    21,
+    245,
+    387,
+    345,
+    790,
+    1031,
+    13,
+    117,
+    85,
+    28,
+    1,
+    2,
+    1,
+    28,
+    488,
+    351,
+    71,
+    201,
+    4,
+    7,
+    11,
+    58
+  ]
+}
