@@ -1,3 +1,4 @@
+/*
 import { useLayoutEffect, useState } from 'react'
 
 import { EventTarget } from '../event-target'
@@ -24,3 +25,4 @@ export const useMeta = () => {
 
   return state
 }
+*/
