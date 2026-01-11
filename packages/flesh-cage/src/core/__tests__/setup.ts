@@ -2,6 +2,20 @@ import { expect, afterEach } from 'vitest'
 import { cleanup } from '@testing-library/react'
 import '@testing-library/jest-dom/vitest'
 
+/**
+ * Base test element that mimics Stylable's interface for useCore tests
+ */
+export class TestStylable extends HTMLElement {
+  constructor() {
+    super()
+    this.attachShadow({ mode: 'open' })
+  }
+
+  change(_context: { skin?: string }) {
+    // No-op for tests - useCore calls this but we don't need it to do anything
+  }
+}
+
 // Cleanup after each test
 afterEach(() => {
   cleanup()

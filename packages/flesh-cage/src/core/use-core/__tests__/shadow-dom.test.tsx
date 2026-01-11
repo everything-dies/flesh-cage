@@ -5,7 +5,7 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { render, waitFor } from '@testing-library/react'
 import { useCore } from '../index'
-import '../../__tests__/setup'
+import { TestStylable } from '../../__tests__/setup'
 
 /**
  * useCore Shadow DOM lifecycle tests
@@ -87,12 +87,7 @@ describe('useCore - Shadow DOM Lifecycle', () => {
 
   describe('Shadow DOM Attachment', () => {
     it('attaches shadow root on mount', async () => {
-      class TestElement extends HTMLElement {
-        constructor() {
-          super()
-          this.attachShadow({ mode: 'open' })
-        }
-      }
+      class TestElement extends TestStylable {}
 
       if (!customElements.get('test-shadow-attach')) {
         customElements.define('test-shadow-attach', TestElement)
@@ -128,12 +123,7 @@ describe('useCore - Shadow DOM Lifecycle', () => {
     })
 
     it('shadow root has open mode', async () => {
-      class TestElement extends HTMLElement {
-        constructor() {
-          super()
-          this.attachShadow({ mode: 'open' })
-        }
-      }
+      class TestElement extends TestStylable {}
 
       if (!customElements.get('test-shadow-mode')) {
         customElements.define('test-shadow-mode', TestElement)
@@ -171,12 +161,7 @@ describe('useCore - Shadow DOM Lifecycle', () => {
     })
 
     it('updates container to shadow root after mount', async () => {
-      class TestElement extends HTMLElement {
-        constructor() {
-          super()
-          this.attachShadow({ mode: 'open' })
-        }
-      }
+      class TestElement extends TestStylable {}
 
       if (!customElements.get('test-container-update')) {
         customElements.define('test-container-update', TestElement)
@@ -231,12 +216,7 @@ describe('useCore - Shadow DOM Lifecycle', () => {
 
   describe('Shadow Root Creation', () => {
     it('shadow root is accessible via ref', async () => {
-      class TestElement extends HTMLElement {
-        constructor() {
-          super()
-          this.attachShadow({ mode: 'open' })
-        }
-      }
+      class TestElement extends TestStylable {}
 
       if (!customElements.get('test-shadow-ref')) {
         customElements.define('test-shadow-ref', TestElement)
@@ -274,11 +254,12 @@ describe('useCore - Shadow DOM Lifecycle', () => {
     })
 
     it('shadow root can be queried', async () => {
-      class TestElement extends HTMLElement {
+      class TestElement extends TestStylable {
         constructor() {
           super()
-          const shadow = this.attachShadow({ mode: 'open' })
-          shadow.innerHTML = '<div class="test">Content</div>'
+          if (this.shadowRoot) {
+            this.shadowRoot.innerHTML = '<div class="test">Content</div>'
+          }
         }
       }
 
@@ -321,12 +302,7 @@ describe('useCore - Shadow DOM Lifecycle', () => {
     })
 
     it('shadow root supports adoptedStyleSheets', async () => {
-      class TestElement extends HTMLElement {
-        constructor() {
-          super()
-          this.attachShadow({ mode: 'open' })
-        }
-      }
+      class TestElement extends TestStylable {}
 
       if (!customElements.get('test-shadow-styles')) {
         customElements.define('test-shadow-styles', TestElement)
@@ -366,12 +342,7 @@ describe('useCore - Shadow DOM Lifecycle', () => {
 
   describe('Cleanup on Unmount', () => {
     it('cleans up event listeners on unmount', async () => {
-      class TestElement extends HTMLElement {
-        constructor() {
-          super()
-          this.attachShadow({ mode: 'open' })
-        }
-      }
+      class TestElement extends TestStylable {}
 
       if (!customElements.get('test-cleanup-listeners')) {
         customElements.define('test-cleanup-listeners', TestElement)
@@ -428,12 +399,7 @@ describe('useCore - Shadow DOM Lifecycle', () => {
     })
 
     it('removes suspend event listener specifically', async () => {
-      class TestElement extends HTMLElement {
-        constructor() {
-          super()
-          this.attachShadow({ mode: 'open' })
-        }
-      }
+      class TestElement extends TestStylable {}
 
       if (!customElements.get('test-remove-suspend')) {
         customElements.define('test-remove-suspend', TestElement)
@@ -489,12 +455,7 @@ describe('useCore - Shadow DOM Lifecycle', () => {
     })
 
     it('does not leak memory on unmount', async () => {
-      class TestElement extends HTMLElement {
-        constructor() {
-          super()
-          this.attachShadow({ mode: 'open' })
-        }
-      }
+      class TestElement extends TestStylable {}
 
       if (!customElements.get('test-no-leak')) {
         customElements.define('test-no-leak', TestElement)
@@ -538,12 +499,7 @@ describe('useCore - Shadow DOM Lifecycle', () => {
 
   describe('startTransition Behavior', () => {
     it('uses startTransition for container update', async () => {
-      class TestElement extends HTMLElement {
-        constructor() {
-          super()
-          this.attachShadow({ mode: 'open' })
-        }
-      }
+      class TestElement extends TestStylable {}
 
       if (!customElements.get('test-transition')) {
         customElements.define('test-transition', TestElement)
@@ -587,12 +543,7 @@ describe('useCore - Shadow DOM Lifecycle', () => {
     })
 
     it('container update does not block rendering', async () => {
-      class TestElement extends HTMLElement {
-        constructor() {
-          super()
-          this.attachShadow({ mode: 'open' })
-        }
-      }
+      class TestElement extends TestStylable {}
 
       if (!customElements.get('test-non-blocking')) {
         customElements.define('test-non-blocking', TestElement)
@@ -631,19 +582,9 @@ describe('useCore - Shadow DOM Lifecycle', () => {
 
   describe('Multiple Custom Elements', () => {
     it('handles multiple elements with independent shadow roots', async () => {
-      class TestElement1 extends HTMLElement {
-        constructor() {
-          super()
-          this.attachShadow({ mode: 'open' })
-        }
-      }
+      class TestElement1 extends TestStylable {}
 
-      class TestElement2 extends HTMLElement {
-        constructor() {
-          super()
-          this.attachShadow({ mode: 'open' })
-        }
-      }
+      class TestElement2 extends TestStylable {}
 
       if (!customElements.get('test-multi-1')) {
         customElements.define('test-multi-1', TestElement1)
@@ -713,12 +654,7 @@ describe('useCore - Shadow DOM Lifecycle', () => {
     })
 
     it('each element has independent event listeners', async () => {
-      class TestElement extends HTMLElement {
-        constructor() {
-          super()
-          this.attachShadow({ mode: 'open' })
-        }
-      }
+      class TestElement extends TestStylable {}
 
       if (!customElements.get('test-independent-events')) {
         customElements.define('test-independent-events', TestElement)

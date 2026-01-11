@@ -5,7 +5,7 @@ import { render, waitFor } from '@testing-library/react'
 import { Suspense, useState } from 'react'
 import { useCore } from '../index'
 import { Context } from '../../context'
-import '../../__tests__/setup'
+import { TestStylable } from '../../__tests__/setup'
 
 /**
  * useCore suspension logic tests
@@ -71,12 +71,7 @@ describe('useCore - Suspension Logic', () => {
 
   describe('Suspension Event Handling', () => {
     it('listens for suspend events on mounted element', async () => {
-      class TestElement extends HTMLElement {
-        constructor() {
-          super()
-          this.attachShadow({ mode: 'open' })
-        }
-      }
+      class TestElement extends TestStylable {}
 
       if (!customElements.get('test-suspend-listen')) {
         customElements.define('test-suspend-listen', TestElement)
@@ -125,12 +120,7 @@ describe('useCore - Suspension Logic', () => {
     })
 
     it('handles suspend event with promise detail', async () => {
-      class TestElement extends HTMLElement {
-        constructor() {
-          super()
-          this.attachShadow({ mode: 'open' })
-        }
-      }
+      class TestElement extends TestStylable {}
 
       if (!customElements.get('test-suspend-detail')) {
         customElements.define('test-suspend-detail', TestElement)
@@ -182,12 +172,7 @@ describe('useCore - Suspension Logic', () => {
 
   describe('Suspense Integration', () => {
     it('does not suspend when suspendable is false', () => {
-      class TestElement extends HTMLElement {
-        constructor() {
-          super()
-          this.attachShadow({ mode: 'open' })
-        }
-      }
+      class TestElement extends TestStylable {}
 
       if (!customElements.get('test-no-suspend')) {
         customElements.define('test-no-suspend', TestElement)
@@ -224,12 +209,7 @@ describe('useCore - Suspension Logic', () => {
     })
 
     it('does not suspend when no suspension promise exists', () => {
-      class TestElement extends HTMLElement {
-        constructor() {
-          super()
-          this.attachShadow({ mode: 'open' })
-        }
-      }
+      class TestElement extends TestStylable {}
 
       if (!customElements.get('test-no-promise')) {
         customElements.define('test-no-promise', TestElement)
@@ -268,12 +248,7 @@ describe('useCore - Suspension Logic', () => {
 
   describe('Resume Logic', () => {
     it('continues rendering after promise resolves', async () => {
-      class TestElement extends HTMLElement {
-        constructor() {
-          super()
-          this.attachShadow({ mode: 'open' })
-        }
-      }
+      class TestElement extends TestStylable {}
 
       if (!customElements.get('test-resume')) {
         customElements.define('test-resume', TestElement)
@@ -315,12 +290,7 @@ describe('useCore - Suspension Logic', () => {
     })
 
     it('handles multiple suspend/resume cycles', async () => {
-      class TestElement extends HTMLElement {
-        constructor() {
-          super()
-          this.attachShadow({ mode: 'open' })
-        }
-      }
+      class TestElement extends TestStylable {}
 
       if (!customElements.get('test-multi-suspend')) {
         customElements.define('test-multi-suspend', TestElement)
@@ -371,12 +341,7 @@ describe('useCore - Suspension Logic', () => {
     })
 
     it('handles rapid suspend events', async () => {
-      class TestElement extends HTMLElement {
-        constructor() {
-          super()
-          this.attachShadow({ mode: 'open' })
-        }
-      }
+      class TestElement extends TestStylable {}
 
       if (!customElements.get('test-rapid-suspend')) {
         customElements.define('test-rapid-suspend', TestElement)
@@ -428,12 +393,14 @@ describe('useCore - Suspension Logic', () => {
     })
   })
 
-  describe('Change Event Dispatching', () => {
-    it('dispatches change event with skin from context', async () => {
-      class TestElement extends HTMLElement {
-        constructor() {
-          super()
-          this.attachShadow({ mode: 'open' })
+  describe('Change Method Invocation', () => {
+    it('calls change() with skin from context', async () => {
+      const receivedSkin = { current: null as string | null }
+
+      class TestElement extends TestStylable {
+        override change(context: { skin?: string }) {
+          receivedSkin.current = context.skin ?? null
+          super.change(context)
         }
       }
 
@@ -441,29 +408,10 @@ describe('useCore - Suspension Logic', () => {
         customElements.define('test-change-event', TestElement)
       }
 
-      const receivedSkin = { current: null as string | null }
-
       function TestComponent() {
         const { ref } = useCore({ suspendable: false })
 
-        return (
-          <test-change-event
-            ref={(el: HTMLElement | null) => {
-              if (el) {
-                Object.defineProperty(ref, 'current', {
-                  value: el,
-                  writable: true,
-                  configurable: true,
-                })
-
-                el.addEventListener('change', (event: Event) => {
-                  const customEvent = event as CustomEvent<{ skin: string }>
-                  receivedSkin.current = customEvent.detail.skin
-                })
-              }
-            }}
-          />
-        )
+        return <test-change-event ref={ref} />
       }
 
       render(
@@ -477,11 +425,15 @@ describe('useCore - Suspension Logic', () => {
       })
     })
 
-    it('dispatches change event when skin changes', async () => {
-      class TestElement extends HTMLElement {
-        constructor() {
-          super()
-          this.attachShadow({ mode: 'open' })
+    it('calls change() when skin changes', async () => {
+      const receivedSkins: string[] = []
+
+      class TestElement extends TestStylable {
+        override change(context: { skin?: string }) {
+          if (context.skin) {
+            receivedSkins.push(context.skin)
+          }
+          super.change(context)
         }
       }
 
@@ -489,29 +441,10 @@ describe('useCore - Suspension Logic', () => {
         customElements.define('test-skin-change', TestElement)
       }
 
-      const receivedSkins: string[] = []
-
       function TestComponent() {
         const { ref } = useCore({ suspendable: false })
 
-        return (
-          <test-skin-change
-            ref={(el: HTMLElement | null) => {
-              if (el) {
-                Object.defineProperty(ref, 'current', {
-                  value: el,
-                  writable: true,
-                  configurable: true,
-                })
-
-                el.addEventListener('change', (event: Event) => {
-                  const customEvent = event as CustomEvent<{ skin: string }>
-                  receivedSkins.push(customEvent.detail.skin)
-                })
-              }
-            }}
-          />
-        )
+        return <test-skin-change ref={ref} />
       }
 
       function Wrapper() {
@@ -545,12 +478,7 @@ describe('useCore - Suspension Logic', () => {
 
   describe('Event Listener Cleanup', () => {
     it('removes event listeners on unmount', async () => {
-      class TestElement extends HTMLElement {
-        constructor() {
-          super()
-          this.attachShadow({ mode: 'open' })
-        }
-      }
+      class TestElement extends TestStylable {}
 
       if (!customElements.get('test-cleanup')) {
         customElements.define('test-cleanup', TestElement)

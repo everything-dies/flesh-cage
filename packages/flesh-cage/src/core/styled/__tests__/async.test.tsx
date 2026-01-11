@@ -333,15 +333,12 @@ describe('styled - async loading', () => {
     const element = findCustomElement(container, 'test-abort-fake-timers')
 
     await act(async () => {
-      element?.dispatchEvent(
-        new CustomEvent('change', { detail: { skin: 'first' } })
-      )
-      element?.dispatchEvent(
-        new CustomEvent('change', { detail: { skin: 'second' } })
-      )
-      element?.dispatchEvent(
-        new CustomEvent('change', { detail: { skin: 'third' } })
-      )
+      const typedElement = element as HTMLElement & {
+        change: (ctx: { skin?: string }) => void
+      }
+      typedElement.change({ skin: 'first' })
+      typedElement.change({ skin: 'second' })
+      typedElement.change({ skin: 'third' })
       await vi.runAllTimersAsync()
     })
 

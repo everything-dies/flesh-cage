@@ -4,7 +4,7 @@ import { render, waitFor } from '@testing-library/react'
 import { useCore } from '../index'
 import { Context } from '../../context'
 import { type RefObject } from 'react'
-import '../../__tests__/setup'
+import { TestStylable } from '../../__tests__/setup'
 
 /**
  * useCore hook basic behavior tests
@@ -102,12 +102,7 @@ describe('useCore - Basic Behavior', () => {
 
   describe('Return Values', () => {
     it('returns an object with ref and container properties', () => {
-      class TestElement extends HTMLElement {
-        constructor() {
-          super()
-          this.attachShadow({ mode: 'open' })
-        }
-      }
+      class TestElement extends TestStylable {}
 
       if (!customElements.get('test-return-values')) {
         customElements.define('test-return-values', TestElement)
@@ -135,12 +130,7 @@ describe('useCore - Basic Behavior', () => {
     })
 
     it('returns a stable ref object', () => {
-      class TestElement extends HTMLElement {
-        constructor() {
-          super()
-          this.attachShadow({ mode: 'open' })
-        }
-      }
+      class TestElement extends TestStylable {}
 
       if (!customElements.get('test-stable-ref')) {
         customElements.define('test-stable-ref', TestElement)
@@ -165,12 +155,7 @@ describe('useCore - Basic Behavior', () => {
     })
 
     it('returns a container that is initially a DocumentFragment', () => {
-      class TestElement extends HTMLElement {
-        constructor() {
-          super()
-          this.attachShadow({ mode: 'open' })
-        }
-      }
+      class TestElement extends TestStylable {}
 
       if (!customElements.get('test-initial-container')) {
         customElements.define('test-initial-container', TestElement)
@@ -196,12 +181,7 @@ describe('useCore - Basic Behavior', () => {
     })
 
     it('container is not null (safe for portals)', () => {
-      class TestElement extends HTMLElement {
-        constructor() {
-          super()
-          this.attachShadow({ mode: 'open' })
-        }
-      }
+      class TestElement extends TestStylable {}
 
       if (!customElements.get('test-container-not-null')) {
         customElements.define('test-container-not-null', TestElement)
@@ -226,12 +206,7 @@ describe('useCore - Basic Behavior', () => {
 
   describe('Ref Stability', () => {
     it('ref object remains stable across re-renders', () => {
-      class TestElement extends HTMLElement {
-        constructor() {
-          super()
-          this.attachShadow({ mode: 'open' })
-        }
-      }
+      class TestElement extends TestStylable {}
 
       if (!customElements.get('test-ref-rerender')) {
         customElements.define('test-ref-rerender', TestElement)
@@ -267,12 +242,7 @@ describe('useCore - Basic Behavior', () => {
     })
 
     it('ref object is stable even when container updates', async () => {
-      class TestElement extends HTMLElement {
-        constructor() {
-          super()
-          this.attachShadow({ mode: 'open' })
-        }
-      }
+      class TestElement extends TestStylable {}
 
       if (!customElements.get('test-ref-stability')) {
         customElements.define('test-ref-stability', TestElement)
@@ -309,19 +279,9 @@ describe('useCore - Basic Behavior', () => {
     })
 
     it('multiple hook calls create separate refs', () => {
-      class TestElement1 extends HTMLElement {
-        constructor() {
-          super()
-          this.attachShadow({ mode: 'open' })
-        }
-      }
+      class TestElement1 extends TestStylable {}
 
-      class TestElement2 extends HTMLElement {
-        constructor() {
-          super()
-          this.attachShadow({ mode: 'open' })
-        }
-      }
+      class TestElement2 extends TestStylable {}
 
       if (!customElements.get('test-multi-ref-1')) {
         customElements.define('test-multi-ref-1', TestElement1)
@@ -358,12 +318,7 @@ describe('useCore - Basic Behavior', () => {
 
   describe('Container Updates', () => {
     it('container starts as DocumentFragment', () => {
-      class TestElement extends HTMLElement {
-        constructor() {
-          super()
-          this.attachShadow({ mode: 'open' })
-        }
-      }
+      class TestElement extends TestStylable {}
 
       if (!customElements.get('test-container-start')) {
         customElements.define('test-container-start', TestElement)
@@ -389,12 +344,7 @@ describe('useCore - Basic Behavior', () => {
     })
 
     it('container can be used as portal target immediately', () => {
-      class TestElement extends HTMLElement {
-        constructor() {
-          super()
-          this.attachShadow({ mode: 'open' })
-        }
-      }
+      class TestElement extends TestStylable {}
 
       if (!customElements.get('test-portal-target')) {
         customElements.define('test-portal-target', TestElement)
@@ -421,12 +371,7 @@ describe('useCore - Basic Behavior', () => {
 
   describe('Integration with Context', () => {
     it('reads skin from Context when Provider exists', () => {
-      class TestElement extends HTMLElement {
-        constructor() {
-          super()
-          this.attachShadow({ mode: 'open' })
-        }
-      }
+      class TestElement extends TestStylable {}
 
       if (!customElements.get('test-with-context')) {
         customElements.define('test-with-context', TestElement)
@@ -452,12 +397,7 @@ describe('useCore - Basic Behavior', () => {
     })
 
     it('works without Context Provider', () => {
-      class TestElement extends HTMLElement {
-        constructor() {
-          super()
-          this.attachShadow({ mode: 'open' })
-        }
-      }
+      class TestElement extends TestStylable {}
 
       if (!customElements.get('test-no-context')) {
         customElements.define('test-no-context', TestElement)
@@ -479,12 +419,7 @@ describe('useCore - Basic Behavior', () => {
     })
 
     it('handles Context value changes', () => {
-      class TestElement extends HTMLElement {
-        constructor() {
-          super()
-          this.attachShadow({ mode: 'open' })
-        }
-      }
+      class TestElement extends TestStylable {}
 
       if (!customElements.get('test-context-change')) {
         customElements.define('test-context-change', TestElement)
@@ -532,12 +467,7 @@ describe('useCore - Basic Behavior', () => {
 
   describe('Suspendable Prop', () => {
     it('accepts suspendable: false', () => {
-      class TestElement extends HTMLElement {
-        constructor() {
-          super()
-          this.attachShadow({ mode: 'open' })
-        }
-      }
+      class TestElement extends TestStylable {}
 
       if (!customElements.get('test-suspendable-false')) {
         customElements.define('test-suspendable-false', TestElement)
@@ -558,12 +488,7 @@ describe('useCore - Basic Behavior', () => {
     })
 
     it('accepts suspendable: true', () => {
-      class TestElement extends HTMLElement {
-        constructor() {
-          super()
-          this.attachShadow({ mode: 'open' })
-        }
-      }
+      class TestElement extends TestStylable {}
 
       if (!customElements.get('test-suspendable-true')) {
         customElements.define('test-suspendable-true', TestElement)
@@ -584,12 +509,7 @@ describe('useCore - Basic Behavior', () => {
     })
 
     it('does not suspend when suspendable is false', () => {
-      class TestElement extends HTMLElement {
-        constructor() {
-          super()
-          this.attachShadow({ mode: 'open' })
-        }
-      }
+      class TestElement extends TestStylable {}
 
       if (!customElements.get('test-no-suspend-false')) {
         customElements.define('test-no-suspend-false', TestElement)
@@ -606,12 +526,7 @@ describe('useCore - Basic Behavior', () => {
     })
 
     it('does not suspend when suspendable is true but no suspension exists', () => {
-      class TestElement extends HTMLElement {
-        constructor() {
-          super()
-          this.attachShadow({ mode: 'open' })
-        }
-      }
+      class TestElement extends TestStylable {}
 
       if (!customElements.get('test-no-suspend-true')) {
         customElements.define('test-no-suspend-true', TestElement)

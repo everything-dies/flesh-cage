@@ -389,7 +389,7 @@ describe('styled - CustomElement class', () => {
     expect(css).not.toContain('red')
   })
 
-  it('responds to custom change events', async () => {
+  it('responds to direct change() calls', async () => {
     const name = uniqueName('test-change-event')
     const Button = styled('button', {
       name,
@@ -405,24 +405,24 @@ describe('styled - CustomElement class', () => {
       </Provider>
     )
 
-    const element = findCustomElement(container, name)
+    const element = findCustomElement(container, name) as HTMLElement & {
+      change: (context: { skin?: string }) => void
+    }
 
     await act(async () => {
       await waitForStyles(element)
     })
 
-    let css = normalizeCSS(getShadowCSS(element?.shadowRoot))
+    let css = normalizeCSS(getShadowCSS(element.shadowRoot))
     expect(css).toContain('yellow')
 
-    // Dispatch custom change event
+    // Call change() directly (new API)
     await act(async () => {
-      element?.dispatchEvent(
-        new CustomEvent('change', { detail: { skin: 'second' } })
-      )
+      element.change({ skin: 'second' })
       await new Promise((resolve) => setTimeout(resolve, 100))
     })
 
-    css = normalizeCSS(getShadowCSS(element?.shadowRoot))
+    css = normalizeCSS(getShadowCSS(element.shadowRoot))
     expect(css).toContain('pink')
   })
 })
