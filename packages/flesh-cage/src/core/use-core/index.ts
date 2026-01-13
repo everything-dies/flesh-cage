@@ -1,6 +1,5 @@
 import { startTransition, use, useLayoutEffect, useRef, useState } from 'react'
 
-import { type Stylable } from '../stylable'
 import { useContext } from '../use-context'
 
 export const useCore = ({ suspendable }: { suspendable: boolean }) => {
@@ -31,9 +30,9 @@ export const useCore = ({ suspendable }: { suspendable: boolean }) => {
   }, [])
 
   useLayoutEffect(() => {
-    const element = ref.current as Stylable
+    const element = ref.current as HTMLElement
 
-    element.change({ skin })
+    element.dispatchEvent(new CustomEvent('change', { detail: { skin } }))
   }, [skin])
 
   if (suspendable && suspension) {

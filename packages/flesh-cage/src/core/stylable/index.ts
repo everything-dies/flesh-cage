@@ -46,16 +46,23 @@ export abstract class Stylable<
     }
   }
 
-  change = (context: { skin?: Names }) => {
-    const skin = (this.getAttribute('skin') ?? context.skin ?? '')
+  change = (event: Event) => {
+    const { detail } = event as CustomEvent<{ skin?: Names }>
+    const skin = (this.getAttribute('skin') ?? detail.skin ?? '')
       .trim()
       .toLowerCase() as Names
 
     return this.suspend(this.adorn(skin))
   }
 
+  connectedCallback() {
+    this.addEventListener('change', this.change)
+  }
+
   disconnectedCallback() {
     this.shadow.adoptedStyleSheets = []
+
+    this.removeEventListener('change', this.change)
   }
 
   resume = () => this.dispatchEvent(new CustomEvent('suspend'))

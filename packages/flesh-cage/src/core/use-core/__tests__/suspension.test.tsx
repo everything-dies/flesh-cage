@@ -393,14 +393,17 @@ describe('useCore - Suspension Logic', () => {
     })
   })
 
-  describe('Change Method Invocation', () => {
-    it('calls change() with skin from context', async () => {
+  describe('Change Event Dispatch', () => {
+    it('dispatches change event with skin from context', async () => {
       const receivedSkin = { current: null as string | null }
 
       class TestElement extends TestStylable {
-        override change(context: { skin?: string }) {
-          receivedSkin.current = context.skin ?? null
-          super.change(context)
+        constructor() {
+          super()
+          this.addEventListener('change', (event: Event) => {
+            const { detail } = event as CustomEvent<{ skin?: string }>
+            receivedSkin.current = detail.skin ?? null
+          })
         }
       }
 
@@ -425,15 +428,18 @@ describe('useCore - Suspension Logic', () => {
       })
     })
 
-    it('calls change() when skin changes', async () => {
+    it('dispatches change event when skin changes', async () => {
       const receivedSkins: string[] = []
 
       class TestElement extends TestStylable {
-        override change(context: { skin?: string }) {
-          if (context.skin) {
-            receivedSkins.push(context.skin)
-          }
-          super.change(context)
+        constructor() {
+          super()
+          this.addEventListener('change', (event: Event) => {
+            const { detail } = event as CustomEvent<{ skin?: string }>
+            if (detail.skin) {
+              receivedSkins.push(detail.skin)
+            }
+          })
         }
       }
 

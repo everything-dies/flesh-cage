@@ -416,9 +416,11 @@ describe('styled - CustomElement class', () => {
     let css = normalizeCSS(getShadowCSS(element.shadowRoot))
     expect(css).toContain('yellow')
 
-    // Call change() directly (new API)
+    // Dispatch change event (event-based API)
     await act(async () => {
-      element.change({ skin: 'second' })
+      element.dispatchEvent(
+        new CustomEvent('change', { detail: { skin: 'second' } })
+      )
       await new Promise((resolve) => setTimeout(resolve, 100))
     })
 

@@ -173,19 +173,23 @@ describe('Stylable class', () => {
 
       await new Promise<void>((resolve) => {
         element.addEventListener('suspend', () => resolve(), { once: true })
-        element.change({ skin: 'light' })
+        element.dispatchEvent(
+          new CustomEvent('change', { detail: { skin: 'light' } })
+        )
       })
 
-      // Should use 'dark' from attribute, not 'light' from context
+      // Should use 'dark' from attribute, not 'light' from event detail
       expect(adornSpy).toHaveBeenCalledWith('dark')
     })
 
-    it('should fall back to context.skin if no attribute', async () => {
+    it('should fall back to event detail skin if no attribute', async () => {
       const adornSpy = vi.spyOn(element, 'adorn')
 
       await new Promise<void>((resolve) => {
         element.addEventListener('suspend', () => resolve(), { once: true })
-        element.change({ skin: 'light' })
+        element.dispatchEvent(
+          new CustomEvent('change', { detail: { skin: 'light' } })
+        )
       })
 
       expect(adornSpy).toHaveBeenCalledWith('light')
@@ -194,7 +198,9 @@ describe('Stylable class', () => {
     it('should call suspend with adorn promise', () => {
       const suspendSpy = vi.spyOn(element, 'suspend')
 
-      element.change({ skin: 'light' })
+      element.dispatchEvent(
+        new CustomEvent('change', { detail: { skin: 'light' } })
+      )
 
       expect(suspendSpy).toHaveBeenCalled()
     })
