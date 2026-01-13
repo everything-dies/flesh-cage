@@ -13,6 +13,7 @@ The `use-core/` module exports the most complex and critical hook in the flesh-c
 **Dependencies:**
 
 - `react` - For `startTransition`, `use`, `useLayoutEffect`, `useRef`, `useState`
+- `../stylable/` - For the `Stylable` type interface (used to type the custom element ref)
 - `../use-context/` - For accessing the current skin name from Context
 
 **Dependents:**
@@ -133,38 +134,38 @@ We initialize `container` to a `DocumentFragment` (not `null`) because:
 
 Once the shadow root is attached (in the first `useLayoutEffect`), we update `container` to point to the `ShadowRoot`, and React will move the children from the fragment to the shadow root via portal reconciliation.
 
-### Why Custom Event Communication?
+### Why Hybrid Communication Pattern?
 
 ```typescript
-// Listening for suspend events
+// Listening for suspend events (custom element → React)
 element.addEventListener('suspend', suspend)
 
-// Dispatching change events
-element.dispatchEvent(new CustomEvent('change', { detail: { skin } }))
+// Calling change method (React → custom element)
+element.change({ skin })
 ```
 
-**Decision:** Use custom DOM events for bidirectional communication between React and custom elements.
+**Decision:** Use a hybrid approach: custom DOM events for custom element → React communication, and direct method calls for React → custom element communication.
 
 **Rationale:**
 
-1. **Decoupling:** Custom elements don't need to know about React. They just dispatch events. React components listen for those events. This separation of concerns makes the system more modular.
+1. **Type safety:** The `Stylable` abstract class provides a typed interface. Calling `element.change({ skin })` is type-checked, catching errors at compile time.
 
-2. **Standard API:** Custom events are part of the DOM standard. No special APIs or abstractions needed.
+2. **Explicit contract:** Custom elements extending `Stylable` must implement the `change()` method, making the API explicit.
 
-3. **Propagation control:** Events can bubble or be captured, giving fine-grained control over which components receive notifications.
+3. **Standard events for async:** Custom elements dispatch 'suspend' events because suspension happens asynchronously after skin loading starts. Events are ideal for this "fire and notify later" pattern.
 
-4. **Detail payload:** `CustomEvent` supports typed payloads via the `detail` property, enabling rich data transfer.
+4. **Direct calls for sync:** When React needs to tell the element to change skins, a direct method call is simpler and more efficient than creating/dispatching events.
 
-**Event types:**
+**Communication patterns:**
 
-- `suspend`: Dispatched by custom elements when skin loading starts (carries a promise)
-- `change`: Dispatched by React components when skin context changes (carries skin name)
+- `suspend` event: Dispatched by custom elements when skin loading starts (carries a promise). React listens for this to integrate with Suspense.
+- `change()` method: Called by React when skin context changes. The custom element implements this method (via `Stylable` abstract class).
 
 **Rejected alternatives:**
 
-- **Props:** Can't pass data from custom elements to React (flow is unidirectional)
+- **Events only:** Would lose TypeScript type safety for skin changes
+- **Methods only:** Custom elements can't call React methods (need events for async notifications)
 - **Callbacks:** Would require custom elements to hold references to React functions (memory leaks)
-- **Observables:** Over-engineering for simple event-driven communication
 
 ### Why use() Hook for Suspense?
 
@@ -333,12 +334,14 @@ import { startTransition, use, useLayoutEffect, useRef, useState } from 'react'
 - `useState`: Reactive state for suspension tracking and container updates
 
 ```typescript
-import { useContext } from './use-context'
+import { type Stylable } from '../stylable'
+import { useContext } from '../use-context'
 ```
 
-**Relative import:** Imports our context hook (not React's `useContext`) to get the current skin name.
+**Relative imports:**
 
-**Note:** The import path `'./use-context'` is incorrect—it should be `'../use-context'` since we're in the `use-core/` folder and need to go up one level. This needs to be fixed.
+- `Stylable` type: Imported from `../stylable/` for typing the custom element ref. This abstract class defines the `change()` method interface that custom elements must implement.
+- `useContext`: Imports our context hook (not React's `useContext`) to get the current skin name.
 
 ```typescript
 export const useCore = ({ suspendable }: { suspendable: boolean }) => {
@@ -582,13 +585,13 @@ return () => {
 
 Both work, but the `.bind()` approach is more concise.
 
-### useLayoutEffect 3: Skin Change Dispatcher (Lines 32-36)
+### useLayoutEffect 3: Skin Change Caller (Lines 33-37)
 
 ```typescript
 useLayoutEffect(() => {
-  const element = ref.current as HTMLElement
+  const element = ref.current as Stylable
 
-  element.dispatchEvent(new CustomEvent('change', { detail: { skin } }))
+  element.change({ skin })
 }, [skin])
 ```
 
@@ -601,31 +604,37 @@ useLayoutEffect(() => {
 **Line-by-line breakdown:**
 
 ```typescript
-const element = ref.current as HTMLElement
+const element = ref.current as Stylable
 ```
 
-**What this does:** Get the custom element and assert it's an `HTMLElement`.
+**What this does:** Get the custom element and assert it's a `Stylable` instance. The `Stylable` type (from `../stylable/`) is an abstract class that defines the interface for skin-switching custom elements.
 
 ```typescript
-element.dispatchEvent(new CustomEvent('change', { detail: { skin } }))
+element.change({ skin })
 ```
 
 **What this does:**
 
-1. Create a new `CustomEvent` with type 'change'
-2. Set the `detail` payload to `{ skin }` (object with current skin name)
-3. Dispatch the event on the custom element
+1. Call the `change()` method directly on the custom element
+2. Pass the current skin name in a context object `{ skin }`
+3. The custom element's `change()` method handles skin validation and style adoption
 
-**Event flow:**
+**Method call flow:**
 
 1. User changes Provider's `skin` prop: `<Provider skin="dark">` → `<Provider skin="light">`
 2. Context value updates, triggering re-render
 3. `useCore` hook re-runs, `skin` variable changes from "dark" to "light"
 4. `useLayoutEffect` detects `skin` changed (dependency array `[skin]`)
-5. Effect re-runs, dispatches 'change' event with new skin
-6. Custom element receives event, updates adopted stylesheets
+5. Effect re-runs, calls `element.change({ skin: 'light' })`
+6. Custom element's `change()` method loads and applies the new skin styles
 
-**Why no cleanup?** Dispatching an event is instantaneous—no resources to clean up. Events are fire-and-forget.
+**Why direct method call instead of events?** The `Stylable` abstract class provides a typed interface for skin changes. Using a direct method call:
+
+- Provides TypeScript type safety
+- Avoids the overhead of event creation and dispatch
+- Makes the API contract explicit (elements must implement `change()`)
+
+**Why no cleanup?** Calling a method is instantaneous—no resources to clean up.
 
 **Important:** This effect runs on mount too (when `skin` is first set). This ensures the custom element receives the initial skin name, even if the Provider doesn't change.
 
@@ -934,6 +943,8 @@ function App() {
 ## Related Modules
 
 ### Dependencies
+
+- **[../stylable/](../stylable/README.md)** - Provides the `Stylable` abstract class type. Custom elements must extend this class to work with `useCore`. The `change()` method on `Stylable` is called when skin context changes.
 
 - **[../use-context/](../use-context/README.md)** - Provides access to the current skin name from React Context. The `useCore` hook calls `useContext()` to get the skin value, which triggers re-renders when the Provider's skin prop changes.
 
