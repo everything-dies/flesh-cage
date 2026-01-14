@@ -86,13 +86,14 @@ describe('Stylable class', () => {
   })
 
   describe('adorn method', () => {
-    it('should call validate with the skin name', async () => {
-      const validateSpy = vi.spyOn(
-        element,
-        'validate' as keyof TestStylableElement
+    it('should validate the skin name', async () => {
+      // Valid skin should succeed
+      await expect(element.adorn('light')).resolves.toBeDefined()
+
+      // Invalid skin should reject
+      await expect(element.adorn('invalid-test')).rejects.toThrow(
+        'Invalid skin'
       )
-      await element.adorn('light')
-      expect(validateSpy).toHaveBeenCalledWith('light')
     })
 
     it('should reject if validate returns false', async () => {
@@ -231,7 +232,8 @@ describe('Stylable class', () => {
 
       await new Promise<void>((resolve) => {
         element.addEventListener('suspend', () => resolve(), { once: true })
-        element.attributeChangedCallback('SKIN', '', 'light')
+        // Cast to 'skin' to satisfy TypeScript - testing internal case handling
+        element.attributeChangedCallback('SKIN' as 'skin', '', 'light')
       })
 
       expect(adornSpy).toHaveBeenCalledWith('light')
@@ -255,11 +257,11 @@ describe('Stylable class', () => {
       element.suspend(slowPromise)
 
       // Wait for the first microtask (event dispatch)
-      await new Promise((resolve) => queueMicrotask(resolve))
+      await new Promise<void>((resolve) => queueMicrotask(() => resolve()))
 
       // First event should have detail (the promise)
       expect(events.length).toBeGreaterThanOrEqual(1)
-      expect(events[0].detail).toBeInstanceOf(Promise)
+      expect(events[0]?.detail).toBeInstanceOf(Promise)
 
       // Now resolve the promise to trigger resume
       resolvePromise()
@@ -288,7 +290,7 @@ describe('Stylable class', () => {
       element.suspend(promise)
 
       // Wait for initial event dispatch
-      await new Promise((resolve) => queueMicrotask(resolve))
+      await new Promise<void>((resolve) => queueMicrotask(() => resolve()))
 
       // Resume should not have been called yet
       expect(resumeSpy).not.toHaveBeenCalled()
@@ -316,7 +318,7 @@ describe('Stylable class', () => {
       element.suspend(promise)
 
       // Wait for initial event dispatch
-      await new Promise((resolve) => queueMicrotask(resolve))
+      await new Promise<void>((resolve) => queueMicrotask(() => resolve()))
 
       // Resume should not have been called yet (promise not settled)
       expect(resumeSpy).not.toHaveBeenCalled()

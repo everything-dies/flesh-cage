@@ -131,8 +131,8 @@ describe('EventTarget', () => {
       EventTarget.dispatchEvent(new CustomEvent(eventType, { detail }))
 
       expect(handler).toHaveBeenCalledTimes(1)
-      const event = handler.mock.calls[0][0] as CustomEvent
-      expect(event.detail).toEqual(detail)
+      const event = handler.mock.calls[0]?.[0] as CustomEvent | undefined
+      expect(event?.detail).toEqual(detail)
 
       // Cleanup
       EventTarget.removeEventListener(eventType, handler)
@@ -155,10 +155,12 @@ describe('EventTarget', () => {
       EventTarget.addEventListener(eventType, handler)
       EventTarget.dispatchEvent(new CustomEvent(eventType, { detail }))
 
-      const event = handler.mock.calls[0][0] as CustomEvent<DetailType>
-      expect(event.detail.nested.value).toBe(42)
-      expect(event.detail.array).toEqual([1, 2, 3])
-      expect(event.detail.fn()).toBe('test')
+      const event = handler.mock.calls[0]?.[0] as
+        | CustomEvent<DetailType>
+        | undefined
+      expect(event?.detail.nested.value).toBe(42)
+      expect(event?.detail.array).toEqual([1, 2, 3])
+      expect(event?.detail.fn()).toBe('test')
 
       // Cleanup
       EventTarget.removeEventListener(eventType, handler)
