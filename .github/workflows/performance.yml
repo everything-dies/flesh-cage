@@ -29,13 +29,16 @@ jobs:
       - name: Install Dependencies
         run: yarn install --immutable
 
+      - name: Build packages
+        run: yarn build:packages
+
       - name: Install Playwright Browsers
         run: yarn playwright install --with-deps chromium
         working-directory: ./perf
 
       - name: Run Performance Scenario
         id: perf-run
-        run: yarn perf start run simple-usage --output ./artifacts/pr
+        run: yarn workspace flesh-cage-perf-harness start run simple-usage --output ./artifacts/pr
         # For a push to main, you might use a different output dir
         # if: github.ref == 'refs/heads/main'
         # run: yarn perf start run simple-usage --output ./artifacts/main
