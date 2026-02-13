@@ -1,20 +1,21 @@
 # Flesh Cage
 
-> Modern CSS-in-TypeScript with Shadow DOM & Constructable Stylesheets
+Modern CSS-in-TypeScript for React, powered by Shadow DOM and constructable stylesheets.
 
 [![CI](https://github.com/everything-dies/flesh-cage/actions/workflows/ci.yml/badge.svg)](https://github.com/everything-dies/flesh-cage/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-## What is Flesh Cage?
+## Why Flesh Cage
 
-Flesh Cage is a **paradigm shift** in component styling that combines four powerful concepts:
+Flesh Cage focuses on style isolation and runtime correctness:
 
-1. **🎨 Skins (Not Themes)** - Complete visual languages, not variable swaps (CSS Zen Garden at scale)
-2. **🌐 Attribute-Driven Styling** - Semantic attributes (ARIA, data-\*) for styling, not prop interpolation
-3. **📝 CSS-in-TypeScript** - Full ecosystem access at build-time, zero runtime cost
-4. **⚡ Constructable Stylesheets + Shadow DOM** - True encapsulation and efficient style management
+- Shadow DOM boundaries for real CSS encapsulation
+- Lazy skin loading via dynamic imports
+- Fast skin switching via `adoptedStyleSheets`
+- Automatic cancellation of stale async skin loads with `AbortController`
+- Optional React Suspense integration for loading states
 
-## Quick Start
+## Install
 
 ```bash
 npm install @everything-dies/flesh-cage
@@ -22,206 +23,135 @@ npm install @everything-dies/flesh-cage
 yarn add @everything-dies/flesh-cage
 ```
 
-```tsx
-import { styled, Provider } from '@everything-dies/flesh-cage'
+Requirements:
 
-// Define base component
-const ButtonBase = ({ children }) => (
-  <button part="surface">
+- Node.js `>=18`
+- React `^18 || ^19`
+- React DOM `^18 || ^19`
+
+## Quick Example
+
+```tsx
+import { Provider, styled } from '@everything-dies/flesh-cage'
+
+type ButtonProps = React.ComponentProps<'button'>
+
+const ButtonBase = ({ children, ...props }: ButtonProps) => (
+  <button part="surface" {...props}>
     <span part="label">{children}</span>
   </button>
 )
 
-// Create shadow component with multiple skins
-export const Button = styled(ButtonBase, {
-  name: 'styled-button',
+const Button = styled(ButtonBase, {
+  name: 'app-button',
   skins: {
     material: () => import('./skins/material'),
     brutalist: () => import('./skins/brutalist'),
   },
-  exportparts: 'label, surface',
+  exportparts: 'surface,label',
 })
 
-// Use with Provider (no prop drilling!)
-function App() {
+export function App() {
   return (
     <Provider skin="material">
-      <Button>Click Me</Button>
+      <Button>Click me</Button>
     </Provider>
   )
 }
 ```
 
-## Package Structure
+## Core API
 
-This is a **single-package library** focused on the core component API:
-
-```typescript
-// Main export - Component API
-import { styled, Provider, useContext } from '@everything-dies/flesh-cage'
-
-// Type definitions
+```ts
+import { Provider, css, styled, useContext } from '@everything-dies/flesh-cage'
 import type {
+  ProviderProps,
   SkinLoader,
   Skins,
   StyledConfig,
 } from '@everything-dies/flesh-cage'
 ```
 
-**One install, everything included:**
+### `styled(Component, config)`
 
-- ✅ Component API (`styled()`, `Provider`, hooks)
-- ✅ Shadow DOM integration with Constructable Stylesheets
-- ✅ Automatic skin loading with caching
-- ✅ React Suspense support
-- ✅ Full TypeScript types
+Creates a React component backed by a custom element + shadow root.
 
-## Features
+Config:
 
-### ✨ Provider Pattern (No Prop Drilling!)
+- `name`: required custom element tag name (must include `-`)
+- `skins`: map of skin names to async loaders
+- `suspendable?`: when `true`, integrates with React Suspense
+- additional HTML attributes (for example `exportparts`, `data-*`, `aria-*`)
+
+### `Provider`
+
+Provides the active skin to all descendants through React context.
 
 ```tsx
 <Provider skin="material">
-  <Button>Uses material</Button>
-
-  {/* Nested providers override */}
-  <Provider skin="dark">
-    <Button>Uses dark</Button>
+  <Button />
+  <Provider skin="brutalist">
+    <Button />
   </Provider>
 </Provider>
 ```
 
-### 🎨 Core API
+### `useContext()`
 
-**`styled(Component, config)`** - Create shadow components
+Returns the current skin value from the nearest `Provider`.
 
-```tsx
-const ButtonBase = ({ children }) => <button>{children}</button>
+### `css`
 
-export const Button = styled(ButtonBase, {
-  name: 'styled-button',
-  skins: { material: () => import('./material') },
-  exportparts: 'label, surface',
-  suspendable: false, // Optional: integrate with React Suspense
-})
+`String.raw` helper for CSS-in-TypeScript authoring ergonomics.
+
+## Behavior Notes
+
+- Skin names are normalized to lowercase in the custom element layer.
+- Skin switches dispatch internal `change` events to trigger style replacement.
+- Previous in-flight skin loads are aborted when a new skin is requested.
+- On unmount, adopted stylesheets are cleared from the shadow root.
+
+## Monorepo Layout
+
+```text
+packages/flesh-cage     # publishable library
+examples/playground     # local dev playground
+perf                    # performance harness
+docs                    # project documentation
 ```
-
-**Configuration Options:**
-
-- `name` - Custom element tag name (required, must contain hyphen)
-- `skins` - Map of skin names to lazy loader functions
-- `suspendable` - Enable React Suspense integration for loading states (default: `false`)
-- Any HTML attributes (e.g., `exportparts`, `class`, `data-*`)
-
-**Suspendable Components:**
-
-When `suspendable: true`, the component integrates with React Suspense boundaries, allowing you to show fallback UI while skins load:
-
-```tsx
-export const Button = styled(ButtonBase, {
-  name: 'styled-button',
-  skins: { material: () => import('./material') },
-  suspendable: true, // Enable Suspense integration
-})
-
-// Use with Suspense boundary
-<Suspense fallback={<div>Loading skin...</div>}>
-  <Button>Click Me</Button>
-</Suspense>
-```
-
-**Automatic Abort on Skin Switch:**
-
-Flesh Cage automatically aborts stale skin loads when rapidly switching between skins. If you click a button to load skin A, then immediately click another button to load skin B, the incomplete load for skin A will be aborted, preventing stale updates. This uses the standard `AbortController` API internally.
-
-**`Provider`** - Context-based skin management
-
-```tsx
-<Provider skin="material">
-  <Button>Uses material skin</Button>
-</Provider>
-```
-
-**`useContext()`** - Access current skin
-
-```tsx
-import { useContext } from '@everything-dies/flesh-cage'
-
-function MyComponent() {
-  const skin = useContext()
-  return <div>Current skin: {skin}</div>
-}
-```
-
-### 📊 Performance
-
-- **Lazy loading** - Dynamic imports for code-splitting
-- **Fast theme switching** - Direct stylesheet replacement via adoptedStyleSheets
-- **Small bundle** - Minimal runtime overhead, tree-shakeable
 
 ## Development
 
 ```bash
-# Install dependencies
+# install deps
 yarn install
 
-# Start playground
+# run playground
 yarn dev
 
-# Run tests
+# typecheck + lint + tests
+yarn typecheck
+yarn lint
 yarn test
 
-# Build packages
-yarn build
-
-# Lint & format
-yarn lint
-yarn format
+# build and validate package artifacts
+yarn build:packages
+yarn validate
 ```
-
-## Local Development
-
-The monorepo includes a **playground** for testing packages locally:
-
-```bash
-yarn dev  # Starts Vite on http://localhost:3000
-```
-
-Changes to packages hot-reload instantly - no build step needed!
 
 ## Documentation
 
-### Current Features
-
-- **[Current vs Planned Features](./docs/CURRENT_VS_PLANNED.md)** - Clear distinction between implemented and planned features
-- [Getting Started](./docs/GETTING_STARTED.md) - Quick start guide
-- [Verification Checklist](./docs/VERIFICATION.md) - System verification
-
-### Design Philosophy
-
-- [Complete Architecture](./.idea/design-docs/ARCHITECTURE_COMPLETE.md)
-- [Skins vs Themes Philosophy](./.idea/design-docs/SKINS_VS_THEMES_PHILOSOPHY.md)
-- [Attribute-Driven Styling](./.idea/design-docs/ATTRIBUTE_DRIVEN_STYLING.md)
-- [Provider Pattern](./.idea/design-docs/PROVIDER_PATTERN.md)
-
-### Future Proposals
-
-See [docs/proposals/](./docs/proposals/) for planned features (not yet implemented)
+- [Getting Started](./docs/GETTING_STARTED.md)
+- [Current vs Planned](./docs/CURRENT_VS_PLANNED.md)
+- [Contributing](./docs/CONTRIBUTING.md)
+- [Publishing](./docs/PUBLISHING.md)
+- [Docs Index](./docs/README.md)
+- [Proposals](./docs/proposals/README.md)
 
 ## Contributing
 
-See [CONTRIBUTING.md](./docs/CONTRIBUTING.md) for development guidelines.
+Open an issue or PR, then follow the process in `docs/CONTRIBUTING.md`.
 
 ## License
 
-MIT © Fernando Camargo
-
----
-
-**Built with cutting-edge web platform primitives:**
-
-- Shadow DOM for true encapsulation
-- Constructable Stylesheets for performance
-- Web Components for interoperability
-- TypeScript for type safety
-- React for developer experience
+MIT

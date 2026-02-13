@@ -1,6 +1,7 @@
 # Flesh Cage Documentation
 
 This directory contains all documentation for the Flesh Cage library.
+Documentation is currently being reorganized and consolidated.
 
 ## Getting Started
 
@@ -14,8 +15,7 @@ This directory contains all documentation for the Flesh Cage library.
 Contributing and development guides:
 
 - **[CONTRIBUTING.md](./CONTRIBUTING.md)** - Development guidelines and contribution workflow
-- **[VERIFICATION.md](./VERIFICATION.md)** ⚠️ - System verification checklist (outdated)
-- **[PACKAGE_EXPORTS_GUIDE.md](./PACKAGE_EXPORTS_GUIDE.md)** ⚠️ - Package export configuration (outdated)
+- **[PUBLISHING.md](./PUBLISHING.md)** - Release and publishing process
 
 ## Testing
 
@@ -44,33 +44,14 @@ Future feature proposals (not yet implemented):
 
 ---
 
-## Documentation Organization
-
-### Status Indicators
-
-- ✅ **Up to date** - Current and accurate
-- ⚠️ **Outdated** - Contains outdated information, needs updating
-- 🚧 **Work in Progress** - Actively being developed
-- 📋 **Placeholder** - Template or incomplete
-
-### Document Categories
-
-1. **Getting Started** - User-facing guides for using Flesh Cage
-2. **Development** - Internal guides for contributors
-3. **Testing** - Testing strategies and research
-4. **Philosophy** - Design decisions and architectural principles
-5. **Technical** - Deep dives into implementation details
-6. **Proposals** - Future features and experimental ideas
-
 ## Contributing to Documentation
 
-When adding new documentation:
+Current direction:
 
-1. Place it in the appropriate category directory (or create one if needed)
-2. Update this README to include it in the relevant section
-3. Use clear, descriptive filenames (SCREAMING_SNAKE_CASE for major docs)
-4. Add status indicators if the doc is outdated or WIP
-5. Cross-reference related docs using relative links
+1. Keep docs focused on current behavior.
+2. Avoid source-level duplicated docs under `src/`.
+3. Keep this index aligned with existing files.
+4. Prefer updating a single canonical doc over adding overlapping ones.
 
 ## Related Documentation
 
